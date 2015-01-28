@@ -25,8 +25,9 @@ using namespace std;
 
 const float GRAVITY = 9.8;
 
-struct Player
+class Player
 {
+public:
 	unsigned short int Angle = 0;
 
 	float PosX;
@@ -36,6 +37,7 @@ struct Player
 	int MoY;
 	int MoZ;		//Used by gravity
 
+private:
 	const int MaxWalkSpeed = 70;
 	const int MaxRunSpeed = 40;
 
@@ -53,14 +55,15 @@ struct Player
 	int Kills = 0;		//For deathmatch
 	int Deaths = 0;
 
-	//Object-Oriented Programming
+public:
 	void ForwardMove(int Thrust);
 	void LateralMove(int Thrust);
 	void Fall(/* Map*  */);
 };
 
-struct Barrel
+class Barrel
 {
+private:
 	float PosX;
 	float PosY;
 	float PosZ;
@@ -68,6 +71,7 @@ struct Barrel
 	int MoY;
 	int MoZ;		//Used if the barrel falls
 
+public:
 	int Radius = 16;
 	int Height = 32;
 	int Health = 20;
@@ -92,6 +96,7 @@ struct Level
 	////Vertex *ptrSpawns = new Vertex[];
 	////Vertex *ptrBarrels = new Vertex[];
 	////Vertex *ptrDoors = new Vertex[];
+
 };
 
 struct SpawnSpot

@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 {
 	// Creating the first memory pointer
 	int *ptr = new int;
-	const int VERSION = 1;		// A serial number for the version
+	const int VERSION = 0;		// A serial number for the version
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -45,8 +45,8 @@ int main(int argc, char *argv[])
 	ProgramName = ProgramName.substr(ProgramName.find_last_of("/\\"), ProgramName.length());
 	ProgramName[0] = ' ';	// The first character here will be a space
 
-	cout << "                    >> RIPOFF VERSION " <<		// Should be named "KillBox"
-		VERSION / 100 << "." << VERSION % 100 << " <<" << endl;
+	cout << "                KILLBOX DEV VERSION " <<		// Should be named "KillBox"
+		VERSION / 100 << "." << VERSION % 100 << " (PRE-ALPHA)" << endl;
 	cout << "Memory area: Is around 0x" << &ptr << endl;       //approx area ~
 	cout << "Program name:" << ProgramName << endl << endl;
 
@@ -58,9 +58,9 @@ int main(int argc, char *argv[])
 
 	cout << "                            WARNING" << endl;
 	cout << "================================================================" << endl;
-	cout << "  \"RipOff\" is free software, covered by the GNU General Public" << endl;
+	cout << "  \"KillBox\" is free software, covered by the GNU General Public" << endl;
 	cout << " License. There is NO warranty and the author is NOT liable for" << endl;
-	cout << "   results of its use. Read the license BEFORE you continue." << endl;
+	cout << " any results of its use. Read the license BEFORE you continue." << endl;
 	cout << "                    PRESS A KEY TO CONTINUE" << endl;
 	cout << "================================================================" << endl;
 	cin.get();
