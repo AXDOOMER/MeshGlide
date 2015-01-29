@@ -28,6 +28,7 @@ const float GRAVITY = 9.8;
 class Player
 {
 public:
+	// Object-oriented programming is a pain. Made it public so it's easily accessible. 
 	unsigned short int Angle = 0;
 
 	float PosX;
