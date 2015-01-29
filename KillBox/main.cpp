@@ -16,12 +16,17 @@
 
 // The main stuff is here
 
+#include <GLFW/glfw3.h>
+#include <GL/freeglut.h>
+#include <GL/GL.h>
+#include <GL/GLU.h>
 
 #include <iostream>
 #include <string>
 #include <string.h>     //Used for strcmp()
 #include <stdlib.h>     /* atoi */
 
+#include "viewdraw.h"
 #include "command.h"
 #include "random.h"
 #include "things.h"
@@ -85,18 +90,6 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	cout << "Graphics: Loading [";
-	for (int i = 0; i < 20; i++)
-	{
-		cout << ".";
-	}
-	cout << "]" << endl;
-
-	if (FindArgumentPosition(argc, argv, "-wireframe") > 0)
-	{
-		cout << "_OpenGL: Wireframe mode activated." << endl;
-	}
-
 	if (FindArgumentPosition(argc, argv, "-random") > 0)
 	{
 		if (argv[FindArgumentPosition(argc, argv, "-random") + 1] > 0 &&
@@ -137,6 +130,28 @@ int main(int argc, char *argv[])
 	cin >> LevelName;
 	Level* CurrentLevel = F_LoadLevel(LevelName);
 
+	// Load somem stuff
+	cout << "Graphics: Loading [";
+	for (int i = 0; i < 20; i++)
+	{
+		cout << ".";
+	}
+	cout << "]" << endl;
+
+	// Load OpenGL
+	GLFWwindow* window = Init_OpenGL();
+	if (!window)
+	{
+		cout << "An error as occurend when tried to initialise OpenGL stuff!" << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	if (FindArgumentPosition(argc, argv, "-wireframe") > 0)
+	{
+		cout << "_OpenGL: Wireframe mode activated." << endl;
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+
     //Game loop
     do
     {
@@ -157,12 +172,18 @@ int main(int argc, char *argv[])
 
 		//Play sound
 
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+
         TicCount++;
     }
-    while(!Quit);
+	while (!Quit && !glfwWindowShouldClose(window));
 
 	cout << endl << endl << "Press any key to terminate the program." << endl;
 	cin.get();
+
+	// Close OpenGL stuff
+	Close_OpenGL();
 
 	return 0;
 }
