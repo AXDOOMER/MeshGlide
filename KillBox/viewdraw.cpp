@@ -62,7 +62,7 @@ GLFWwindow* Init_OpenGL()
 
 	// Vsync
 	glfwSwapInterval(1);
-	glfwSetKeyCallback(window, Key_Callback<);
+	glfwSetKeyCallback(window, Key_Callback);
 
 	// Make the background black
 	glClearColor(0.5, 0.5, 0.5, 0.0);
