@@ -43,31 +43,39 @@ using namespace std;
 //	return (Number % Modulo) * Spacing;
 //}
 
+// How it works: R_Random( % , * , + )
+// Default values should be ( 256, 1, 0) for the wider range of results
 int R_Random(int Modulo, int Spacing, int Modifier)
 {
+	// Avoid a crash
 	if (Modulo < 1)
 	{
-		Modulo = PRA_SIZE;
+		// Make it bigger than the largest number so it doesn't have an impact
+		Modulo = NUMBERS;
 	}
 
+	// It's useless to multiply a random number by zero
 	if (Spacing < 1)
 	{
+		// Multiply it by one so it doesn't have an impact
 		Spacing = 1;
 	}
 
-	int Number = static_cast<int>(RandomNumbers[Index]);
+	// Get a number an switch the index to the next
+	int Number = static_cast<int>(RandomNumbers[Index++]);
 
-	Index++;
-
-	if (Index == PRA_SIZE)
+	// Do this so we don't read outside of the array
+	if (Index == NUMBERS)
 	{
 		Index = 0;
 	}
 
-	if (Index > PRA_SIZE)
+	// Should never happen unless there is a programming error
+	if (Index > NUMBERS)
 	{
 		cout << "Pseudo-Random Number Array Overflow! Index is " << Index << endl;
 	}
 
+	// Do the operations that we want on the number then return it
 	return (Number % Modulo) * Spacing + Modifier;
 }
