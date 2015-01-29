@@ -16,6 +16,8 @@
 
 // The main stuff is here
 
+// These instructions tell where to put them:
+// http://stackoverflow.com/questions/22539047/how-can-i-set-up-freeglut-and-glew-for-use-in-visual-studio-2013
 #include <GLFW/glfw3.h>
 #include <GL/freeglut.h>
 #include <GL/GL.h>
@@ -152,6 +154,10 @@ int main(int argc, char *argv[])
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 
+	// Temporary player
+	Player* play = new Player;
+
+
     //Game loop
     do
     {
@@ -171,6 +177,46 @@ int main(int argc, char *argv[])
 		//Draw Screen
 
 		//Play sound
+
+		// Input for tests
+		if (glfwGetKey(window, GLFW_KEY_W))
+		{
+			play->ForwardMove(5);
+		}
+		if (glfwGetKey(window, GLFW_KEY_S))
+		{
+			play->ForwardMove(-5);
+		}
+		if (glfwGetKey(window, GLFW_KEY_A))
+		{
+			play->LateralMove(-5);
+		}
+		if (glfwGetKey(window, GLFW_KEY_D))
+		{
+			play->LateralMove(5);
+		}
+		if (glfwGetKey(window, GLFW_KEY_LEFT))
+		{
+			play->AngleTurn(1);
+		}
+		if (glfwGetKey(window, GLFW_KEY_RIGHT))
+		{
+			play->AngleTurn(-1);
+		}
+		if (glfwGetKey(window, GLFW_KEY_SPACE))
+		{
+			play->Angle = 0;
+			play->PosX = 0;
+			play->PosY = 0;
+			play->PosZ = 0;
+			play->MoX = 0;
+			play->MoY = 0;
+			play->MoZ = 0;	
+		}
+
+		// Status of the player for debugging purposes
+		cout << static_cast<int>(play->PosX) << "		" << static_cast<int>(play->PosY) << "		" << play->Angle << endl;
+
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

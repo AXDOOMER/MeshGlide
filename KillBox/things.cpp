@@ -16,6 +16,59 @@
 
 // Data structures (player, barrels, walls, triangles, doors, etc. ) used in the World
 
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 #include "things.h"
+
+void Player::ForwardMove(int Thrust)
+{
+	PosX += Thrust * cos(GetRadianAngle(Angle));
+	PosY += Thrust * sin(GetRadianAngle(Angle));
+}
+
+void Player::LateralMove(int Thrust)
+{
+	PosX += Thrust * sin(GetRadianAngle(Angle));
+	PosY += Thrust * cos(GetRadianAngle(Angle));
+}
+
+float Player::GetRadianAngle(short Angle)
+{
+	return Angle * M_PI * 2 / 32768;
+}
+
+void Player::AngleTurn(short AngleChange)
+{
+	// Our internal representation of angles goes from -16384 to 16383, 
+	// so there are 32768 different angles possible. 
+
+	// If you turn bigger than 180 degrees on one side, 
+	// why didn't you turn the other side? 
+	if (AngleChange < 16383 && AngleChange > -16384)
+	{
+		Angle += AngleChange;
+
+		if (Angle + AngleChange > 16383)
+		{
+			Angle = Angle + AngleChange - 32768;
+		}
+		else if (Angle + AngleChange < -16384)
+		{
+			Angle = Angle + AngleChange + 32768;
+		}
+	}
+
+	//Angle += AngleChange;
+
+	//if (Angle + AngleChange > M_PI)
+	//{
+	//	Angle = Angle + AngleChange - M_PI * 2;
+	//}
+	//else if (Angle + AngleChange < -M_PI)
+	//{
+	//	Angle = Angle + AngleChange + M_PI * 2;
+	//}
+
+}
 

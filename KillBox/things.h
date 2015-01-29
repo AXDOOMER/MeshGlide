@@ -21,26 +21,28 @@
 #define _THINGS_H
 
 #include <string>
+#include <cmath>
 using namespace std;
 
 const float GRAVITY = 9.8;
+//const float PI = atan(1) * 4;
 
 class Player
 {
 public:
 	// Object-oriented programming is a pain. Made it public so it's easily accessible. 
-	unsigned short int Angle = 0;
+	short Angle = 8192;	// Should use shorts to avoid a lost of accuracy in MP games...
 
-	float PosX;
-	float PosY;
-	float PosZ;
-	int MoX;		//Speed vector (momentum)
-	int MoY;
-	int MoZ;		//Used by gravity
+	float PosX = 0;
+	float PosY = 0;
+	float PosZ = 0;
+	char MoX = 0;		//Speed vector (momentum)
+	char MoY = 0;
+	char MoZ = 0;		//Used by gravity
 
 private:
-	const int MaxWalkSpeed = 70;
-	const int MaxRunSpeed = 40;
+	const int MaxWalkSpeed = 40;
+	const int MaxRunSpeed = 70;
 
 	const int ViewZ = 42;
 	char Damages = 0;	//Damage location indicator: 0=none, 1=both, 2=left, 3=right
@@ -56,9 +58,12 @@ private:
 	int Kills = 0;		//For deathmatch
 	int Deaths = 0;
 
+	float GetRadianAngle(short Angle);
+
 public:
 	void ForwardMove(int Thrust);
 	void LateralMove(int Thrust);
+	void AngleTurn(short AngleChange);
 	void Fall(/* Map*  */);
 };
 
