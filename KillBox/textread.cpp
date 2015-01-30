@@ -59,8 +59,7 @@ Level* F_LoadLevel(string LevelName)
 
 					if (Line.find("{") != string::npos)
 					{
-						// DEFINITION ENTERED 
-						// Eat the { right now and go to the next line
+						// Go to the next line right now
 						getline(LevelFile, Line);
 						Count++;
 					}

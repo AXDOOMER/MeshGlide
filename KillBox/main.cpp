@@ -142,6 +142,9 @@ int main(int argc, char *argv[])
 
 	// Load OpenGL
 	GLFWwindow* window = Init_OpenGL();
+	// Initialize GLUT, else we can't draw spheres and cones
+	glutInit(&argc, argv);
+
 	if (!window)
 	{
 		cout << "An error as occurend when tried to initialise OpenGL stuff!" << endl;
@@ -175,6 +178,7 @@ int main(int argc, char *argv[])
 		//Update game logic
 		
 		//Draw Screen
+		DrawScreen(play);
 
 		//Play sound
 
@@ -197,11 +201,11 @@ int main(int argc, char *argv[])
 		}
 		if (glfwGetKey(window, GLFW_KEY_LEFT))
 		{
-			play->AngleTurn(1);
+			play->AngleTurn(100);
 		}
 		if (glfwGetKey(window, GLFW_KEY_RIGHT))
 		{
-			play->AngleTurn(-1);
+			play->AngleTurn(-100);
 		}
 		if (glfwGetKey(window, GLFW_KEY_SPACE))
 		{

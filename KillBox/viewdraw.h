@@ -16,11 +16,15 @@
 
 // OpenGL camera functions for screen drawing
 
+#include "things.h"
+
 GLFWwindow* Init_OpenGL();
 
 void Error_Callback(int error, const char* description);
 
 void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+void DrawScreen(Player* play);
 
 int Close_OpenGL();
 

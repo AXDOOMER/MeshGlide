@@ -29,8 +29,10 @@ void Player::ForwardMove(int Thrust)
 
 void Player::LateralMove(int Thrust)
 {
-	PosX += Thrust * sin(GetRadianAngle(Angle));
-	PosY += Thrust * cos(GetRadianAngle(Angle));
+	float LateralAngle = GetRadianAngle(Angle) - M_PI_2;
+
+	PosX += Thrust * cos(LateralAngle);
+	PosY += Thrust * sin(LateralAngle);
 }
 
 float Player::GetRadianAngle(short Angle)

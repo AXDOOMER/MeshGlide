@@ -58,9 +58,10 @@ private:
 	int Kills = 0;		//For deathmatch
 	int Deaths = 0;
 
-	float GetRadianAngle(short Angle);
 
 public:
+	float GetRadianAngle(short Angle);
+
 	void ForwardMove(int Thrust);
 	void LateralMove(int Thrust);
 	void AngleTurn(short AngleChange);

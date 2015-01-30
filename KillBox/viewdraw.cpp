@@ -23,6 +23,9 @@
 #include <GL/GLU.h>
 
 #include <iostream>
+
+#include "things.h"
+
 using namespace std;
 
 void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -66,13 +69,73 @@ GLFWwindow* Init_OpenGL()
 
 	// Make the background black
 	glClearColor(0.5, 0.5, 0.5, 0.0);
-	//glEnable(GL_DEPTH_TEST);		// Enable later...
+	glEnable(GL_DEPTH_TEST);		// Enable later...
 	glEnable(GL_CULL_FACE);
 
 	// Swap buffers right now
 	glfwSwapBuffers(window);
 
 	return window;
+}
+
+void DrawScreen(Player* play)
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glViewport(0, 0, 640, 480);
+	gluPerspective(90, 1, 0.1f, 100.0f);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	gluLookAt(play->PosY/64, 2.0f, play->PosX / 64,		// Camera's position
+		play->PosY / 64 + sin(play->GetRadianAngle(play->Angle)), 2.0f, play->PosX / 64 + cos(play->GetRadianAngle(play->Angle)),	// What the camera will look at
+			  0.0, 1.0, 0.0);	// This is for the camera's frame rotation
+
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	for (int i = -3; i <= 3; i++)
+	{
+		for (int j = -3; j <= 3; j++)
+		{
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glPushMatrix();
+			glTranslatef(i*10.0f, 0.0f, j * 10.0f);
+			// Big body snow ball
+			glTranslatef(0.0f, 0.75f, 0.0f);
+			glutSolidSphere(0.75f, 20, 20);
+			// Small head ball
+			glTranslatef(0.0f, 1.0f, 0.0f);
+			glutSolidSphere(0.25f, 20, 20);
+			// Black Eyes
+			glPushMatrix();
+			glColor3f(0.0f, 0.0f, 0.0f);
+			glTranslatef(0.05f, 0.10f, 0.18f);
+			glutSolidSphere(0.05f, 10, 10);
+			glTranslatef(-0.1f, 0.0f, 0.0f);
+			glutSolidSphere(0.05f, 10, 10);
+			glPopMatrix();
+			// Carrot
+			glColor3f(1.0f, 0.5f, 0.0f);
+			glutSolidCone(0.08f, 0.5f, 10, 2);
+			glPopMatrix();
+		}
+	}
+
+	//// Draw ground
+	glColor3f(0.0f, 0.5f, 0.0f);
+	glBegin(GL_QUADS);
+	glVertex3f(-35.0f, 0.0f, -35.0f);
+	glVertex3f(-35.0f, 0.0f, 35.0f);
+	glVertex3f(35.0f, 0.0f, 35.0f);
+	glVertex3f(35.0f, 0.0f, -35.0f);
+	glEnd();
+	glPopMatrix();
+
+	// The sky is blue
+	glClearColor(0.0, 0.0, 0.5, 0.0);
 }
 
 int Close_OpenGL()
