@@ -78,14 +78,26 @@ GLFWwindow* Init_OpenGL()
 	return window;
 }
 
-void DrawScreen(Player* play)
+void DrawScreen(GLFWwindow* window, Player* play)
 {
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+	// Tell GL how to show us the world
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glViewport(0, 0, 640, 480);
-	gluPerspective(90, 1, 0.1f, 100.0f);
+
+	float ratio = (float)width / height;
+	float fov = 90;
+
+	if (ratio > 1)
+	{
+		fov = fov / ratio;
+	}
+
+	glViewport(0, 0, width, height);
+	gluPerspective(fov, ratio, 0.1f, 100.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

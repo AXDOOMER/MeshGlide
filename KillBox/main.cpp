@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
 		//Update game logic
 		
 		//Draw Screen
-		DrawScreen(play);
+		DrawScreen(window, play);
 
 		//Play sound
 
