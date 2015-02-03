@@ -69,8 +69,8 @@ GLFWwindow* Init_OpenGL()
 
 	// Make the background black
 	glClearColor(0.5, 0.5, 0.5, 0.0);
-	glEnable(GL_DEPTH_TEST);		// Enable later...
-	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);	// Draw objects at the appropriate Z
+	glEnable(GL_CULL_FACE);		// Don't draw faces behind polygones
 
 	// Swap buffers right now
 	glfwSwapBuffers(window);
@@ -82,6 +82,7 @@ void DrawScreen(GLFWwindow* window, Player* play)
 {
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
+
 	// Tell GL how to show us the world
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -91,6 +92,8 @@ void DrawScreen(GLFWwindow* window, Player* play)
 	float ratio = (float)width / height;
 	float fov = 90;
 
+	// Wide horizontal screen. People with a large screen should not 
+	// see more than others. The action is mostly horizontal. 
 	if (ratio > 1)
 	{
 		fov = fov / ratio;
@@ -130,20 +133,31 @@ void DrawScreen(GLFWwindow* window, Player* play)
 			glutSolidSphere(0.05f, 10, 10);
 			glPopMatrix();
 			// Carrot
-			glColor3f(1.0f, 0.5f, 0.0f);
+			glColor3f(235.0f/256.0f, 95.0f/256.0f, 0.0f);
 			glutSolidCone(0.08f, 0.5f, 10, 2);
 			glPopMatrix();
 		}
 	}
 
-	//// Draw ground
+	// Draw ground
 	glColor3f(0.0f, 0.5f, 0.0f);
-	glBegin(GL_QUADS);
-	glVertex3f(-35.0f, 0.0f, -35.0f);
-	glVertex3f(-35.0f, 0.0f, 35.0f);
-	glVertex3f(35.0f, 0.0f, 35.0f);
-	glVertex3f(35.0f, 0.0f, -35.0f);
-	glEnd();
+		glBegin(GL_QUADS);
+			glVertex3f(-35.0f, 0.0f, -35.0f);
+			glVertex3f(-35.0f, 0.0f, 35.0f);
+			glVertex3f(35.0f, 0.0f, 35.0f);
+			glVertex3f(35.0f, 0.0f, -35.0f);
+		glEnd();
+	glPopMatrix();
+
+	// Draw sky
+	glColor3f(153.0f / 256.0f, 217.0f / 256.0f, 234.0f / 256.0f);
+		glBegin(GL_QUADS);
+					// (Xpos, Zpos, Ypos)
+			glVertex3f(100.0f, 10.0f, -100.0f);
+			glVertex3f(100.0f, 10.0f, 100.0f);
+			glVertex3f(-100.0f, 10.0f, 100.0f);
+			glVertex3f(-100.0f, 10.0f, -100.0f);
+		glEnd();
 	glPopMatrix();
 
 	// The sky is blue
