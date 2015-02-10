@@ -22,6 +22,7 @@
 
 #include <string>
 #include <cmath>
+#include <vector>
 using namespace std;
 
 const float GRAVITY = 9.8;
@@ -87,6 +88,16 @@ public:
 	int Source;		//Could be a pointer on who shot it before its explosion
 };
 
+struct Wall
+{
+	vector<int> *ptrVertices = new vector<int>;
+	int Xoff = 0;
+	int Yoff = 0;
+	char Light;
+	string Texture;
+	int Tag;
+};
+
 struct Level
 {
 	string Name = "Unknown";
@@ -98,6 +109,7 @@ struct Level
 	bool PlayerInGame[4];
 	
 	//Faire des pointeurs sur des objets, on peut tu faire juste un vecteur à place ?
+	vector<Wall> *ptrWalls = new vector<Wall>;
 	////Vertex *ptrWalls = new Vertex[];
 	////Vertex *ptrPlayers = new Vertex[];
 	////Vertex *ptrSpawns = new Vertex[];
@@ -119,17 +131,6 @@ struct Vertex
 	int Xpos;
 	int Ypos;
 	int Zpos;
-};
-
-struct Wall
-{
-	int Number = 5;
-	Vertex *ptr = new Vertex[Number];
-	int Xoff = 0;
-	int Yoff = 0;
-	char Light;
-	string Texture;
-	int Tag;
 };
 
 class VerticalDoor

@@ -60,12 +60,12 @@ Level* F_LoadLevel(string LevelName)
 					if (Line.find("{") != string::npos)
 					{
 						// Go to the next line right now
-						getline(LevelFile, Line);
-						Count++;
+						//getline(LevelFile, Line);
+						//Count++;
 					}
 					else if (Line.find("name: ") != string::npos)
 					{
-						Current->Name = atoi((Line.substr(Line.find("name: "), Line.find(';'))).c_str());
+						Current->Name = (Line.substr(Line.find("name: "), Line.find(';'))).c_str();
 					}
 					else if (Line.find("fog: ") != string::npos)
 					{
@@ -74,6 +74,43 @@ Level* F_LoadLevel(string LevelName)
 					else if (Line.find("}") != string::npos)
 					{
 						// DEFINITION EXITED
+						// We wille exit next time
+					}
+					Count++;
+				}
+			}
+			else if (Line.find("wall") != string::npos && Line.find(":") != string::npos)
+			{
+				Count++;
+
+				while (Line.find("}") == string::npos)
+				{
+					getline(LevelFile, Line);
+					cout << Line << '\n';
+
+					if (Line.find("{") != string::npos)
+					{
+						// Go to the next line right now
+						//getline(LevelFile, Line);
+						//Count++;
+					}
+					else if (Line.find("x: ") != string::npos)
+					{
+						Current->ptrWalls->resize(Current->ptrWalls->size() + 1);
+						Current->ptrWalls->at(Current->ptrWalls->size() - 1).ptrVertices->push_back(atoi((Line.substr(Line.find("x: "), Line.find(';'))).c_str()));
+					}
+					else if (Line.find("y: ") != string::npos)
+					{
+						Current->ptrWalls->resize(Current->ptrWalls->size() + 1);
+						Current->ptrWalls->at(Current->ptrWalls->size() - 1).ptrVertices->push_back(atoi((Line.substr(Line.find("y: "), Line.find(';'))).c_str()));
+					}
+					else if (Line.find("z: ") != string::npos)
+					{
+						Current->ptrWalls->resize(Current->ptrWalls->size() + 1);
+						Current->ptrWalls->at(Current->ptrWalls->size() - 1).ptrVertices->push_back(atoi((Line.substr(Line.find("z: "), Line.find(';'))).c_str()));
+					}
+					else if (Line.find("}") != string::npos)
+					{
 						// We wille exit next time
 					}
 					Count++;
