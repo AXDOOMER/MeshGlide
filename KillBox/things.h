@@ -90,6 +90,8 @@ public:
 
 struct Wall
 {
+	bool Impassable = true;
+	bool TwoSided = true;
 	vector<int> *ptrVertices = new vector<int>;
 	int Xoff = 0;
 	int Yoff = 0;

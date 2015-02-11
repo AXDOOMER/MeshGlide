@@ -78,7 +78,7 @@ GLFWwindow* Init_OpenGL()
 	return window;
 }
 
-void DrawScreen(GLFWwindow* window, Player* play)
+void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 {
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
@@ -160,8 +160,49 @@ void DrawScreen(GLFWwindow* window, Player* play)
 		glEnd();
 	glPopMatrix();
 
+	// Draw relative rectangle
+	glColor3f(255.0f / 256.0f, 120.0f / 256.0f, 120.0f / 256.0f);
+		glBegin(GL_QUADS);
+			// (Ypos, Zpos, Xpos)
+		glVertex3f(play->PosY / 64 + 10.0f, 5.0f, play->PosX / 64 - 10.0f);
+		glVertex3f(play->PosY / 64 + 10.0f, 5.0f, play->PosX / 64 + 10.0f);
+		glVertex3f(play->PosY / 64 - 10.0f, 5.0f, play->PosX / 64 + 10.0f);
+		glVertex3f(play->PosY / 64 - 10.0f, 5.0f, play->PosX / 64 - 10.0f);
+		glEnd();
+	glPopMatrix();
+
 	// The sky is blue
 	glClearColor(0.0, 0.0, 0.5, 0.0);
+
+	if (lvl != 0)
+	{
+		for (int i = 0; i < lvl->ptrWalls->size(); i++)
+		{
+			if (lvl->ptrWalls->at(i).TwoSided)
+			{
+				glDisable(GL_CULL_FACE);
+			}
+
+			glColor3f(0.5f, 0.5f, 0.5f);
+			glBegin(GL_QUADS);
+
+			for (int j = 0; j < lvl->ptrWalls->at(i).ptrVertices->size(); j += 3)
+			{
+				// (Ypos, Zpos, Xpos)
+				glVertex3f(lvl->ptrWalls->at(i).ptrVertices->at(j+1), 
+					lvl->ptrWalls->at(i).ptrVertices->at(j+2),
+					lvl->ptrWalls->at(i).ptrVertices->at(j));
+			}
+
+			glEnd();
+			glPopMatrix();
+
+			if (lvl->ptrWalls->at(i).TwoSided)
+			{
+				glEnable(GL_CULL_FACE);
+			}
+		}
+	}
 }
 
 int Close_OpenGL()

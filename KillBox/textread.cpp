@@ -48,6 +48,12 @@ Level* F_LoadLevel(string LevelName)
 			string id;
 			int Number;
 
+			while (Line[0] == '#' /*|| Line[0] == '\t' && Line[1] == '#'*/)
+			{
+				// This line is a comment, skip it. Skip until the line is not a comment. 
+				getline(LevelFile, Line);
+			}
+
 			if (Line.find("level:") != string::npos)
 			{
 				Count++;
@@ -82,6 +88,8 @@ Level* F_LoadLevel(string LevelName)
 			else if (Line.find("wall") != string::npos && Line.find(":") != string::npos)
 			{
 				Count++;
+				// We need some place to put the wall, so resize.
+				Current->ptrWalls->resize(Current->ptrWalls->size() + 1);
 
 				while (Line.find("}") == string::npos)
 				{
@@ -94,20 +102,25 @@ Level* F_LoadLevel(string LevelName)
 						//getline(LevelFile, Line);
 						//Count++;
 					}
+					else if (Line.find("2sided: ") != string::npos)
+					{
+						if (Line.substr(Line.find("2sided: ") + 8, Line.find(';')) == "false")
+						{
+							Current->ptrWalls->at(Current->ptrWalls->size() - 1).TwoSided = false;
+						}
+						// If it's something else, then it's going to be double-sided. 
+					}
 					else if (Line.find("x: ") != string::npos)
 					{
-						Current->ptrWalls->resize(Current->ptrWalls->size() + 1);
-						Current->ptrWalls->at(Current->ptrWalls->size() - 1).ptrVertices->push_back(atoi((Line.substr(Line.find("x: "), Line.find(';'))).c_str()));
+						Current->ptrWalls->at(Current->ptrWalls->size() - 1).ptrVertices->push_back(atoi((Line.substr(Line.find("x: ") + 3, Line.find(';'))).c_str()));
 					}
 					else if (Line.find("y: ") != string::npos)
 					{
-						Current->ptrWalls->resize(Current->ptrWalls->size() + 1);
-						Current->ptrWalls->at(Current->ptrWalls->size() - 1).ptrVertices->push_back(atoi((Line.substr(Line.find("y: "), Line.find(';'))).c_str()));
+						Current->ptrWalls->at(Current->ptrWalls->size() - 1).ptrVertices->push_back(atoi((Line.substr(Line.find("y: ") + 3, Line.find(';'))).c_str()));
 					}
 					else if (Line.find("z: ") != string::npos)
 					{
-						Current->ptrWalls->resize(Current->ptrWalls->size() + 1);
-						Current->ptrWalls->at(Current->ptrWalls->size() - 1).ptrVertices->push_back(atoi((Line.substr(Line.find("z: "), Line.find(';'))).c_str()));
+						Current->ptrWalls->at(Current->ptrWalls->size() - 1).ptrVertices->push_back(atoi((Line.substr(Line.find("z: ") + 3, Line.find(';'))).c_str()));
 					}
 					else if (Line.find("}") != string::npos)
 					{
@@ -167,6 +180,7 @@ Level* F_LoadLevel(string LevelName)
 	}
 	else
 	{
+		Current = 0;
 		delete Current;		// Erase because it's no longer useful
 		cout << "Unable to open level info!" << endl;
 	}

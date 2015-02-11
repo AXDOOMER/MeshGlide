@@ -26,6 +26,8 @@ dm_spawn:
 
 wall000:
 {
+	2sided: false;
+	impassable: true;
 	x: 384;
 	y: 256;
 	z: 128;
@@ -43,6 +45,73 @@ wall000:
 	p2(512,256,128);
 	p3(512,256,0);
 	p4(384,256,0);
+
+	OffX: 0;
+	OffY: 0;
+	Light: 160;
+}
+
+wall001:
+{
+	2sided: true;
+	impassable: true;
+	x: 0;
+	y: 0;
+	z: 4;
+	x: 0;
+	y: 4;
+	z: 0;
+	x: 4;
+	y: 4;
+	z: 0;
+	x: 4;
+	y: 0;
+	z: 4;
+
+	OffX: 0;
+	OffY: 0;
+	Light: 160;
+}
+
+wall002:
+{
+	2sided: true;
+	impassable: true;
+	x: 0;
+	y: 0;
+	z: 4;
+	x: 0;
+	y: -4;
+	z: 0;
+	x: 4;
+	y: -4;
+	z: 0;
+	x: 4;
+	y: 0;
+	z: 4;
+
+	OffX: 0;
+	OffY: 0;
+	Light: 160;
+}
+
+wall003:
+{
+#flèche qui  point vers les X positifs
+	2sided: true;
+	impassable: true;
+	x: 3;
+	y: -1;
+	z: 1;
+	x: 7;
+	y: 0;
+	z: 1;
+	x: 7;
+	y: 0;
+	z: 1;
+	x: 3;
+	y: 1;
+	z: 1;
 
 	OffX: 0;
 	OffY: 0;
