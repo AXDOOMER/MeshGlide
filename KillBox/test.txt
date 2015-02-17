@@ -51,6 +51,23 @@ wall000:
 	Light: 160;
 }
 
+
+wall004:
+{
+	x: 38;
+	y: 25;
+	z: 12;
+	x: 51;
+	y: 25;
+	z: 12;
+	x: 51;
+	y: 25;
+	z: 0;
+	x: 38;
+	y: 25;
+	z: 0;
+}
+
 wall001:
 {
 	2sided: true;
@@ -97,7 +114,7 @@ wall002:
 
 wall003:
 {
-#flèche qui  point vers les X positifs
+#flèche qui pointe vers les X positifs
 	2sided: true;
 	impassable: true;
 	x: 3;
@@ -116,6 +133,206 @@ wall003:
 	OffX: 0;
 	OffY: 0;
 	Light: 160;
+}
+
+#maison
+wall005:
+{
+	2sided: false;
+	impassable: true;
+	#les murs doivent être dessinés dans le sens anti-horaire
+	#PLANCHER
+	x: 0;
+	y: 50;
+	z: 0;
+	x: 0;
+	y: 60;
+	z: 0;
+	x: 10;
+	y: 60;
+	z: 0;
+	x: 10;
+	y: 50;
+	z: 0;
+}
+
+wall006:
+{
+	2sided: true;
+	impassable: true;
+	#les murs doivent être dessinés dans le sens anti-horaire
+	# MUR 1
+	x: 0;
+	y: 60;
+	z: 0;
+	x: 0;
+	y: 50;
+	z: 0;
+	x: 0;
+	y: 50;
+	z: 5;
+	x: 0;
+	y: 60;
+	z: 5;
+}
+
+wall007:
+{
+	2sided: true;
+	impassable: true;
+	#les murs doivent être dessinés dans le sens anti-horaire
+	# MUR 2
+	x: 10;
+	y: 60;
+	z: 0;
+	x: 10;
+	y: 50;
+	z: 0;
+	x: 10;
+	y: 50;
+	z: 5;
+	x: 10;
+	y: 60;
+	z: 5;
+}
+
+wall008:
+{
+	2sided: true;
+	impassable: true;
+	#les murs doivent être dessinés dans le sens anti-horaire
+	# MUR 3
+	x: 0;
+	y: 60;
+	z: 0;
+
+	x: 10;
+	y: 60;
+	z: 0;
+
+	x: 10;
+	y: 60;
+	z: 5;
+
+	x: 0;
+	y: 60;
+	z: 5;
+}
+
+wall009:
+{
+	2sided: true;
+	impassable: true;
+	#les murs doivent être dessinés dans le sens anti-horaire
+	# MUR 4
+	x: 0;
+	y: 50;
+	z: 0;
+
+	x: 10;
+	y: 50;
+	z: 0;
+
+	x: 10;
+	y: 50;
+	z: 5;
+
+	x: 0;
+	y: 50;
+	z: 5;
+}
+
+wall010:
+{
+	2sided: true;
+	impassable: true;
+	#les murs doivent être dessinés dans le sens anti-horaire
+	# TOIT 1
+	x: 0;
+	y: 50;
+	z: 5;
+
+	x: 0;
+	y: 60;
+	z: 5;
+
+	x: 5;
+	y: 60;
+	z: 7;
+
+	x: 5;
+	y: 50;
+	z: 7;
+}
+
+
+wall011:
+{
+	2sided: true;
+	impassable: true;
+	#les murs doivent être dessinés dans le sens anti-horaire
+	# TOIT 2
+	x: 10;
+	y: 50;
+	z: 5;
+
+	x: 10;
+	y: 60;
+	z: 5;
+
+	x: 5;
+	y: 60;
+	z: 7;
+
+	x: 5;
+	y: 50;
+	z: 7;
+}
+
+wall012:
+{
+	2sided: true;
+	impassable: false;
+	#les murs doivent être dessinés dans le sens anti-horaire
+	# PORTE
+	x: 4;
+	y: 50;
+	z: 0;
+
+	x: 6;
+	y: 50;
+	z: 0;
+
+	x: 6;
+	y: 50;
+	z: 3;
+
+	x: 4;
+	y: 50;
+	z: 3;
+}
+
+wall012:
+{
+	2sided: true;
+	impassable: false;
+	#les murs doivent être dessinés dans le sens anti-horaire
+	# spirale?
+	x: 10;
+	y: 10;
+	z: 0;
+
+	x: 10;
+	y: 12;
+	z: 3;
+
+	x: 12;
+	y: 12;
+	z: 6;
+
+	x: 12;
+	y: 10;
+	z: 9;
 }
 
 floor001:

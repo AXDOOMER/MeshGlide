@@ -100,7 +100,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 	}
 
 	glViewport(0, 0, width, height);
-	gluPerspective(fov, ratio, 0.1f, 100.0f);
+	gluPerspective(fov, ratio, 0.1f, 1000.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

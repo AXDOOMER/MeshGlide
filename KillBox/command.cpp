@@ -106,3 +106,33 @@ void ListArguments(int argc, char *argv[])
 	}
 }
 
+void FatalError(string MyError)
+{
+	if (MyError.at(MyError.size() - 1) == '!')
+	{
+		cout << "FUCKSHIT: " << MyError << endl;
+	}
+	else
+	{
+		cout << "ERROR: " << MyError << endl;
+	}
+
+	// Wait until 'ENTER' is pressed, then exit. 
+	WaitForEnterKey();
+}
+
+void WaitForEnterKey()
+{
+	// DOES NOT WORK AS INTENDED RIGHT NOW
+	// SHOULD ONLY ACCEPT ENTER AND NOT PRINT OTHER CHARACTERS
+
+	/* cin.ignore(cin.rdbuf()->in_avail() + 1); */
+	cin.ignore();	// Ignore the newline from the stream
+	if (cin.get() == '\n')	// Act like a 'system("PAUSE")'
+	{
+		// Abord program
+		exit(EXIT_FAILURE);
+	}
+}
+
+

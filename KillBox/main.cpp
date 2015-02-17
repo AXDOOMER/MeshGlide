@@ -77,9 +77,11 @@ int main(int argc, char *argv[])
 		cout << "I_sys: Debug mode ON." << endl;
 	}
 
+	string LevelName = "";
 	if (FindArgumentPosition(argc, argv, "-file") > 0 && argv[(FindArgumentPosition(argc, argv, "-file") + 1)] > 0)
 	{
 		cout << "WADunit_ " << argv[(FindArgumentPosition(argc, argv, "-file") + 1)] << endl;
+		LevelName = argv[(FindArgumentPosition(argc, argv, "-file") + 1)];
 	}
 
 	string DemoPlay = "";
@@ -127,18 +129,25 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	cout << "Enter a level's name: ";
-	string LevelName;
-	cin >> LevelName;
+	if (LevelName == "" || LevelName.length() == 0)
+	{
+		cout << "Enter a level's name (assuming .txt): ";
+		cin >> LevelName;
+	}
+	else
+	{
+		cout << "Loading level \"" + LevelName + "\"." << endl;
+	}
+
 	Level* CurrentLevel = F_LoadLevel(LevelName);
 
-	// Load somem stuff
-	cout << "Graphics: Loading [";
-	for (int i = 0; i < 20; i++)
-	{
-		cout << ".";
-	}
-	cout << "]" << endl;
+	//// Load some stuff
+	//cout << "Graphics: Loading [";
+	//for (int i = 0; i < 20; i++)
+	//{
+	//	cout << ".";
+	//}
+	//cout << "]" << endl;
 
 	// Load OpenGL
 	GLFWwindow* window = Init_OpenGL();

@@ -23,6 +23,7 @@
 #include <fstream>
 
 #include "things.h"
+#include "command.h"
 
 using namespace std;
 
@@ -79,7 +80,6 @@ Level* F_LoadLevel(string LevelName)
 					}
 					else if (Line.find("}") != string::npos)
 					{
-						// DEFINITION EXITED
 						// We wille exit next time
 					}
 					Count++;
@@ -127,6 +127,14 @@ Level* F_LoadLevel(string LevelName)
 						// We wille exit next time
 					}
 					Count++;
+				}
+
+				// Verify integrity, make sure it's fine
+				if (Current->ptrWalls->at(Current->ptrWalls->size() - 1).ptrVertices->size() % 3 != 0)
+				{
+					string First = "The vertices vector resulting of the loading of a wall";
+					string Second = "doesn't have a size that is a multiple of three!";
+					FatalError(First + '\n' + Second);
 				}
 			}
 			//else if (Content == "wall")
