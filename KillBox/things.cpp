@@ -21,6 +21,14 @@
 
 #include "things.h"
 
+Player::Player()
+{
+	for (int i = 0; i < MAXOWNEDWEAPONS; i++)
+	{
+		OwnedWeapons[i] = false;
+	}
+}
+
 void Player::ForwardMove(int Thrust)
 {
 	PosX += Thrust * cos(GetRadianAngle(Angle));

@@ -27,6 +27,7 @@ using namespace std;
 
 const float GRAVITY = 9.8;
 //const float PI = atan(1) * 4;
+const int MAXOWNEDWEAPONS = 16;
 
 class Player
 {
@@ -40,6 +41,17 @@ public:
 	char MoX = 0;		//Speed vector (momentum)
 	char MoY = 0;
 	char MoZ = 0;		//Used by gravity
+
+	// Weapons that are in the player's possession
+	bool OwnedWeapons[MAXOWNEDWEAPONS] /*= { false, false, false, false, false, false, false, false,
+							  false, false, false, false, false, false, false, false }*/;
+	// Ammo types
+	short Ammo = 0;
+	short Shells = 0;
+	short Rockets = 0;
+	short Cells = 0;
+
+	Player(); // We need a constructor for the weapons array
 
 private:
 	const int MaxWalkSpeed = 40;
@@ -58,7 +70,6 @@ private:
 
 	int Kills = 0;		//For deathmatch
 	int Deaths = 0;
-
 
 public:
 	float GetRadianAngle(short Angle);

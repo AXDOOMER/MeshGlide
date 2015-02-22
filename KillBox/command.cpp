@@ -118,21 +118,8 @@ void FatalError(string MyError)
 	}
 
 	// Wait until 'ENTER' is pressed, then exit. 
-	WaitForEnterKey();
+	cin.ignore(cin.rdbuf()->in_avail());
+	cin.get();
+	exit(EXIT_FAILURE);
 }
-
-void WaitForEnterKey()
-{
-	// DOES NOT WORK AS INTENDED RIGHT NOW
-	// SHOULD ONLY ACCEPT ENTER AND NOT PRINT OTHER CHARACTERS
-
-	/* cin.ignore(cin.rdbuf()->in_avail() + 1); */
-	cin.ignore();	// Ignore the newline from the stream
-	if (cin.get() == '\n')	// Act like a 'system("PAUSE")'
-	{
-		// Abord program
-		exit(EXIT_FAILURE);
-	}
-}
-
 
