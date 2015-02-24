@@ -70,3 +70,32 @@ void Player::AngleTurn(short AngleChange)
 	}
 }
 
+int Player::Height()
+{
+	return height;
+}
+
+void Player::Height(int newHeight)
+{
+	height = newHeight;
+}
+
+int Player::M()
+{
+	return PosZ + height / 2;
+}
+
+int Player::V()
+{
+	return height * 4 / 3;
+}
+
+int Player::Radius()
+{
+	return radius;
+}
+
+void Player::HealthChange(int Change)
+{
+	Health = Health + Change;
+}

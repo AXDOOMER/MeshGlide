@@ -60,8 +60,8 @@ private:
 	const int ViewZ = 42;
 	char Damages = 0;	//Damage location indicator: 0=none, 1=both, 2=left, 3=right
 
-	int Radius = 16;
-	int Height = 56;
+	int radius = 16;
+	int height = 56;
 	int Health = 100;	//The player's life condition
 	int Armor = 100;	//Recharging Energy Shield
 	char ArmorClass = 0;
@@ -78,6 +78,15 @@ public:
 	void LateralMove(int Thrust);
 	void AngleTurn(short AngleChange);
 	void Fall(/* Map*  */);
+
+	// Way to do OOP
+	int Height();					// Get height
+	void Height(int newHeight);		// Set height
+
+	int M();						// Get middle height
+	int V();						// Get view height
+	int Radius();					// Get radius;
+	void HealthChange(int Change);	// Change the player's health
 };
 
 class Barrel
