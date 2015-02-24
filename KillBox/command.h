@@ -34,6 +34,4 @@ void ListArguments(int argc, char *argv[]);
 // Print a message about an error. Will cause the program to stop. 
 void FatalError(string MyError);
 
-// Wait for enter key 
-void WaitForEnterKey();
 
