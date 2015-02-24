@@ -60,7 +60,7 @@ bool PointInPlayer(Player &Object, float PointX, float PointY, float PointZ)
 	{
 		// Thee point is inside the player's Z coordinates
 
-		if (sqrt(d2Mesurment) <= Object.Radius());
+		if (sqrt(d2Mesurment) <= Object.Radius())
 		{
 			// The point is inside the player's radius
 			return true;
@@ -111,10 +111,10 @@ bool PointPolygonTraversal(Level* Geometry, float PointX, float PointY, float Po
 	bool Hit = false;
 
 	// Test every wall
-	for (int w = 0; w < Geometry->ptrWalls->size(); w++)
+	for (unsigned int w = 0; w < Geometry->ptrWalls->size(); w++)
 	{
 		// Go trough every vertex
-		for (int v = 0; v < Geometry->ptrWalls->at(w).ptrVertices->size(); v++)
+		for (unsigned int v = 0; v < Geometry->ptrWalls->at(w).ptrVertices->size(); v++)
 		{
 			// TODO: CHECK FOR COLISION INSIDE THE POLY
 		}
@@ -127,10 +127,10 @@ bool PointPolygonTraversal(Level* Geometry, float PointX, float PointY, float Po
 bool PlayerCollision(Player &One, Player &Two)
 {
 	// The following takes in account that both players have the same height
-	if (abs(One.PosZ - Two.PosZ) <= One.Height)
+	if (abs(One.PosZ - Two.PosZ) <= One.Height())
 	{
 		// The players are at the same Z height, now test if they are in the same XY space 
-		if (pow(One.PosX - Two.PosX, 2) + pow(One.PosY - Two.PosY, 2) <= One.Radius() + Two.Radius());
+		if (pow(One.PosX - Two.PosX, 2) + pow(One.PosY - Two.PosY, 2) <= One.Radius() + Two.Radius())
 		{
 			// The players are inside each other
 			return true;
