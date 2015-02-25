@@ -65,10 +65,13 @@ int main(int argc, char *argv[])
 
 	cout << "                            WARNING" << endl;
 	cout << "================================================================" << endl;
-	cout << "  \"KillBox\" is free software, covered by the GNU General Public" << endl;
-	cout << " License. There is NO warranty and the author is NOT liable for" << endl;
-	cout << " any results of its use. Read the license BEFORE you continue." << endl;
-	cout << "                    PRESS A KEY TO CONTINUE" << endl;
+	cout << " \"KillBox\" is free software, covered by the GNU General Public" << endl;
+	cout << " License and distributed WITHOUT ANY WARRANTY; without even the" << endl;
+	cout << " implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR" << endl;
+	cout << " PURPOSE. The author is NOT LIABLE for any results of its use," << endl;
+	cout << " INCLUDING, BUT NOT LIMITED TO, hard-drive crashes, toasted RAM" << endl;
+	cout << " and computer explosions. USE IT AT YOUR OWN RISK! For more info," << endl;
+	cout << " see the GNU General Public License. Tap \"ENTER\" to continue..." << endl;
 	cout << "================================================================" << endl;
 	cin.get();
 
@@ -129,14 +132,15 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if (LevelName == "" || LevelName.length() == 0)
+	if (LevelName.length() > 0)
 	{
-		cout << "Enter a level's name (assuming .txt): ";
-		cin >> LevelName;
+		cout << "Loading level \"" + LevelName + "\"." << endl;
 	}
 	else
 	{
-		cout << "Loading level \"" + LevelName + "\"." << endl;
+		cin.ignore(cin.rdbuf()->in_avail());
+		cout << "Enter a level's name (assuming .txt): ";
+		cin >> LevelName;
 	}
 
 	Level* CurrentLevel = F_LoadLevel(LevelName);
