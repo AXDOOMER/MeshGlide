@@ -102,11 +102,17 @@ void HitScan(Player Players[], int NumberOfPlayers, float IpX, float IpY, float 
 	for (int p = 0; p < NumberOfPlayers; p++)
 	{
 		// The other player's X pos
-		int OtherX = Players[((p + 1) % 4)].PosX;
-		int LineX = Players[p].PosX;
-		int LineY = Players[p].PosY;
-		int LineZ = Players[p].PosZ;
+		float OtherX = Players[((p + 1) % 4)].PosX;
+		float LineX = Players[p].PosX;
+		float LineY = Players[p].PosY;
+		float LineZ = Players[p].PosZ;
 		bool Touched = false;
+
+		if (IpX == Players[p].PosX && IpY == Players[p].PosY && IpZ == Players[p].PosZ)
+		{
+			// Don't check against yourself
+			break;
+		}
 
 		for (int i = 0; i < Max && !Hit; i++)
 		{
@@ -114,6 +120,9 @@ void HitScan(Player Players[], int NumberOfPlayers, float IpX, float IpY, float 
 			LineX += Step * cos(Hangle);
 			LineY += Step * sin(Hangle);
 			LineZ += Step * sin(Vangle);
+
+			// We should check if we hit a wall right here
+			// TO-DO
 
 			if (LineX >= OtherX - Step || LineX <= OtherX + Step)
 			{
