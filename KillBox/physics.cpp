@@ -77,7 +77,71 @@ void HitScan(Player Players[], int NumberOfPlayers, float IpX, float IpY, float 
 	int Max = 2048;		// Max distance we will check in multiples of steps
 	bool Hit = false;	// Has the bullet already hit something?
 
-	for (int i = 0; i < Max && !Hit; i++)
+	// Get a position that is farther on the line's direction
+	int FarX = IpX * 2 * cos(Hangle);
+	int FarY = IpY * 2 * sin(Hangle);
+
+	// Check for a collision with each players
+	/*for (int p = 0; p < NumberOfPlayers; p++)
+	{
+		// Trace a line that reachers the other player's X position
+		int NewX = Players[((p + 1) % 4)].PosX;
+		int Multiplyer = Players[p].PosX / IpX;
+
+		// Check if the point is in the player
+		if (PointInPlayer(Players[p], IpX, IpY, IpZ))
+		{
+			// If the point is inside the player, then damage him. 
+			Players[p].HealthChange(Damage);
+			Hit = true;		// We hit something
+			break;
+		}
+	}*/
+
+
+	for (int p = 0; p < NumberOfPlayers; p++)
+	{
+		// The other player's X pos
+		int OtherX = Players[((p + 1) % 4)].PosX;
+		int LineX = Players[p].PosX;
+		int LineY = Players[p].PosY;
+		int LineZ = Players[p].PosZ;
+		bool Touched = false;
+
+		for (int i = 0; i < Max && !Hit; i++)
+		{
+			// Move the bullet forward
+			LineX += Step * cos(Hangle);
+			LineY += Step * sin(Hangle);
+			LineZ += Step * sin(Vangle);
+
+			if (LineX > OtherX - 1 || LineX < OtherX + 1)
+			{
+				// The line's point is at the same X position as the other player
+				Touched = true;	// Yes, the line as touched the other player's X position
+				i = Max;
+
+				if (abs(Players[((p + 1) % NumberOfPlayers)].PosY - LineY) <= Players[((p + 1) % NumberOfPlayers)].Radius)
+				{
+					// The line two-dimensional's point is inside the other player
+
+					if (LineZ > Players[((p + 1) % NumberOfPlayers)].PosZ && 
+						Players[((p + 1) % NumberOfPlayers)].PosZ + Players[((p + 1) % NumberOfPlayers)].Height() < LineZ)
+					{
+						// The point is inside the player's Z coordinates, so damage him. 
+						Players[((p + 1) % NumberOfPlayers)].HealthChange(Damage);
+						Hit = true;		// He was hit
+						break;
+					}
+				}
+			}
+		}
+	}
+
+
+	
+
+	/*for (int i = 0; i < Max && !Hit; i++)
 	{
 		// Until we reach the maximum distance to check...
 
@@ -103,7 +167,7 @@ void HitScan(Player Players[], int NumberOfPlayers, float IpX, float IpY, float 
 			IpY += Step * sin(Hangle);
 			IpZ += Step * sin(Vangle);
 		}
-	}
+	}*/
 }
 
 bool PointPolygonTraversal(Level* Geometry, float PointX, float PointY, float PointZ, float Velocity, float Hangle, float Vangle)
@@ -124,6 +188,7 @@ bool PointPolygonTraversal(Level* Geometry, float PointX, float PointY, float Po
 	return true;
 }
 
+// When two players collide together
 bool PlayerCollision(Player &One, Player &Two)
 {
 	// The following takes in account that both players have the same height
@@ -139,4 +204,9 @@ bool PlayerCollision(Player &One, Player &Two)
 
 	// There is no collision
 	return false;
+}
+
+bool PlayerAgainstSurface(Player Object, Wall Surface)
+{
+
 }
