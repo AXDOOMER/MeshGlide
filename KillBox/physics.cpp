@@ -125,8 +125,8 @@ void HitScan(Player Players[], int NumberOfPlayers, float IpX, float IpY, float 
 				{
 					// The line two-dimensional's point is inside the other player
 
-					if (LineZ > Players[((p + 1) % NumberOfPlayers)].PosZ && 
-						Players[((p + 1) % NumberOfPlayers)].PosZ + Players[((p + 1) % NumberOfPlayers)].Height() < LineZ)
+					if (LineZ >= Players[((p + 1) % NumberOfPlayers)].PosZ && 
+						Players[((p + 1) % NumberOfPlayers)].PosZ + Players[((p + 1) % NumberOfPlayers)].Height() <= LineZ)
 					{
 						// The point is inside the player's Z coordinates, so damage him. 
 						Players[((p + 1) % NumberOfPlayers)].HealthChange(Damage);
