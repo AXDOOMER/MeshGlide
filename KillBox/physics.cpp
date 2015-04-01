@@ -78,8 +78,8 @@ void HitScan(Player Players[], int NumberOfPlayers, float IpX, float IpY, float 
 	bool Hit = false;	// Has the bullet already hit something?
 
 	// Get a position that is farther on the line's direction
-	int FarX = IpX * 2 * cos(Hangle);
-	int FarY = IpY * 2 * sin(Hangle);
+	/*int FarX = IpX * 2 * cos(Hangle);
+	int FarY = IpY * 2 * sin(Hangle);*/
 
 	// Check for a collision with each players
 	/*for (int p = 0; p < NumberOfPlayers; p++)
@@ -115,7 +115,7 @@ void HitScan(Player Players[], int NumberOfPlayers, float IpX, float IpY, float 
 			LineY += Step * sin(Hangle);
 			LineZ += Step * sin(Vangle);
 
-			if (LineX > OtherX - 1 || LineX < OtherX + 1)
+			if (LineX >= OtherX - Step || LineX <= OtherX + Step)
 			{
 				// The line's point is at the same X position as the other player
 				Touched = true;	// Yes, the line as touched the other player's X position
