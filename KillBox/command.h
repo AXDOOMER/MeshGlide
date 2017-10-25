@@ -22,16 +22,8 @@ using namespace std;
 
 #pragma once
 
-// Generate random numbers to a file
-void GenerateRandomNumbers(unsigned int Number, string Name);
-
 // Return position of an argument
 int FindArgumentPosition(int argc, char *argv[], string Argument);
 
 // Print a list of arguments
 void ListArguments(int argc, char *argv[]);
-
-// Print a message about an error. Will cause the program to stop. 
-void FatalError(string MyError);
-
-

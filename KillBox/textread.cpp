@@ -23,7 +23,6 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
-#include <algorithm>
 #include <iterator>
 
 #include "things.h"

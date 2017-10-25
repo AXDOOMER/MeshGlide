@@ -63,17 +63,6 @@ int main(int argc, char *argv[])
 
 	ListArguments(argc, argv);
 
-	cout << "                            WARNING" << endl;
-	cout << "================================================================" << endl;
-	cout << " \"KillBox\" is free software, covered by the GNU General Public" << endl;
-	cout << " License and distributed WITHOUT ANY WARRANTY; without even the" << endl;
-	cout << " implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR" << endl;
-	cout << " PURPOSE. The author is NOT LIABLE for any results of its use," << endl;
-	cout << " INCLUDING, BUT NOT LIMITED TO, hard-drive crashes, toasted RAM" << endl;
-	cout << " and computer explosions. USE IT AT YOUR OWN RISK! For more info," << endl;
-	cout << " see the GNU General Public License. Tap \"ENTER\" to continue..." << endl;
-	cout << "================================================================" << endl;
-
 	if (FindArgumentPosition(argc, argv, "-debug") > 0)
 	{
 		cout << "I_sys: Debug mode ON." << endl;
@@ -93,41 +82,6 @@ int main(int argc, char *argv[])
 		if (DemoPlay[0] != '-')
 		{
 			DemoPlay = argv[FindArgumentPosition(argc, argv, "-playdemo") + 1];
-		}
-	}
-
-	if (FindArgumentPosition(argc, argv, "-random") > 0)
-	{
-		if (argv[FindArgumentPosition(argc, argv, "-random") + 1] > 0 &&
-			argv[(FindArgumentPosition(argc, argv, "-random") + 2)] > 0)
-		{
-			string Number = argv[FindArgumentPosition(argc, argv, "-random") + 1];
-
-			if (Number[0] != '-')
-			{
-				string FileName = argv[FindArgumentPosition(argc, argv, "-random") + 2];
-				unsigned int Lenght = atoi(Number.c_str());
-
-				if (FileName[0] != '-')
-				{
-					GenerateRandomNumbers(Lenght, FileName);
-				}
-				else
-				{
-					cout << "ERROR with parameter '-random'. File name is missing!" << endl;
-					cout << "Type output file name: ";
-					cin >> FileName;
-					GenerateRandomNumbers(Lenght, FileName);
-				}
-			}
-			else
-			{
-				cout << "ERROR with parameter '-random'. Check arguments!" << endl;
-			}
-		}
-		else
-		{
-			cout << "ERROR with parameter '-random'. Missing arguments!" << endl;
 		}
 	}
 
@@ -240,9 +194,6 @@ int main(int argc, char *argv[])
         TicCount++;
     }
 	while (!Quit && !glfwWindowShouldClose(window));
-
-	cout << endl << endl << "Press any key to terminate the program." << endl;
-	cin.get();
 
 	// Close OpenGL stuff
 	Close_OpenGL();

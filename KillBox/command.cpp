@@ -21,36 +21,10 @@
 #include <string.h>     //Used for strcmp()
 #include <sstream>
 #include <fstream>
-#include <stdlib.h>
-#include <time.h>
 
 #include "command.h"
 
 using namespace std;
-
-//Generate random numbers to a file
-void GenerateRandomNumbers(unsigned int Number, string Name)
-{
-	srand(static_cast<unsigned int>(time(NULL)));
-	string FileName = Name + ".txt";
-	ofstream myfile(FileName.c_str());
-
-	if (myfile.is_open())
-	{
-		for (unsigned int i = 0; i < Number; i++)
-		{
-			myfile << rand() % 10;
-			// cout << Number - i << endl;
-		}
-
-		cout << "Rand Nums -> Done!" << endl;
-		myfile.close();
-	}
-	else
-	{
-		cout << "Unable to open file";
-	}
-}
 
 //Return position of an argument
 int FindArgumentPosition(int argc, char *argv[], string Argument)
@@ -105,21 +79,3 @@ void ListArguments(int argc, char *argv[])
 		}
 	}
 }
-
-void FatalError(string MyError)
-{
-	if (MyError.at(MyError.size() - 1) == '!')
-	{
-		cout << "FUCKSHIT: " << MyError << endl;
-	}
-	else
-	{
-		cout << "ERROR: " << MyError << endl;
-	}
-
-	// Wait until 'ENTER' is pressed, then exit. 
-	cin.ignore(cin.rdbuf()->in_avail());
-	cin.get();
-	exit(EXIT_FAILURE);
-}
-
