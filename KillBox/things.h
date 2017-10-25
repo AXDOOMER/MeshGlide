@@ -209,5 +209,5 @@ private:
 	void Act();		//Do its stuff
 };
 
-#endif _THINGS_H
+#endif
 

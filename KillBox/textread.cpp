@@ -20,7 +20,11 @@
 // basic file operations
 #include <iostream>
 #include <string>
+#include <vector>
 #include <fstream>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
 
 #include "things.h"
 #include "command.h"
@@ -36,162 +40,49 @@ Level* F_LoadLevel(string LevelName)
 	ifstream LevelFile(FileName.c_str());   //can't do it all on this line.
 	if (LevelFile.is_open())
 	{
-		int Count = 0;
+		unsigned int Count = 0;
 		string Line;
 		while (!LevelFile.eof())     //Read the entire file until the end
 		{
 			getline(LevelFile, Line);
-			cout << Line << '\n';
 
-			//Serious business
-			int Position = Line.find_first_of(":;0123456789");
-			string Content = Line.substr(0, Position);
-			string id;
-			int Number;
-
-			while (Line[0] == '#' /*|| Line[0] == '\t' && Line[1] == '#'*/)
-			{
-				// This line is a comment, skip it. Skip until the line is not a comment. 
-				getline(LevelFile, Line);
-			}
-
-			if (Line.find("level:") != string::npos)
+			if (Line.size() > 0)
 			{
 				Count++;
+				//cout << Count << ": " << Line << '\n';
 
-				while (Line.find("}") == string::npos)
+				istringstream buf(Line);
+				istream_iterator<string> beg(buf), end;
+				vector<string> tokens(beg, end);
+
+				if (tokens.size() > 0 && tokens[0][0] != '#')
 				{
-					getline(LevelFile, Line);
-					cout << Line << '\n';
-
-					if (Line.find("{") != string::npos)
+					if (tokens[0] == "thing" && tokens.size() == 6)
 					{
-						// Go to the next line right now
-						//getline(LevelFile, Line);
-						//Count++;
+						cout << tokens[1] << endl;
 					}
-					else if (Line.find("name: ") != string::npos)
+					else if (tokens[0] == "poly" && tokens.size() == 20)
 					{
-						Current->Name = (Line.substr(Line.find("name: "), Line.find(';'))).c_str();
+						cout << tokens[1] << endl;
 					}
-					else if (Line.find("fog: ") != string::npos)
+					else
 					{
-						Current->Fog = atoi((Line.substr(Line.find("fog: "), Line.find(';'))).c_str());
+						cout << "INVALID LINE IGNORED AT: " << Count << endl;
 					}
-					else if (Line.find("}") != string::npos)
-					{
-						// We wille exit next time
-					}
-					Count++;
 				}
 			}
-			else if (Line.find("wall") != string::npos && Line.find(":") != string::npos)
-			{
-				Count++;
-				// We need some place to put the wall, so resize.
-				Current->ptrWalls->resize(Current->ptrWalls->size() + 1);
-
-				while (Line.find("}") == string::npos)
-				{
-					getline(LevelFile, Line);
-					cout << Line << '\n';
-
-					if (Line.find("{") != string::npos)
-					{
-						// Go to the next line right now
-						//getline(LevelFile, Line);
-						//Count++;
-					}
-					else if (Line.find("2sided: ") != string::npos)
-					{
-						if (Line.substr(Line.find("2sided: ") + 8, Line.find(';')) == "false")
-						{
-							Current->ptrWalls->at(Current->ptrWalls->size() - 1).TwoSided = false;
-						}
-						// If it's something else, then it's going to be double-sided. 
-					}
-					else if (Line.find("x: ") != string::npos)
-					{
-						Current->ptrWalls->at(Current->ptrWalls->size() - 1).ptrVertices->push_back(atoi((Line.substr(Line.find("x: ") + 3, Line.find(';'))).c_str()));
-					}
-					else if (Line.find("y: ") != string::npos)
-					{
-						Current->ptrWalls->at(Current->ptrWalls->size() - 1).ptrVertices->push_back(atoi((Line.substr(Line.find("y: ") + 3, Line.find(';'))).c_str()));
-					}
-					else if (Line.find("z: ") != string::npos)
-					{
-						Current->ptrWalls->at(Current->ptrWalls->size() - 1).ptrVertices->push_back(atoi((Line.substr(Line.find("z: ") + 3, Line.find(';'))).c_str()));
-					}
-					else if (Line.find("}") != string::npos)
-					{
-						// We wille exit next time
-					}
-					Count++;
-				}
-
-				// Verify integrity, make sure it's fine
-				if (Current->ptrWalls->at(Current->ptrWalls->size() - 1).ptrVertices->size() % 3 != 0)
-				{
-					string First = "The vertices vector resulting of the loading of a wall";
-					string Second = "doesn't have a size that is a multiple of three!";
-					FatalError(First + '\n' + Second);
-				}
-			}
-			//else if (Content == "wall")
-			//{
-			//	id = Line.substr(Position, Line.find_first_of(":;"));
-			//	id = id.substr(0, id.size() - 1);
-			//	cout << "--------------" << id << endl;
-
-			//	Count++;
-			//}
-			//else if (Content == "floor")
-			//{
-			//	id = Line.substr(Position, Line.find_first_of(":;"));
-			//	id = id.substr(0, id.size() - 1);
-			//	cout << "--------------" << id << endl;
-
-			//	Count++;
-			//}
-			//else if (Content == "slope")
-			//{
-			//	id = Line.substr(Position, Line.find_first_of(":;"));
-			//	id = id.substr(0, id.size() - 1);
-			//	cout << "--------------" << id << endl;
-
-			//	Count++;
-			//}
-			//else if (Content == "plane")
-			//{
-			//	id = Line.substr(Position, Line.find_first_of(":;"));
-			//	id = id.substr(0, id.size() - 1);
-			//	cout << "--------------" << id << endl;
-
-			//	Count++;
-			//}
-			//else if (Line.find("thing"))
-			//{
-			//	Line.find_first_of("_");
-			//	id = Line.substr(Line.find("_"), Line.find(":"));
-			//	cout << "--------------" << id << endl;
-
-			//	Count++;
-			//}
-			else
-			{
-				Count++;
-			}
-
 		}
+
 		cout << "Read " << Count << " lines from file. " << endl;
 		LevelFile.close();
 	}
 	else
 	{
-		Current = 0;
 		delete Current;		// Erase because it's no longer useful
+		Current = nullptr;
 		cout << "Unable to open level info!" << endl;
 	}
+
 	return Current;	//Doit retourner un pointeur sur le niveau
 }
 

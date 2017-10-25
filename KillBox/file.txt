@@ -1,0 +1,6 @@
+# Use tabs with a width of 8 to view this file
+#THING	TYPE	X	Y	Z 	ANGLE
+thing	player	0	0	0	90
+thing	plant	128	128	0	0
+#POLY	TEXTURE	IMPASSA	DBLSIDE	ScaleX	ScaleY	AlignX	AlignY	X	Y	Z	X	Y	Z	X	Y	Z	X	Y	Z
+poly	pic.jpg	1	1	1	1	0	0	0	0	0	128	0	0	128	128	0	0	128	0

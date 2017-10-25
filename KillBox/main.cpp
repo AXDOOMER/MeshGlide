@@ -73,19 +73,18 @@ int main(int argc, char *argv[])
 	cout << " and computer explosions. USE IT AT YOUR OWN RISK! For more info," << endl;
 	cout << " see the GNU General Public License. Tap \"ENTER\" to continue..." << endl;
 	cout << "================================================================" << endl;
-	cin.get();
 
 	if (FindArgumentPosition(argc, argv, "-debug") > 0)
 	{
 		cout << "I_sys: Debug mode ON." << endl;
 	}
 
-	string LevelName = "";
-	if (FindArgumentPosition(argc, argv, "-file") > 0 && argv[(FindArgumentPosition(argc, argv, "-file") + 1)] > 0)
+	string LevelName = "file";
+	/*if (FindArgumentPosition(argc, argv, "-file") > 0 && argv[(FindArgumentPosition(argc, argv, "-file") + 1)] > 0)
 	{
 		cout << "WADunit_ " << argv[(FindArgumentPosition(argc, argv, "-file") + 1)] << endl;
 		LevelName = argv[(FindArgumentPosition(argc, argv, "-file") + 1)];
-	}
+	}*/
 
 	string DemoPlay = "";
 	if (argv[FindArgumentPosition(argc, argv, "-playdemo") + 1] > 0)
