@@ -5,7 +5,6 @@ level:
 	cloudcolor: #FFFFFF;
 	background: 0099CC;
 	fog: 2000;
-	defaultmusic: ARYX.s3m;
 }
 
 dm_spawn:

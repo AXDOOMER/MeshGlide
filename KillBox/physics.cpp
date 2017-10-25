@@ -130,7 +130,7 @@ void HitScan(Player Players[], int NumberOfPlayers, float IpX, float IpY, float 
 				Touched = true;	// Yes, the line as touched the other player's X position
 				i = Max;
 
-				if (abs(Players[((p + 1) % NumberOfPlayers)].PosY - LineY) <= Players[((p + 1) % NumberOfPlayers)].Radius)
+				if (abs(Players[((p + 1) % NumberOfPlayers)].PosY - LineY) <= Players[((p + 1) % NumberOfPlayers)].Radius())
 				{
 					// The line two-dimensional's point is inside the other player
 

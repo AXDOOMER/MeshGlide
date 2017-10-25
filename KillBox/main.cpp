@@ -20,8 +20,8 @@
 // http://stackoverflow.com/questions/22539047/how-can-i-set-up-freeglut-and-glew-for-use-in-visual-studio-2013
 #include <GLFW/glfw3.h>
 #include <GL/freeglut.h>
-#include <GL/GL.h>
-#include <GL/GLU.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 #include <iostream>
 #include <string>

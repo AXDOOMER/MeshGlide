@@ -19,8 +19,8 @@
 
 #include <GLFW/glfw3.h>
 #include <GL/freeglut.h>
-#include <GL/GL.h>
-#include <GL/GLU.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 #include <iostream>
 
