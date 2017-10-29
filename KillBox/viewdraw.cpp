@@ -1,21 +1,20 @@
+// Copyright (C) 2014-2017 Alexandre-Xavier Labonté-Lamoureux
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 // viewdraw.cpp
-//Copyright (C) 2014 Alexandre-Xavier Labonté-Lamoureux
-//
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
-//
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU General Public License for more details.
-//
-//You should have received a copy of the GNU General Public License
-//along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 // OpenGL camera functions for screen drawing
-
 
 #include <GLFW/glfw3.h>
 #include <GL/freeglut.h>
@@ -53,6 +52,7 @@ GLFWwindow* Init_OpenGL()
 
 	// Create a windowed mode window and its OpenGL context
 	window = glfwCreateWindow(640, 480, "KillBox", NULL, NULL);
+	//window = glfwCreateWindow(1366, 768, "Full screen window", glfwGetPrimaryMonitor(), NULL);
 	if (!window)
 	{
 		// If it didn't work
@@ -105,9 +105,12 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	gluLookAt(play->PosY/64, 2.0f, play->PosX / 64,		// Camera's position
-		play->PosY / 64 + sin(play->GetRadianAngle(play->Angle)), 2.0f, play->PosX / 64 + cos(play->GetRadianAngle(play->Angle)),	// What the camera will look at
-			  0.0, 1.0, 0.0);	// This is for the camera's frame rotation
+	gluLookAt(
+		play->PosY/64, play->PosZ/64, play->PosX / 64,		// Camera's position
+		play->PosY / 64 + sin(play->GetRadianAngle(play->Angle)), 	// What the camera will look at
+		play->PosZ/64,
+		play->PosX / 64 + cos(play->GetRadianAngle(play->Angle)),	// What the camera will look at
+		0.0, 1.0, 0.0);	// This is for the camera's frame rotation
 
 	glColor3f(1.0f, 1.0f, 1.0f);
 
@@ -205,10 +208,9 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 	}
 }
 
-int Close_OpenGL()
+int Close_OpenGL(GLFWwindow* window)
 {
+	glfwDestroyWindow(window);
 	glfwTerminate();
 	return true;
 }
-
-

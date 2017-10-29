@@ -1,28 +1,26 @@
+// Copyright (C) 2014-2017 Alexandre-Xavier Labonté-Lamoureux
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 // random.h
-//Copyright (C) 2014 Alexandre-Xavier Labonté-Lamoureux
-//
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
-//
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU General Public License for more details.
-//
-//You should have received a copy of the GNU General Public License
-//along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 // Pseudo-random number generator (PRNG)
 
 static unsigned short Index = 0;
 const int NUMBERS = 256;
 
-//
-// Numbers from 0 to 255
-//
-const unsigned char RandomNumbers[NUMBERS] = {
+// Numbers from 0 to 255 in random order
+const unsigned char PRNG[NUMBERS] = {
 	41, 35, 190, 132, 225, 108, 214, 174, 82, 144, 73, 241, 187, 233, 235, 179,
 	166, 219, 60, 135, 12, 62, 153, 36, 94, 13, 28, 6, 183, 71, 222, 18,
 	77, 200, 67, 139, 31, 3, 90, 125, 9, 56, 37, 93, 212, 203, 252, 150, 
@@ -41,6 +39,7 @@ const unsigned char RandomNumbers[NUMBERS] = {
 	81, 25, 46, 188, 148, 75, 88, 210, 172, 26, 162, 237, 251, 221, 186, 171
 };
 
-//Use: Modulo(%), Spacing(*), Modifier(+)
-int R_Random(int Modulo, int Spacing, int Modifier);
+int R_Random();
+
+void R_Reset();
 

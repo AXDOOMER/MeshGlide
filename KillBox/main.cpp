@@ -1,20 +1,20 @@
+// Copyright (C) 2014-2017 Alexandre-Xavier Labonté-Lamoureux
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 // main.cpp
-//Copyright (C) 2014 Alexandre-Xavier Labonté-Lamoureux
-//
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
-//
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU General Public License for more details.
-//
-//You should have received a copy of the GNU General Public License
-//along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-// The main stuff is here
+// The main stuff is here, like the game loop.
 
 // These instructions tell where to put them:
 // http://stackoverflow.com/questions/22539047/how-can-i-set-up-freeglut-and-glew-for-use-in-visual-studio-2013
@@ -27,6 +27,7 @@
 #include <string>
 #include <string.h>     //Used for strcmp()
 #include <stdlib.h>     /* atoi */
+#include <fstream>
 
 #include "viewdraw.h"
 #include "command.h"
@@ -36,32 +37,16 @@
 
 using namespace std;
 
-//Global variables
-int Global = 0xCAFEBABE;
-
 int main(int argc, char *argv[])
 {
-	// Creating the first memory pointer
-	int *ptr = new int;
-	const int VERSION = 0;		// A serial number for the version
+	const char* const VERSION = "1.00 (dev)";		// A serial number for the version
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
+	ofstream DemoWrite;
+	ifstream DemoRead;
 
-	string ProgramName = argv[0];
-	ProgramName = ProgramName.substr(ProgramName.find_last_of("/\\"), ProgramName.length());
-	ProgramName[0] = ' ';	// The first character here will be a space
-
-	cout << "                KILLBOX DEV VERSION " <<		// Should be named "KillBox"
-		VERSION / 100 << "." << VERSION % 100 << " (PRE-ALPHA)" << endl;
-	cout << "Memory area: Is around 0x" << &ptr << endl;       //approx area ~
-	cout << "Program name:" << ProgramName << endl << endl;
-
-	// Remove the first pointer from memory
-	delete ptr;
-	ptr = 0;
-
-	ListArguments(argc, argv);
+	cout << "                KILLBOX -- " << VERSION << "\n\n";
 
 	if (FindArgumentPosition(argc, argv, "-debug") > 0)
 	{
@@ -75,19 +60,42 @@ int main(int argc, char *argv[])
 		LevelName = argv[(FindArgumentPosition(argc, argv, "-file") + 1)];
 	}*/
 
-	string DemoPlay = "";
-	if (argv[FindArgumentPosition(argc, argv, "-playdemo") + 1] > 0)
+	string DemoName = FindArgumentParameter(argc, argv, "-playdemo");
+	if (DemoName.size() > 0 && DemoName[0] != '-')
 	{
-		DemoPlay = argv[FindArgumentPosition(argc, argv, "-playdemo") + 1];
-		if (DemoPlay[0] != '-')
+		cout << "Playing demo: " << DemoName << endl;
+		DemoRead = ifstream(DemoName);
+		if (!DemoRead.is_open())
 		{
-			DemoPlay = argv[FindArgumentPosition(argc, argv, "-playdemo") + 1];
+			cout << "Could not open demo: " << DemoName << endl;
+			exit(EXIT_FAILURE);
 		}
 	}
+	else
+	{
+		DemoName = "";
+	}
+
+	DemoName = FindArgumentParameter(argc, argv, "-record");
+	if (DemoName.size() > 0 && DemoName[0] != '-')
+	{
+		cout << "Recoring demo: " << DemoName << endl;
+		DemoWrite = ofstream(DemoName);
+		if (!DemoWrite.is_open())
+		{
+			cout << "Could not open demo file to write to: " << DemoName << endl;
+			exit(EXIT_FAILURE);
+		}
+	}
+	else
+	{
+		DemoName = "";
+	}
+
 
 	if (LevelName.length() > 0)
 	{
-		cout << "Loading level \"" + LevelName + "\"." << endl;
+		cout << "Loading level " + LevelName + ".txt" << endl;
 	}
 	else
 	{
@@ -97,14 +105,11 @@ int main(int argc, char *argv[])
 	}
 
 	Level* CurrentLevel = F_LoadLevel(LevelName);
-
-	//// Load some stuff
-	//cout << "Graphics: Loading [";
-	//for (int i = 0; i < 20; i++)
-	//{
-	//	cout << ".";
-	//}
-	//cout << "]" << endl;
+	if (!CurrentLevel)
+	{
+		cout << "ERROR: Impossible to load level " << CurrentLevel << endl;
+		exit(EXIT_FAILURE);
+	}
 
 	// Load OpenGL
 	GLFWwindow* window = Init_OpenGL();
@@ -113,7 +118,7 @@ int main(int argc, char *argv[])
 
 	if (!window)
 	{
-		cout << "An error as occurend when tried to initialise OpenGL stuff!" << endl;
+		cout << "Cound not create window!" << endl;
 		exit(EXIT_FAILURE);
 	}
 
@@ -123,80 +128,149 @@ int main(int argc, char *argv[])
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 
-	// Temporary player
+	// Player
 	Player* play = new Player;
 
+	if (DemoWrite.is_open())
+	{
+		DemoWrite << VERSION << endl;
+		DemoWrite << LevelName << endl;
+		DemoWrite << 1 << endl;	// Number of players
+	}
+
+	if (DemoRead.is_open())
+	{
+		string line;
+		getline(DemoRead, line);
+		cout << "Version: " << line << endl;
+		getline(DemoRead, line);
+		cout << "Level name: " << line << endl;
+		getline(DemoRead, line);
+		cout << "# of players: " << line << endl;
+	}
 
     //Game loop
     do
     {
-		if (DemoPlay.size() > 0)
+		glfwPollEvents();
+
+		if (DemoRead.is_open())
 		{
+			string line;
 			//Demo Play is True
+			if (!getline(DemoRead, line))
+				Quit = true;
+			if (!line.empty())
+				play->Cmd.forward = stoi(line);
+			if (!getline(DemoRead, line))
+				Quit = true;
+			if (!line.empty())
+				play->Cmd.lateral = stoi(line);
+			if (!getline(DemoRead, line))
+				Quit = true;
+			if (!line.empty())
+				play->Cmd.rotation = stoi(line);
 		}
 		else
 		{
 			//Get Input from Keyboard
+			// Input for tests
+			if (!((glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP)) && (glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN))))
+			{
+				if (glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP))
+				{
+					play->Cmd.forward = 10;
+				}
+				if (glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN))
+				{
+					play->Cmd.forward = -10;
+				}
+			}
+			if (!(glfwGetKey(window, GLFW_KEY_A) && glfwGetKey(window, GLFW_KEY_D)))
+			{
+				if (glfwGetKey(window, GLFW_KEY_A))
+				{
+					play->Cmd.lateral = -10;
+				}
+				if (glfwGetKey(window, GLFW_KEY_D))
+				{
+					play->Cmd.lateral = 10;
+				}
+			}
+			if (!(glfwGetKey(window, GLFW_KEY_LEFT) && glfwGetKey(window, GLFW_KEY_RIGHT)))
+			{
+				if (glfwGetKey(window, GLFW_KEY_LEFT))
+				{
+					play->Cmd.rotation = 200;
+				}
+				if (glfwGetKey(window, GLFW_KEY_RIGHT))
+				{
+					play->Cmd.rotation = -200;
+				}
+			}
+
+			if (DemoWrite.is_open())
+			{
+				DemoWrite << static_cast<int>(play->Cmd.forward) << endl;
+				DemoWrite << static_cast<int>(play->Cmd.lateral) << endl;
+				DemoWrite << static_cast<int>(play->Cmd.rotation) << endl;
+			}
+		}
+
+		// Keys that don't affect the player
+		if (glfwGetKey(window, GLFW_KEY_R))
+		{
+			play->Angle = 0;
+			play->PosX = 0;
+			play->PosY = 0;
+			play->PosZ = 128;
+			play->MoX = 0;
+			play->MoY = 0;
+			play->MoZ = 0;	
+		}
+		if (glfwGetKey(window, GLFW_KEY_SPACE))
+		{
+			play->PosZ = play->PosZ + 10;
+		}
+		if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL))
+		{
+			play->PosZ = play->PosZ - 10;
+		}
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE))
+		{
+			Quit = true;
 		}
 
 		//Send Commands over Network
 
 		//Update game logic
-		
+		play->ExecuteTicCmd();
+
 		//Draw Screen
 		DrawScreen(window, play, CurrentLevel);
+		glfwSwapBuffers(window);
 
 		//Play sound
 
-		// Input for tests
-		if (glfwGetKey(window, GLFW_KEY_W))
-		{
-			play->ForwardMove(5);
-		}
-		if (glfwGetKey(window, GLFW_KEY_S))
-		{
-			play->ForwardMove(-5);
-		}
-		if (glfwGetKey(window, GLFW_KEY_A))
-		{
-			play->LateralMove(-5);
-		}
-		if (glfwGetKey(window, GLFW_KEY_D))
-		{
-			play->LateralMove(5);
-		}
-		if (glfwGetKey(window, GLFW_KEY_LEFT))
-		{
-			play->AngleTurn(100);
-		}
-		if (glfwGetKey(window, GLFW_KEY_RIGHT))
-		{
-			play->AngleTurn(-100);
-		}
-		if (glfwGetKey(window, GLFW_KEY_SPACE))
-		{
-			play->Angle = 0;
-			play->PosX = 0;
-			play->PosY = 0;
-			play->PosZ = 0;
-			play->MoX = 0;
-			play->MoY = 0;
-			play->MoZ = 0;	
-		}
-
 		// Status of the player for debugging purposes
-		cout << static_cast<int>(play->PosX) << "		" << static_cast<int>(play->PosY) << "		" << play->Angle << endl;
-
-
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+		//cout << static_cast<int>(play->PosX) << "		" << static_cast<int>(play->PosY) << "		" << play->Angle << endl;
 
         TicCount++;
     }
 	while (!Quit && !glfwWindowShouldClose(window));
 
+	if (DemoWrite.is_open())
+	{
+		DemoWrite.close();
+	}
+
+	if (DemoRead.is_open())
+	{
+		DemoRead.close();
+	}
+
 	// Close OpenGL stuff
-	Close_OpenGL();
+	Close_OpenGL(window);
 
 	return 0;
 }

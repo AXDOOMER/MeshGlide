@@ -1,19 +1,19 @@
+// Copyright (C) 2014-2017 Alexandre-Xavier Labonté-Lamoureux
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 // command.cpp
-//Copyright (C) 2014 Alexandre-Xavier Labonté-Lamoureux
-//
-//This program is free software: you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
-//
-//This program is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//GNU General Public License for more details.
-//
-//You should have received a copy of the GNU General Public License
-//along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 // Command line parameters
 
 #include <iostream>
@@ -40,42 +40,12 @@ int FindArgumentPosition(int argc, char *argv[], string Argument)
 	return 0;
 }
 
-//Print a list of arguments
-void ListArguments(int argc, char *argv[])
+string FindArgumentParameter(int argc, char *argv[], string Argument)
 {
-	if (argc > 1)
+	int argpos = FindArgumentPosition(argc, argv, Argument);
+	if (argpos > 0 && argpos + 1 < argc)
 	{
-		cout << "Reading parameters..." << endl;
-
-		int i = 1;
-		bool None = true;
-
-		while (i < argc)
-		{
-			if (argv[i][0] == '-')
-			{
-				cout << argv[i];
-				None = false;
-				i++;
-				break;
-			}
-
-			i++;
-		}
-
-		while (i < argc)
-		{
-			if (argv[i][0] == '-')
-			{
-				cout << ", " << argv[i];
-			}
-
-			i++;
-		}
-
-		if (!None)
-		{
-			cout << endl;
-		}
+		return argv[argpos + 1];
 	}
+	return "";
 }
