@@ -103,36 +103,29 @@ public:
 	void HealthChange(int Change);	// Change the player's health
 };
 
+struct Vertex
+{
+	int Xpos;
+	int Ypos;
+	int Zpos;
+};
+
 struct Wall
 {
+    string Texture;
 	bool Impassable = true;
-	bool TwoSided = true;
-	vector<int> *ptrVertices = new vector<int>;
-	int Xoff = 0;
-	int Yoff = 0;
-	char Light;
-	string Texture;
-	int Tag;
+	bool TwoSided = false;
+	vector<Vertex> Vertices;
+	char Xscale = 0;
+	char Yscale = 0;
+	char Xoff = 0;
+	char Yoff = 0;
+	char Light = 127;
 };
 
 struct Level
 {
-	string Name = "Unknown";
-	string SkyColor;
-	string CloudColor;
-	string Background = "Black";
-	int Fog = 0;
-
-	bool PlayerInGame[4];
-	
-	//Faire des pointeurs sur des objets, on peut tu faire juste un vecteur à place ?
-	vector<Wall> *ptrWalls = new vector<Wall>;
-	////Vertex *ptrWalls = new Vertex[];
-	////Vertex *ptrPlayers = new Vertex[];
-	////Vertex *ptrSpawns = new Vertex[];
-	////Vertex *ptrBarrels = new Vertex[];
-	////Vertex *ptrDoors = new Vertex[];
-
+	vector<Wall> ptrWalls;
 };
 
 struct SpawnSpot
@@ -143,11 +136,4 @@ struct SpawnSpot
 	short Angle;
 };
 
-struct Vertex
-{
-	int Xpos;
-	int Ypos;
-	int Zpos;
-};
-
-#endif
+#endif /* _THINGS_H */

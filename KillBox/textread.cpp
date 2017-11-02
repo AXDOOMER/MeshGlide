@@ -35,7 +35,7 @@ Level* F_LoadLevel(string LevelName)
 {
 	Level* Current = new Level;
 
-	string FileName = LevelName + ".txt";       //Added to compile in Code::Blocks,
+	string FileName = LevelName;       //Added to compile in Code::Blocks,
 	ifstream LevelFile(FileName.c_str());   //can't do it all on this line.
 	if (LevelFile.is_open())
 	{

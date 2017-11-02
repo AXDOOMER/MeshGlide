@@ -7,7 +7,7 @@ This was only a prototype to test the feasibility of a homemade OpenGL engine fo
 
 ### Dev
 
-Compile and run on Linux: `g++ *.cpp -std=c++14 -lglfw -lGL -lGLU -lglut -o FPS_test && ./FPS_test`
+Compile and run on Linux: `g++ *.cpp -std=c++11 -lglfw -lGL -lGLU -lglut -lSDL -o FPS_test && ./FPS_test`
 
 Packages that may need to be installed (Debian): `sudo apt-get install libglfw3 libglfw3-dev`
 

@@ -28,10 +28,10 @@
 #include <string.h>     //Used for strcmp()
 #include <stdlib.h>     /* atoi */
 #include <fstream>
+#include <chrono>
 
 #include "viewdraw.h"
 #include "command.h"
-#include "random.h"
 #include "things.h"
 #include "textread.h"
 
@@ -39,7 +39,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	const char* const VERSION = "1.00 (dev)";		// A serial number for the version
+	const char* const VERSION = "0.02 (dev)";		// A serial number for the version
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 		cout << "I_sys: Debug mode ON." << endl;
 	}
 
-	string LevelName = "file";
+	string LevelName = "level.txt";
 	/*if (FindArgumentPosition(argc, argv, "-file") > 0 && argv[(FindArgumentPosition(argc, argv, "-file") + 1)] > 0)
 	{
 		cout << "WADunit_ " << argv[(FindArgumentPosition(argc, argv, "-file") + 1)] << endl;
@@ -95,12 +95,12 @@ int main(int argc, char *argv[])
 
 	if (LevelName.length() > 0)
 	{
-		cout << "Loading level " + LevelName + ".txt" << endl;
+		cout << "Loading level " + LevelName << endl;
 	}
 	else
 	{
 		cin.ignore(cin.rdbuf()->in_avail());
-		cout << "Enter a level's name (assuming .txt): ";
+		cout << "Enter a level's name: ";
 		cin >> LevelName;
 	}
 
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 
 	if (!window)
 	{
-		cout << "Cound not create window!" << endl;
+		cout << "Could not create OpenGL window!" << endl;
 		exit(EXIT_FAILURE);
 	}
 
@@ -152,6 +152,9 @@ int main(int argc, char *argv[])
     //Game loop
     do
     {
+		// Timer
+		auto start = chrono::system_clock::now();
+
 		glfwPollEvents();
 
 		if (DemoRead.is_open())
@@ -248,14 +251,26 @@ int main(int argc, char *argv[])
 
 		//Draw Screen
 		DrawScreen(window, play, CurrentLevel);
-		glfwSwapBuffers(window);
 
 		//Play sound
 
 		// Status of the player for debugging purposes
 		//cout << static_cast<int>(play->PosX) << "		" << static_cast<int>(play->PosY) << "		" << play->Angle << endl;
 
-        TicCount++;
+		TicCount++;
+
+		//SDL_Delay(30);
+
+		auto end = chrono::system_clock::now();
+		auto diff = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+		SetWindowTitle(window, WindowTitle + " (" + to_string(1000 / diff) + "fps)");
+
+		// Detect OpenGL errors
+		GLenum ErrorCode;
+		while ((ErrorCode = glGetError()) != GL_NO_ERROR)
+		{
+			cout << (const char*)gluErrorString(ErrorCode) << endl;
+		}
     }
 	while (!Quit && !glfwWindowShouldClose(window));
 
@@ -272,5 +287,5 @@ int main(int argc, char *argv[])
 	// Close OpenGL stuff
 	Close_OpenGL(window);
 
-	return 0;
+	return EXIT_SUCCESS;
 }

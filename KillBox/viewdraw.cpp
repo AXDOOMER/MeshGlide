@@ -21,9 +21,14 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include <iostream>
+#include <stdlib.h> /* EXIT_FAILURE */
 
+#include <iostream>
+#include <string>
+
+#include "viewdraw.h"
 #include "things.h"
+#include "texture.h"
 
 using namespace std;
 
@@ -38,26 +43,30 @@ void Error_Callback(int error, const char* description)
 	cout << description << endl;
 }
 
+void SetWindowTitle(GLFWwindow* window, string Title)
+{
+	glfwSetWindowTitle(window, Title.c_str());
+}
+
 GLFWwindow* Init_OpenGL()
 {
 	// Create the window
 	GLFWwindow* window;
 
-
 	glfwSetErrorCallback(Error_Callback);
 
 	// Initialise the glfw library
 	if (!glfwInit())
-		return 0;
+		exit(EXIT_FAILURE);
 
 	// Create a windowed mode window and its OpenGL context
-	window = glfwCreateWindow(640, 480, "KillBox", NULL, NULL);
+	window = glfwCreateWindow(640, 480, WindowTitle.c_str(), NULL, NULL);
 	//window = glfwCreateWindow(1366, 768, "Full screen window", glfwGetPrimaryMonitor(), NULL);
 	if (!window)
 	{
 		// If it didn't work
 		glfwTerminate();
-		return 0;
+		exit(EXIT_FAILURE);
 	}
 
 	// Make its context current
@@ -67,18 +76,18 @@ GLFWwindow* Init_OpenGL()
 	glfwSwapInterval(1);
 	glfwSetKeyCallback(window, Key_Callback);
 
-	// Make the background black
-	glClearColor(0.5, 0.5, 0.5, 0.0);
-	glEnable(GL_DEPTH_TEST);	// Draw objects at the appropriate Z
-	glEnable(GL_CULL_FACE);		// Don't draw faces behind polygones
+	InitProjection(window);
 
-	// Swap buffers right now
-	glfwSwapBuffers(window);
+	// Make the background gray
+	glClearColor(0.0, 0.0, 0.5, 0.0);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_DEPTH_TEST);		// Draw objects at the appropriate Z
+	glEnable(GL_CULL_FACE);		// Don't draw faces behind polygons
 
 	return window;
 }
 
-void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
+void InitProjection(GLFWwindow* window)
 {
 	int width, height;
 	glfwGetWindowSize(window, &width, &height);
@@ -99,11 +108,24 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 		fov = fov / ratio;
 	}
 
-	glViewport(0, 0, width, height);
+	glViewport(0.0f, 0.0f, width, height);
 	gluPerspective(fov, ratio, 0.1f, 1000.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+}
+
+void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
+{
+	// Reset colors and depth buffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Load identity matrix
+	glLoadIdentity();
+
+	// Enable textures
+	glEnable(GL_TEXTURE_2D);
+	static Texture tex("rock.bmp");		// static: Load the texture only once
+	tex.Bind();
 
 	gluLookAt(
 		play->PosY/64, play->PosZ/64, play->PosX / 64,		// Camera's position
@@ -112,7 +134,31 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 		play->PosX / 64 + cos(play->GetRadianAngle(play->Angle)),	// What the camera will look at
 		0.0, 1.0, 0.0);	// This is for the camera's frame rotation
 
-	glColor3f(1.0f, 1.0f, 1.0f);
+	//glRotatef( xrot, 1.0f, 0.0f, 0.0f); /* Rotate On The X Axis */
+	//glRotatef( yrot, 0.0f, 1.0f, 0.0f); /* Rotate On The Y Axis */
+	//glRotatef( zrot, 0.0f, 0.0f, 1.0f); /* Rotate On The Z Axis */
+
+	glPushMatrix();
+	{
+		//glTranslatef(0, 0, 0);
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glBegin(GL_QUADS);
+		{
+			glTexCoord2f(0, 1);
+			glVertex3f( 10.0f, 10.0f, 0.0f);
+			glTexCoord2f(1, 1);
+			glVertex3f(-10.0f, 10.0f, 0.0f);
+			glTexCoord2f(1, 0);
+			glVertex3f(-10.0f,-10.0f, 0.0f);
+			glTexCoord2f(0, 0);
+			glVertex3f( 10.0f,-10.0f, 0.0f);
+		}
+		glEnd();
+	}
+	glPopMatrix();
+
+	// Draw flat polygons from now
+	glDisable(GL_TEXTURE_2D);
 
 	for (int i = -3; i <= 3; i++)
 	{
@@ -143,41 +189,34 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 	}
 
 	// Draw ground
-	glColor3f(0.0f, 0.5f, 0.0f);
+	glPushMatrix();
+		glColor3f(0.0f, 0.5f, 0.0f);
 		glBegin(GL_QUADS);
+			glTexCoord2f(0.0, 0.0);
 			glVertex3f(-35.0f, 0.0f, -35.0f);
+			glTexCoord2f(1.0, 0.0);
 			glVertex3f(-35.0f, 0.0f, 35.0f);
+			glTexCoord2f(1.0, 1.0);
 			glVertex3f(35.0f, 0.0f, 35.0f);
+			glTexCoord2f(0.0, 1.0);
 			glVertex3f(35.0f, 0.0f, -35.0f);
 		glEnd();
 	glPopMatrix();
 
-	// Draw sky
-	glColor3f(153.0f / 256.0f, 217.0f / 256.0f, 234.0f / 256.0f);
+	// Draw sky (relative to player)
+	glPushMatrix();
+		glColor3f(153.0f / 256.0f, 217.0f / 256.0f, 234.0f / 256.0f);
 		glBegin(GL_QUADS);
-					// (Xpos, Zpos, Ypos)
-			glVertex3f(100.0f, 10.0f, -100.0f);
-			glVertex3f(100.0f, 10.0f, 100.0f);
-			glVertex3f(-100.0f, 10.0f, 100.0f);
-			glVertex3f(-100.0f, 10.0f, -100.0f);
+			// (Xpos, Zpos, Ypos)
+			// TODO: Use this for sky coords: glTranslatef(play->PosY/64, play->PosZ/64, play->PosX / 64);
+			glVertex3f(play->PosY / 64 + 100.0f, 10.0f, play->PosX / 64 - 100.0f);
+			glVertex3f(play->PosY / 64 + 100.0f, 10.0f, play->PosX / 64 + 100.0f);
+			glVertex3f(play->PosY / 64 - 100.0f, 10.0f, play->PosX / 64 + 100.0f);
+			glVertex3f(play->PosY / 64 - 100.0f, 10.0f, play->PosX / 64 - 100.0f);
 		glEnd();
 	glPopMatrix();
 
-	// Draw relative rectangle
-	glColor3f(255.0f / 256.0f, 120.0f / 256.0f, 120.0f / 256.0f);
-		glBegin(GL_QUADS);
-			// (Ypos, Zpos, Xpos)
-		glVertex3f(play->PosY / 64 + 10.0f, 5.0f, play->PosX / 64 - 10.0f);
-		glVertex3f(play->PosY / 64 + 10.0f, 5.0f, play->PosX / 64 + 10.0f);
-		glVertex3f(play->PosY / 64 - 10.0f, 5.0f, play->PosX / 64 + 10.0f);
-		glVertex3f(play->PosY / 64 - 10.0f, 5.0f, play->PosX / 64 - 10.0f);
-		glEnd();
-	glPopMatrix();
-
-	// The sky is blue
-	glClearColor(0.0, 0.0, 0.5, 0.0);
-
-	if (lvl != 0)
+/*	if (lvl != nullptr)
 	{
 		for (int i = 0; i < lvl->ptrWalls->size(); i++)
 		{
@@ -205,7 +244,10 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 				glEnable(GL_CULL_FACE);
 			}
 		}
-	}
+	}*/
+
+	// Swap the front and back buffers
+	glfwSwapBuffers(window);
 }
 
 int Close_OpenGL(GLFWwindow* window)

@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2017 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2017 Alexandre-Xavier LabontÃ©-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,32 +13,26 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// viewdraw.h
-// OpenGL camera functions for screen drawing
-
-#ifndef _VIEWDRAW_H
-#define _VIEWDRAW_H
+// textures.cpp
+// Texture loader and cache?
 
 #include <string>
 using namespace std;
 
-#include "things.h"
+class Texture
+{
+private:
+	string _Name;
+	GLuint _Id;
+	unsigned short _Width;
+	unsigned short _Height;
+public:
+	Texture(string Path);
+	~Texture();
 
-const string WindowTitle = "Les animaux de la nature";
-
-void SetWindowTitle(GLFWwindow* window, string Title);
-
-GLFWwindow* Init_OpenGL();
-
-void InitProjection(GLFWwindow* window);
-
-void Error_Callback(int error, const char* description);
-
-void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
-void DrawScreen(GLFWwindow* window, Player* play, Level* lvl);
-
-int Close_OpenGL(GLFWwindow* window);
-
-#endif /* _VIEWDRAW_H */
-
+	string Name();
+	unsigned int Id();
+	unsigned short Width();
+	unsigned short Height();
+	void Bind();
+};
