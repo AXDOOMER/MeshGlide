@@ -19,6 +19,7 @@
 #include <string>
 #include <iostream>
 #include <stdexcept>
+#include <utility>	// swap
 using namespace std;
 
 #include <SDL/SDL.h>
@@ -32,8 +33,8 @@ using namespace std;
 
 Texture::Texture(string Path)
 {
+	// Surface: Blue, Green, Red
 	SDL_Surface* Image = SDL_LoadBMP(Path.c_str());
-	// Blue, Green, Red
 
 	if (!Image)
 	{
@@ -50,8 +51,24 @@ Texture::Texture(string Path)
 	// Bind the texture so that the next functions will modify that texture
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
-	// Load texture
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Image->w, Image->h, 0, GL_BGR, GL_UNSIGNED_BYTE, Image->pixels);
+	// Protect the following code from a segmentation fault if the picture
+	// doesn't contain the expected number of bits per pixel.
+	// Improvement: SDL_ConvertSurfaceFormat ?
+	if (Image->format->BitsPerPixel != 24)
+	{
+		throw runtime_error("Texture " + Path + " is not 24 bits per pixel!");
+	}
+
+	// Flip the bytes in the buffer.
+	Uint8 *pixels = (Uint8 *)Image->pixels;
+	unsigned int bytes = Image->w * Image->h * 3;
+	for (int i = 0; i < bytes / 2; i++)
+	{
+		swap(pixels[i], pixels[bytes - i - 1]);
+	}
+
+	// Load the texture. The GL_BGR format should be used, but the bytes of the buffer have been flipped above.
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Image->w, Image->h, 0, GL_RGB, GL_UNSIGNED_BYTE, Image->pixels);
 
 	// Repeat texture
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -73,7 +90,7 @@ Texture::Texture(string Path)
 	_Id = textureID;
 	SDL_FreeSurface(Image);
 
-	cout << "Texture loaded: '" << Path << "' is " << Image->w << "x" << Image->h << endl;
+	cout << "Texture loaded: '" << Path << "' is " << Image->w << "x" << Image->h << endl;	// Debug
 }
 
 string Texture::Name()

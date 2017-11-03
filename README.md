@@ -1,9 +1,9 @@
-# FPS_test (prototype of KillBox)
+# FPS_test (previously a prototype for [KillBox](https://github.com/AXDOOMER/KillBox))
 
-A simple FPS game that will use FreeGLUT and GLFW for the graphics and input.
-It is distributed under the GNU GPL v2. 
+A simple FPS game that uses GLFW for the graphics and input.
+It is distributed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
-This was only a prototype to test the feasibility of a homemade OpenGL engine for KillBox: https://github.com/AXDOOMER/KillBox
+This was a prototype to test the feasibility of a homemade OpenGL engine for [KillBox](https://github.com/AXDOOMER/KillBox).
 
 ### Dev
 

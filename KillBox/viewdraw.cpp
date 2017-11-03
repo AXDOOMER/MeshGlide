@@ -25,6 +25,7 @@
 
 #include <iostream>
 #include <string>
+#include <cmath>
 
 #include "viewdraw.h"
 #include "things.h"
@@ -36,6 +37,28 @@ void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mod
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
+}
+
+void WindowResize_Callback(GLFWwindow* window, int width, int height)
+{
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	float ratio = (float)width / height;
+	float fov = 90;
+
+	// Wide horizontal screen. People with a large screen should not
+	// see more than others. The action is mostly horizontal.
+	if (ratio > 1)
+	{
+		fov = fov / ratio;
+	}
+
+	glViewport(0.0f, 0.0f, width, height);
+	gluPerspective(fov, ratio, 0.1f, 1000.0f);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 
 void Error_Callback(int error, const char* description)
@@ -72,11 +95,13 @@ GLFWwindow* Init_OpenGL()
 	// Make its context current
 	glfwMakeContextCurrent(window);
 
-	// Vsync
-	glfwSwapInterval(1);
+	glfwSwapInterval(1);	// Vsync?
 	glfwSetKeyCallback(window, Key_Callback);
 
 	InitProjection(window);
+
+	// Set callback
+	glfwSetWindowSizeCallback(window, WindowResize_Callback);
 
 	// Make the background gray
 	glClearColor(0.0, 0.0, 0.5, 0.0);
@@ -95,24 +120,8 @@ void InitProjection(GLFWwindow* window)
 	// Tell GL how to show us the world
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	float ratio = (float)width / height;
-	float fov = 90;
-
-	// Wide horizontal screen. People with a large screen should not 
-	// see more than others. The action is mostly horizontal. 
-	if (ratio > 1)
-	{
-		fov = fov / ratio;
-	}
-
-	glViewport(0.0f, 0.0f, width, height);
-	gluPerspective(fov, ratio, 0.1f, 1000.0f);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	// This set the matrices for the window
+	WindowResize_Callback(window, width, height);
 }
 
 void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
@@ -164,27 +173,55 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 	{
 		for (int j = -3; j <= 3; j++)
 		{
-			glColor3f(1.0f, 1.0f, 1.0f);
-			glPushMatrix();
-			glTranslatef(i*10.0f, 0.0f, j * 10.0f);
-			// Big body snow ball
-			glTranslatef(0.0f, 0.75f, 0.0f);
-			glutSolidSphere(0.75f, 20, 20);
-			// Small head ball
-			glTranslatef(0.0f, 1.0f, 0.0f);
-			glutSolidSphere(0.25f, 20, 20);
-			// Black Eyes
-			glPushMatrix();
-			glColor3f(0.0f, 0.0f, 0.0f);
-			glTranslatef(0.05f, 0.10f, 0.18f);
-			glutSolidSphere(0.05f, 10, 10);
-			glTranslatef(-0.1f, 0.0f, 0.0f);
-			glutSolidSphere(0.05f, 10, 10);
-			glPopMatrix();
-			// Carrot
-			glColor3f(235.0f/256.0f, 95.0f/256.0f, 0.0f);
-			glutSolidCone(0.08f, 0.5f, 10, 2);
-			glPopMatrix();
+			float distance = pow(play->PosX/64 - j*10, 2) + pow(play->PosY/64 - i*10, 2);
+			if (distance <= 500)
+			{
+				glColor3f(1.0f, 1.0f, 1.0f);
+				glPushMatrix();
+				glTranslatef(i*10.0f, 0.0f, j * 10.0f);
+				// Big body snow ball
+				glTranslatef(0.0f, 0.75f, 0.0f);
+				glutSolidSphere(0.75f, 20, 20);
+				// Small head ball
+				glTranslatef(0.0f, 1.0f, 0.0f);
+				glutSolidSphere(0.25f, 20, 20);
+				// Black Eyes
+				glPushMatrix();
+				glColor3f(0.0f, 0.0f, 0.0f);
+				glTranslatef(0.05f, 0.10f, 0.18f);
+				glutSolidSphere(0.05f, 10, 10);
+				glTranslatef(-0.1f, 0.0f, 0.0f);
+				glutSolidSphere(0.05f, 10, 10);
+				glPopMatrix();
+				// Carrot
+				glColor3f(235.0f/256.0f, 95.0f/256.0f, 0.0f);
+				glutSolidCone(0.08f, 0.5f, 10, 2);
+				glPopMatrix();
+			}
+			else	// Far, so lower poly count
+			{
+				glColor3f(1.0f, 1.0f, 1.0f);
+				glPushMatrix();
+				glTranslatef(i*10.0f, 0.0f, j * 10.0f);
+				// Big body snow ball
+				glTranslatef(0.0f, 0.75f, 0.0f);
+				glutSolidSphere(0.75f, 10, 5);
+				// Small head ball
+				glTranslatef(0.0f, 1.0f, 0.0f);
+				glutSolidSphere(0.25f, 10, 5);
+				// Black Eyes
+				glPushMatrix();
+				glColor3f(0.0f, 0.0f, 0.0f);
+				glTranslatef(0.05f, 0.10f, 0.18f);
+				glutSolidSphere(0.05f, 6, 5);
+				glTranslatef(-0.1f, 0.0f, 0.0f);
+				glutSolidSphere(0.05f, 6, 5);
+				glPopMatrix();
+				// Carrot
+				glColor3f(235.0f/256.0f, 95.0f/256.0f, 0.0f);
+				glutSolidCone(0.08f, 0.5f, 5, 2);
+				glPopMatrix();
+			}
 		}
 	}
 
