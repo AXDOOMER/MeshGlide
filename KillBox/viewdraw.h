@@ -32,10 +32,6 @@ GLFWwindow* Init_OpenGL();
 
 void InitProjection(GLFWwindow* window);
 
-void Error_Callback(int error, const char* description);
-
-void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
 void DrawScreen(GLFWwindow* window, Player* play, Level* lvl);
 
 int Close_OpenGL(GLFWwindow* window);

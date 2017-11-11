@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // textures.cpp
-// Texture loader and cache?
+// Texture loader
 
 #include <string>
 #include <iostream>
@@ -31,7 +31,7 @@ using namespace std;
 
 //http://www.opengl-tutorial.org/beginners-tutorials/tutorial-5-a-textured-cube/#compressed-textures
 
-Texture::Texture(string Path)
+Texture::Texture(const string& Path)
 {
 	// Surface: Blue, Green, Red
 	SDL_Surface* Image = SDL_LoadBMP(Path.c_str());
@@ -41,6 +41,7 @@ Texture::Texture(string Path)
 		throw runtime_error("Error loading texture: " + Path);
 	}
 
+	_Name = Path;
 	_Width = Image->w;
 	_Height = Image->h;
 
@@ -59,7 +60,7 @@ Texture::Texture(string Path)
 		throw runtime_error("Texture " + Path + " is not 24 bits per pixel!");
 	}
 
-	// Flip the bytes in the buffer.
+	// Flip the buffer.
 	Uint8 *pixels = (Uint8 *)Image->pixels;
 	unsigned int bytes = Image->w * Image->h * 3;
 	for (int i = 0; i < bytes / 2; i++)
@@ -93,22 +94,22 @@ Texture::Texture(string Path)
 	cout << "Texture loaded: '" << Path << "' is " << Image->w << "x" << Image->h << endl;	// Debug
 }
 
-string Texture::Name()
+string Texture::Name() const
 {
 	return _Name;
 }
 
-unsigned int Texture::Id()
+unsigned int Texture::Id() const
 {
 	return _Id;
 }
 
-unsigned short Texture::Width()
+unsigned short Texture::Width() const
 {
 	return _Width;
 }
 
-unsigned short Texture::Height()
+unsigned short Texture::Height() const
 {
 	return _Height;
 }
@@ -119,5 +120,6 @@ void Texture::Bind()
 }
 
 Texture::~Texture() {
+	cout << "Deleting texture " << _Name << " (" << _Id << ")" << endl;
 	glDeleteTextures(1, &_Id);
 }

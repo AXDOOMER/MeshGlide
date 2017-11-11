@@ -103,6 +103,17 @@ public:
 	void HealthChange(int Change);	// Change the player's health
 };
 
+class Critter
+{
+private:
+	float PosX = 0;
+	float PosY = 0;
+	float PosZ = 128;
+	float Direction = 0;
+public:
+	void Move();
+};
+
 struct Vertex
 {
 	int Xpos;

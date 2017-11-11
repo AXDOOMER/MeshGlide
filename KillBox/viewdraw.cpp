@@ -30,6 +30,7 @@
 #include "viewdraw.h"
 #include "things.h"
 #include "texture.h"
+#include "cache.h"
 
 using namespace std;
 
@@ -63,7 +64,7 @@ void WindowResize_Callback(GLFWwindow* window, int width, int height)
 
 void Error_Callback(int error, const char* description)
 {
-	cout << description << endl;
+	cerr << description << endl;
 }
 
 void SetWindowTitle(GLFWwindow* window, string Title)
@@ -120,8 +121,21 @@ void InitProjection(GLFWwindow* window)
 	// Tell GL how to show us the world
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// This set the matrices for the window
+	// This sets the matrices for the window
 	WindowResize_Callback(window, width, height);
+}
+
+void UseTexture(const string& name)
+{
+	static Cache<Texture> cache;
+	if (!cache.Has(name))
+	{
+		Texture* t = new Texture(name);
+		cache.Add(name, t);
+		cout << "Added texture " << name << endl;
+	}
+	Texture* tex = cache.Get(name);
+	tex->Bind();
 }
 
 void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
@@ -133,8 +147,6 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 
 	// Enable textures
 	glEnable(GL_TEXTURE_2D);
-	static Texture tex("rock.bmp");		// static: Load the texture only once
-	tex.Bind();
 
 	gluLookAt(
 		play->PosY/64, play->PosZ/64, play->PosX / 64,		// Camera's position
@@ -147,6 +159,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 	//glRotatef( yrot, 0.0f, 1.0f, 0.0f); /* Rotate On The Y Axis */
 	//glRotatef( zrot, 0.0f, 0.0f, 1.0f); /* Rotate On The Z Axis */
 
+	UseTexture("rock.bmp");
 	glPushMatrix();
 	{
 		//glTranslatef(0, 0, 0);
@@ -154,17 +167,39 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 		glBegin(GL_QUADS);
 		{
 			glTexCoord2f(0, 1);
-			glVertex3f( 10.0f, 10.0f, 0.0f);
+			glVertex3f( 10.0f, 10.0f, -5.0f);
 			glTexCoord2f(1, 1);
-			glVertex3f(-10.0f, 10.0f, 0.0f);
+			glVertex3f(-10.0f, 10.0f, -5.0f);
 			glTexCoord2f(1, 0);
-			glVertex3f(-10.0f,-10.0f, 0.0f);
+			glVertex3f(-10.0f,-10.0f, -5.0f);
 			glTexCoord2f(0, 0);
-			glVertex3f( 10.0f,-10.0f, 0.0f);
+			glVertex3f( 10.0f,-10.0f, -5.0f);
 		}
 		glEnd();
 	}
 	glPopMatrix();
+
+	UseTexture("rock-tile.bmp");
+	glDisable(GL_CULL_FACE);
+	glPushMatrix();
+	{
+		//glTranslatef(0, 0, 0);
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glBegin(GL_QUADS);
+		{
+			glTexCoord2f(0, 1);
+			glVertex3f(15.0f, 10.0f, 15.0f);
+			glTexCoord2f(1, 1);
+			glVertex3f(15.0f, 0.0f, 15.0f);
+			glTexCoord2f(1, 0);
+			glVertex3f(15.0f, 0.0f, 5.0f);
+			glTexCoord2f(0, 0);
+			glVertex3f(15.0f, 10.0f, 5.0f);
+		}
+		glEnd();
+	}
+	glPopMatrix();
+	glEnable(GL_CULL_FACE);
 
 	// Draw flat polygons from now
 	glDisable(GL_TEXTURE_2D);

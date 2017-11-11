@@ -13,33 +13,61 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// textures.h
-// Texture loader
+// cache.h
+// Generic cache
 
-#ifndef _TEXTURE_H
-#define _TEXTURE_H
+#ifndef _CACHE_H
+#define _CACHE_H
 
 #include <string>
+#include <map>
 using namespace std;
 
-class Texture
+template <class T>
+class Cache
 {
 private:
-	string _Name;
-	GLuint _Id;
-	unsigned short _Width;
-	unsigned short _Height;
+	map<string, T*> _store;
+	string _prev;	// Previous used key when doing a Get
 public:
-	Texture(const string& Path);
-	~Texture();
+	Cache()
+	{
+		_prev = "";
+	}
 
-	Texture() = delete;
+	void Add(const string& key, T* data)
+	{
+		_store.insert(pair<const string&, T*>(key, data));
+	}
 
-	string Name() const;
-	unsigned int Id() const;
-	unsigned short Width() const;
-	unsigned short Height() const;
-	void Bind();
+	bool Has(const string& key) const
+	{
+		return _store.find(key) != _store.end();
+	}
+
+	T* Get(const string& key)
+	{
+		_prev = key;
+		return _store.at(key);
+	}
+
+	unsigned int Size() const
+	{
+		return _store.count();
+	}
+
+	string Previous() const
+	{
+		return _prev;
+	}
+
+	// Destructor
+	~Cache()
+	{
+		for (auto& e: _store) {
+			delete e.second;
+		}
+	}
 };
 
-#endif
+#endif	// _CACHE_H
