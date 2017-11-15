@@ -109,7 +109,7 @@ Level* F_LoadLevel(string LevelName)
 	{
 		delete Current;		// Erase because it's no longer useful
 		Current = nullptr;
-		cout << "Unable to open level info!" << endl;
+		cout << "Unable to open level file!" << endl;
 	}
 
 	return Current;	//Doit retourner un pointeur sur le niveau

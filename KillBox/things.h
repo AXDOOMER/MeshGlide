@@ -23,6 +23,10 @@
 #include <string>
 #include <cmath>
 #include <vector>
+
+#include "texture.h"	// For the cache inside of the level
+#include "cache.h"
+
 using namespace std;
 
 const float GRAVITY = 9.81;
@@ -136,6 +140,7 @@ struct Wall
 
 struct Level
 {
+	Cache<Texture> cache;
 	vector<Wall> ptrWalls;
 };
 

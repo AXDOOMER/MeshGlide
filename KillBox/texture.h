@@ -26,7 +26,7 @@ class Texture
 {
 private:
 	string _Name;
-	GLuint _Id;
+	unsigned int _Id;
 	unsigned short _Width;
 	unsigned short _Height;
 public:

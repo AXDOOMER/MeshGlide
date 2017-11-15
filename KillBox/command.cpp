@@ -40,6 +40,8 @@ int FindArgumentPosition(int argc, char *argv[], string Argument)
 	return 0;
 }
 
+// IMPROVE: Add an optional fourth parameter that is to be used as the default if not found
+// IMPROVE: Add a check to see if the parameter is not an argument (i.e.: Doesn't start with '-')
 string FindArgumentParameter(int argc, char *argv[], string Argument)
 {
 	int argpos = FindArgumentPosition(argc, argv, Argument);

@@ -125,16 +125,15 @@ void InitProjection(GLFWwindow* window)
 	WindowResize_Callback(window, width, height);
 }
 
-void UseTexture(const string& name)
+void UseTexture(Level* lvl, const string& name)
 {
-	static Cache<Texture> cache;
-	if (!cache.Has(name))
+	if (!lvl->cache.Has(name))
 	{
 		Texture* t = new Texture(name);
-		cache.Add(name, t);
+		lvl->cache.Add(name, t);
 		cout << "Added texture " << name << endl;
 	}
-	Texture* tex = cache.Get(name);
+	Texture* tex = lvl->cache.Get(name);
 	tex->Bind();
 }
 
@@ -165,7 +164,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 		// Draw walls
 		for (int i = 0; i < lvl->ptrWalls.size(); i++)
 		{
-			UseTexture(lvl->ptrWalls[i].Texture);
+			UseTexture(lvl, lvl->ptrWalls[i].Texture);
 
 			if (lvl->ptrWalls[i].TwoSided)
 				glDisable(GL_CULL_FACE);

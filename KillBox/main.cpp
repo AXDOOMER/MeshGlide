@@ -39,26 +39,51 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	const char* const VERSION = "0.05 (dev)";		// A serial number for the version
+	const char* const VERSION = "0.06 (dev)";		// A serial number for the version
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
+	static bool Debug = false;
 	ofstream DemoWrite;
 	ifstream DemoRead;
 
 	cout << "                KILLBOX -- " << VERSION << "\n\n";
 
+	/****************************** SYSTEM OPTIONS ******************************/
+
 	if (FindArgumentPosition(argc, argv, "-debug") > 0)
 	{
+		Debug = true;
 		cout << "I_sys: Debug mode ON." << endl;
 	}
 
-	string LevelName = "level.txt";
-	/*if (FindArgumentPosition(argc, argv, "-file") > 0 && argv[(FindArgumentPosition(argc, argv, "-file") + 1)] > 0)
+	/****************************** LEVEL LOADING ******************************/
+
+	string LevelName = FindArgumentParameter(argc, argv, "-level");
+	if (LevelName.size() == 0 || LevelName[0] == '-')
 	{
-		cout << "WADunit_ " << argv[(FindArgumentPosition(argc, argv, "-file") + 1)] << endl;
-		LevelName = argv[(FindArgumentPosition(argc, argv, "-file") + 1)];
-	}*/
+		LevelName = "level.txt";
+	}
+
+	if (LevelName.length() > 0)
+	{
+		cout << "Loading level '" + LevelName << "'" << endl;
+	}
+	else
+	{
+		cin.ignore(cin.rdbuf()->in_avail());
+		cout << "Enter a level's name: ";
+		cin >> LevelName;
+	}
+
+	Level* CurrentLevel = F_LoadLevel(LevelName);
+	if (!CurrentLevel)
+	{
+		cout << "FATAL ERROR: Cannot load level '" << LevelName << "'" << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	/****************************** DEMO FILES ******************************/
 
 	string DemoName = FindArgumentParameter(argc, argv, "-playdemo");
 	if (DemoName.size() > 0 && DemoName[0] != '-')
@@ -92,24 +117,7 @@ int main(int argc, char *argv[])
 		DemoName = "";
 	}
 
-
-	if (LevelName.length() > 0)
-	{
-		cout << "Loading level " + LevelName << endl;
-	}
-	else
-	{
-		cin.ignore(cin.rdbuf()->in_avail());
-		cout << "Enter a level's name: ";
-		cin >> LevelName;
-	}
-
-	Level* CurrentLevel = F_LoadLevel(LevelName);
-	if (!CurrentLevel)
-	{
-		cout << "ERROR: Impossible to load level " << CurrentLevel << endl;
-		exit(EXIT_FAILURE);
-	}
+	/****************************** OPENGL HANDLING ******************************/
 
 	// Load OpenGL
 	GLFWwindow* window = Init_OpenGL();
@@ -127,6 +135,8 @@ int main(int argc, char *argv[])
 		cout << "_OpenGL: Wireframe mode activated." << endl;
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
+
+	/****************************** SETUP PHASE ******************************/
 
 	// Player
 	Player* play = new Player;
@@ -149,7 +159,7 @@ int main(int argc, char *argv[])
 		cout << "# of players: " << line << endl;
 	}
 
-    //Game loop
+	/****************************** GAME LOOP ******************************/
     do
     {
 		// Timer
@@ -255,7 +265,8 @@ int main(int argc, char *argv[])
 		//Play sound
 
 		// Status of the player for debugging purposes
-		//cout << static_cast<int>(play->PosX) << "		" << static_cast<int>(play->PosY) << "		" << play->Angle << endl;
+		if (Debug)
+			cout << static_cast<int>(play->PosX) << '\n' << static_cast<int>(play->PosY) << '\n' << play->Angle << endl;
 
 		TicCount++;
 
@@ -274,6 +285,12 @@ int main(int argc, char *argv[])
 		}
     }
 	while (!Quit && !glfwWindowShouldClose(window));
+
+	/****************************** TERMINATION ******************************/
+
+	// Destroy level
+	if (CurrentLevel != nullptr)
+		delete CurrentLevel;
 
 	if (DemoWrite.is_open())
 	{
