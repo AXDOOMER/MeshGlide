@@ -127,11 +127,11 @@ struct Wall
 	bool Impassable = true;
 	bool TwoSided = false;
 	vector<Vertex> Vertices;
-	char Xscale = 0;
-	char Yscale = 0;
-	char Xoff = 0;
-	char Yoff = 0;
-	char Light = 127;
+	float Xscale = 0;
+	float Yscale = 0;
+	float Xoff = 0;
+	float Yoff = 0;
+	float Light = 0;
 };
 
 struct Level

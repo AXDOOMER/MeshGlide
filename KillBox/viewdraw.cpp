@@ -176,6 +176,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 			{
 				//glTranslatef(0, 0, 0);
 				glColor3f(1.0f, 1.0f, 1.0f);
+				// Polygons are quads for now
 				glBegin(GL_QUADS);
 				{
 					glTexCoord2f(0, 1);

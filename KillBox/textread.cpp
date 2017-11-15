@@ -38,7 +38,7 @@ bool CharToBoolean(char c)
 	return false;
 }
 
-bool FirstStringCharToBoolean(string s)
+bool FirstCharToBoolean(string s)
 {
 	return CharToBoolean(s[0]);
 }
@@ -78,33 +78,18 @@ Level* F_LoadLevel(string LevelName)
 						cout << tokens[1] << endl;
 						Wall wall;
 						wall.Texture = tokens[1];
-						wall.Impassable = CharToBoolean(tokens[2][0]);
-						wall.TwoSided = CharToBoolean(tokens[3][0]);
+						wall.Impassable = FirstCharToBoolean(tokens[2]);
+						wall.TwoSided = FirstCharToBoolean(tokens[3]);
 
-						Vertex v1;
-						v1.Xpos = atof(tokens[8].c_str());
-						v1.Ypos = atof(tokens[9].c_str());
-						v1.Zpos = atof(tokens[10].c_str());
-
-						Vertex v2;
-						v2.Xpos = atof(tokens[11].c_str());
-						v2.Ypos = atof(tokens[12].c_str());
-						v2.Zpos = atof(tokens[13].c_str());
-
-						Vertex v3;
-						v3.Xpos = atof(tokens[14].c_str());
-						v3.Ypos = atof(tokens[15].c_str());
-						v3.Zpos = atof(tokens[16].c_str());
-
-						Vertex v4;
-						v4.Xpos = atof(tokens[17].c_str());
-						v4.Ypos = atof(tokens[18].c_str());
-						v4.Zpos = atof(tokens[19].c_str());
-
-						wall.Vertices.push_back(v1);
-						wall.Vertices.push_back(v2);
-						wall.Vertices.push_back(v3);
-						wall.Vertices.push_back(v4);
+						// polygons are quads for now
+						for (int i = 8; i < 20; i += 3)
+						{
+							Vertex vt;
+							vt.Xpos = atof(tokens[i].c_str());
+							vt.Ypos = atof(tokens[i+1].c_str());
+							vt.Zpos = atof(tokens[i+2].c_str());
+							wall.Vertices.push_back(vt);
+						}
 
 						Current->ptrWalls.push_back(wall);
 					}
