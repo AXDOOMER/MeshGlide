@@ -116,9 +116,9 @@ public:
 
 struct Vertex
 {
-	int Xpos;
-	int Ypos;
-	int Zpos;
+	float Xpos;
+	float Ypos;
+	float Zpos;
 };
 
 struct Wall

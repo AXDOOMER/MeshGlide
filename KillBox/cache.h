@@ -28,7 +28,7 @@ class Cache
 {
 private:
 	map<string, T*> _store;
-	string _prev;	// Previous used key when doing a Get
+	string _prev;	// Previous used key when doing a Get()
 public:
 	Cache()
 	{

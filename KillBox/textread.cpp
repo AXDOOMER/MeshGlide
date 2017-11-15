@@ -30,6 +30,19 @@
 
 using namespace std;
 
+bool CharToBoolean(char c)
+{
+	if (c == '1')
+		return true;
+	// else
+	return false;
+}
+
+bool FirstStringCharToBoolean(string s)
+{
+	return CharToBoolean(s[0]);
+}
+
 //Load le niveau et retourne son pointeur
 Level* F_LoadLevel(string LevelName)
 {
@@ -63,6 +76,37 @@ Level* F_LoadLevel(string LevelName)
 					else if (tokens[0] == "poly" && tokens.size() == 20)
 					{
 						cout << tokens[1] << endl;
+						Wall wall;
+						wall.Texture = tokens[1];
+						wall.Impassable = CharToBoolean(tokens[2][0]);
+						wall.TwoSided = CharToBoolean(tokens[3][0]);
+
+						Vertex v1;
+						v1.Xpos = atof(tokens[8].c_str());
+						v1.Ypos = atof(tokens[9].c_str());
+						v1.Zpos = atof(tokens[10].c_str());
+
+						Vertex v2;
+						v2.Xpos = atof(tokens[11].c_str());
+						v2.Ypos = atof(tokens[12].c_str());
+						v2.Zpos = atof(tokens[13].c_str());
+
+						Vertex v3;
+						v3.Xpos = atof(tokens[14].c_str());
+						v3.Ypos = atof(tokens[15].c_str());
+						v3.Zpos = atof(tokens[16].c_str());
+
+						Vertex v4;
+						v4.Xpos = atof(tokens[17].c_str());
+						v4.Ypos = atof(tokens[18].c_str());
+						v4.Zpos = atof(tokens[19].c_str());
+
+						wall.Vertices.push_back(v1);
+						wall.Vertices.push_back(v2);
+						wall.Vertices.push_back(v3);
+						wall.Vertices.push_back(v4);
+
+						Current->ptrWalls.push_back(wall);
 					}
 					else
 					{

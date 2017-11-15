@@ -159,46 +159,41 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 	//glRotatef( yrot, 0.0f, 1.0f, 0.0f); /* Rotate On The Y Axis */
 	//glRotatef( zrot, 0.0f, 0.0f, 1.0f); /* Rotate On The Z Axis */
 
-	UseTexture("rock.bmp");
-	glPushMatrix();
+	// Check if level is not a null pointer to avoid errors and draw its content
+	if (lvl != nullptr)
 	{
-		//glTranslatef(0, 0, 0);
-		glColor3f(1.0f, 1.0f, 1.0f);
-		glBegin(GL_QUADS);
+		// Draw walls
+		for (int i = 0; i < lvl->ptrWalls.size(); i++)
 		{
-			glTexCoord2f(0, 1);
-			glVertex3f( 10.0f, 10.0f, -5.0f);
-			glTexCoord2f(1, 1);
-			glVertex3f(-10.0f, 10.0f, -5.0f);
-			glTexCoord2f(1, 0);
-			glVertex3f(-10.0f,-10.0f, -5.0f);
-			glTexCoord2f(0, 0);
-			glVertex3f( 10.0f,-10.0f, -5.0f);
-		}
-		glEnd();
-	}
-	glPopMatrix();
+			UseTexture(lvl->ptrWalls[i].Texture);
 
-	UseTexture("rock-tile.bmp");
-	glDisable(GL_CULL_FACE);
-	glPushMatrix();
-	{
-		//glTranslatef(0, 0, 0);
-		glColor3f(1.0f, 1.0f, 1.0f);
-		glBegin(GL_QUADS);
-		{
-			glTexCoord2f(0, 1);
-			glVertex3f(15.0f, 10.0f, 15.0f);
-			glTexCoord2f(1, 1);
-			glVertex3f(15.0f, 0.0f, 15.0f);
-			glTexCoord2f(1, 0);
-			glVertex3f(15.0f, 0.0f, 5.0f);
-			glTexCoord2f(0, 0);
-			glVertex3f(15.0f, 10.0f, 5.0f);
+			if (lvl->ptrWalls[i].TwoSided)
+				glDisable(GL_CULL_FACE);
+			else
+				glEnable(GL_CULL_FACE);
+
+			glPushMatrix();
+			{
+				//glTranslatef(0, 0, 0);
+				glColor3f(1.0f, 1.0f, 1.0f);
+				glBegin(GL_QUADS);
+				{
+					glTexCoord2f(0, 1);
+					glVertex3f(lvl->ptrWalls[i].Vertices[0].Xpos, lvl->ptrWalls[i].Vertices[0].Ypos, lvl->ptrWalls[i].Vertices[0].Zpos);
+					glTexCoord2f(1, 1);
+					glVertex3f(lvl->ptrWalls[i].Vertices[1].Xpos, lvl->ptrWalls[i].Vertices[1].Ypos, lvl->ptrWalls[i].Vertices[1].Zpos);
+					glTexCoord2f(1, 0);
+					glVertex3f(lvl->ptrWalls[i].Vertices[2].Xpos, lvl->ptrWalls[i].Vertices[2].Ypos, lvl->ptrWalls[i].Vertices[2].Zpos);
+					glTexCoord2f(0, 0);
+					glVertex3f(lvl->ptrWalls[i].Vertices[3].Xpos, lvl->ptrWalls[i].Vertices[3].Ypos, lvl->ptrWalls[i].Vertices[3].Zpos);
+				}
+				glEnd();
+			}
+			glPopMatrix();
+
 		}
-		glEnd();
 	}
-	glPopMatrix();
+
 	glEnable(GL_CULL_FACE);
 
 	// Draw flat polygons from now
@@ -287,36 +282,6 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 			glVertex3f(play->PosY / 64 - 100.0f, 10.0f, play->PosX / 64 - 100.0f);
 		glEnd();
 	glPopMatrix();
-
-/*	if (lvl != nullptr)
-	{
-		for (int i = 0; i < lvl->ptrWalls->size(); i++)
-		{
-			if (lvl->ptrWalls->at(i).TwoSided)
-			{
-				glDisable(GL_CULL_FACE);
-			}
-
-			glColor3f(0.5f, 0.5f, 0.5f);
-			glBegin(GL_QUADS);
-
-			for (int j = 0; j < lvl->ptrWalls->at(i).ptrVertices->size(); j += 3)
-			{
-				// (Ypos, Zpos, Xpos)
-				glVertex3f(lvl->ptrWalls->at(i).ptrVertices->at(j+1), 
-					lvl->ptrWalls->at(i).ptrVertices->at(j+2),
-					lvl->ptrWalls->at(i).ptrVertices->at(j));
-			}
-
-			glEnd();
-			glPopMatrix();
-
-			if (lvl->ptrWalls->at(i).TwoSided)
-			{
-				glEnable(GL_CULL_FACE);
-			}
-		}
-	}*/
 
 	// Swap the front and back buffers
 	glfwSwapBuffers(window);
