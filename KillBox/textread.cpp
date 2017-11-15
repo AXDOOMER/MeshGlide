@@ -70,11 +70,17 @@ Level* F_LoadLevel(string LevelName)
 				{
 					if (tokens[0] == "thing" && tokens.size() == 6)
 					{
-						cout << tokens[1] << endl;
+						if (tokens[1] == "player")
+						{
+							Current->play = new Player;
+							Current->play->PosX = atof(tokens[2].c_str());
+							Current->play->PosY = atof(tokens[3].c_str());
+							Current->play->PosZ = atof(tokens[4].c_str());
+							Current->play->Angle = (short)atoi(tokens[5].c_str()) * 91.0222222222f;
+						}
 					}
 					else if (tokens[0] == "poly" && tokens.size() == 21)
 					{
-						cout << tokens[1] << endl;
 						Wall wall;
 						wall.Texture = tokens[1];
 						wall.Impassable = FirstCharToBoolean(tokens[2]);

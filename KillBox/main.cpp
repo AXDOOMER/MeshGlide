@@ -39,7 +39,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	const char* const VERSION = "0.07 (dev)";		// A serial number for the version
+	const char* const VERSION = "0.08 (dev)";		// A serial number for the version
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -138,9 +138,6 @@ int main(int argc, char *argv[])
 
 	/****************************** SETUP PHASE ******************************/
 
-	// Player
-	Player* play = new Player;
-
 	if (DemoWrite.is_open())
 	{
 		DemoWrite << VERSION << endl;
@@ -174,15 +171,15 @@ int main(int argc, char *argv[])
 			if (!getline(DemoRead, line))
 				Quit = true;
 			if (!line.empty())
-				play->Cmd.forward = stoi(line);
+				CurrentLevel->play->Cmd.forward = stoi(line);
 			if (!getline(DemoRead, line))
 				Quit = true;
 			if (!line.empty())
-				play->Cmd.lateral = stoi(line);
+				CurrentLevel->play->Cmd.lateral = stoi(line);
 			if (!getline(DemoRead, line))
 				Quit = true;
 			if (!line.empty())
-				play->Cmd.rotation = stoi(line);
+				CurrentLevel->play->Cmd.rotation = stoi(line);
 		}
 		else
 		{
@@ -192,62 +189,62 @@ int main(int argc, char *argv[])
 			{
 				if (glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP))
 				{
-					play->Cmd.forward = 10;
+					CurrentLevel->play->Cmd.forward = 10;
 				}
 				if (glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN))
 				{
-					play->Cmd.forward = -10;
+					CurrentLevel->play->Cmd.forward = -10;
 				}
 			}
 			if (!(glfwGetKey(window, GLFW_KEY_A) && glfwGetKey(window, GLFW_KEY_D)))
 			{
 				if (glfwGetKey(window, GLFW_KEY_A))
 				{
-					play->Cmd.lateral = -10;
+					CurrentLevel->play->Cmd.lateral = -10;
 				}
 				if (glfwGetKey(window, GLFW_KEY_D))
 				{
-					play->Cmd.lateral = 10;
+					CurrentLevel->play->Cmd.lateral = 10;
 				}
 			}
 			if (!(glfwGetKey(window, GLFW_KEY_LEFT) && glfwGetKey(window, GLFW_KEY_RIGHT)))
 			{
 				if (glfwGetKey(window, GLFW_KEY_LEFT))
 				{
-					play->Cmd.rotation = 200;
+					CurrentLevel->play->Cmd.rotation = 200;
 				}
 				if (glfwGetKey(window, GLFW_KEY_RIGHT))
 				{
-					play->Cmd.rotation = -200;
+					CurrentLevel->play->Cmd.rotation = -200;
 				}
 			}
 
 			if (DemoWrite.is_open())
 			{
-				DemoWrite << static_cast<int>(play->Cmd.forward) << endl;
-				DemoWrite << static_cast<int>(play->Cmd.lateral) << endl;
-				DemoWrite << static_cast<int>(play->Cmd.rotation) << endl;
+				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.forward) << endl;
+				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.lateral) << endl;
+				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.rotation) << endl;
 			}
 		}
 
 		// Keys that don't affect the player
 		if (glfwGetKey(window, GLFW_KEY_R))
 		{
-			play->Angle = 0;
-			play->PosX = 0;
-			play->PosY = 0;
-			play->PosZ = 128;
-			play->MoX = 0;
-			play->MoY = 0;
-			play->MoZ = 0;	
+			CurrentLevel->play->Angle = 0;
+			CurrentLevel->play->PosX = 0;
+			CurrentLevel->play->PosY = 0;
+			CurrentLevel->play->PosZ = 128;
+			CurrentLevel->play->MoX = 0;
+			CurrentLevel->play->MoY = 0;
+			CurrentLevel->play->MoZ = 0;
 		}
 		if (glfwGetKey(window, GLFW_KEY_SPACE))
 		{
-			play->PosZ = play->PosZ + 10;
+			CurrentLevel->play->PosZ = CurrentLevel->play->PosZ + 10;
 		}
 		if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL))
 		{
-			play->PosZ = play->PosZ - 10;
+			CurrentLevel->play->PosZ = CurrentLevel->play->PosZ - 10;
 		}
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE))
 		{
@@ -257,16 +254,18 @@ int main(int argc, char *argv[])
 		//Send Commands over Network
 
 		//Update game logic
-		play->ExecuteTicCmd();
+		CurrentLevel->play->ExecuteTicCmd();
 
 		//Draw Screen
-		DrawScreen(window, play, CurrentLevel);
+		DrawScreen(window, CurrentLevel->play, CurrentLevel);
 
 		//Play sound
 
-		// Status of the player for debugging purposes
-		if (Debug)
-			cout << static_cast<int>(play->PosX) << '\n' << static_cast<int>(play->PosY) << '\n' << play->Angle << endl;
+        // Status of the player for debugging purposes
+        if (Debug)
+            cout << 'x' << static_cast<int>(CurrentLevel->play->PosX)
+                 << "\ty" << static_cast<int>(CurrentLevel->play->PosY)
+                 << '\t' << CurrentLevel->play->Angle << endl;
 
 		TicCount++;
 

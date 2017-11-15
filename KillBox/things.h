@@ -143,6 +143,7 @@ class Level
 public:
 	Cache<Texture> cache;
 	vector<Wall> ptrWalls;
+	Player* play;
 
 	void AddTexture(const string& name);	// Add texture to cache if missing
 	void UseTexture(const string& name);	// Bind texture

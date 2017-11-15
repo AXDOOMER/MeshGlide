@@ -123,14 +123,12 @@ void Level::AddTexture(const string& name)
 {
 	if (!cache.Has(name))
 	{
-		Texture* t = new Texture(name);
-		cache.Add(name, t);
+		cache.Add(name, new Texture(name));
 		cout << "Added texture " << name << endl;
 	}
 }
 
 void Level::UseTexture(const string& name)
 {
-	Texture* tex = cache.Get(name);
-	tex->Bind();
+	cache.Get(name)->Bind();
 }
