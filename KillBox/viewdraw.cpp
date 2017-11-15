@@ -29,8 +29,6 @@
 
 #include "viewdraw.h"
 #include "things.h"
-#include "texture.h"
-#include "cache.h"
 
 using namespace std;
 
@@ -125,18 +123,6 @@ void InitProjection(GLFWwindow* window)
 	WindowResize_Callback(window, width, height);
 }
 
-void UseTexture(Level* lvl, const string& name)
-{
-	if (!lvl->cache.Has(name))
-	{
-		Texture* t = new Texture(name);
-		lvl->cache.Add(name, t);
-		cout << "Added texture " << name << endl;
-	}
-	Texture* tex = lvl->cache.Get(name);
-	tex->Bind();
-}
-
 void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 {
 	// Reset colors and depth buffer
@@ -164,7 +150,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 		// Draw walls
 		for (int i = 0; i < lvl->ptrWalls.size(); i++)
 		{
-			UseTexture(lvl, lvl->ptrWalls[i].Texture);
+			lvl->UseTexture(lvl->ptrWalls[i].Texture);
 
 			if (lvl->ptrWalls[i].TwoSided)
 				glDisable(GL_CULL_FACE);

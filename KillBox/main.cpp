@@ -39,7 +39,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	const char* const VERSION = "0.06 (dev)";		// A serial number for the version
+	const char* const VERSION = "0.07 (dev)";		// A serial number for the version
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -55,32 +55,6 @@ int main(int argc, char *argv[])
 	{
 		Debug = true;
 		cout << "I_sys: Debug mode ON." << endl;
-	}
-
-	/****************************** LEVEL LOADING ******************************/
-
-	string LevelName = FindArgumentParameter(argc, argv, "-level");
-	if (LevelName.size() == 0 || LevelName[0] == '-')
-	{
-		LevelName = "level.txt";
-	}
-
-	if (LevelName.length() > 0)
-	{
-		cout << "Loading level '" + LevelName << "'" << endl;
-	}
-	else
-	{
-		cin.ignore(cin.rdbuf()->in_avail());
-		cout << "Enter a level's name: ";
-		cin >> LevelName;
-	}
-
-	Level* CurrentLevel = F_LoadLevel(LevelName);
-	if (!CurrentLevel)
-	{
-		cout << "FATAL ERROR: Cannot load level '" << LevelName << "'" << endl;
-		exit(EXIT_FAILURE);
 	}
 
 	/****************************** DEMO FILES ******************************/
@@ -134,6 +108,32 @@ int main(int argc, char *argv[])
 	{
 		cout << "_OpenGL: Wireframe mode activated." << endl;
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+
+	/****************************** LEVEL LOADING ******************************/
+
+	string LevelName = FindArgumentParameter(argc, argv, "-level");
+	if (LevelName.size() == 0 || LevelName[0] == '-')
+	{
+		LevelName = "level.txt";
+	}
+
+	if (LevelName.length() > 0)
+	{
+		cout << "Loading level '" + LevelName << "'" << endl;
+	}
+	else
+	{
+		cin.ignore(cin.rdbuf()->in_avail());
+		cout << "Enter a level's name: ";
+		cin >> LevelName;
+	}
+
+	Level* CurrentLevel = F_LoadLevel(LevelName);
+	if (!CurrentLevel)
+	{
+		cout << "FATAL ERROR: Cannot load level '" << LevelName << "'" << endl;
+		exit(EXIT_FAILURE);
 	}
 
 	/****************************** SETUP PHASE ******************************/

@@ -26,7 +26,6 @@
 #include <iterator>
 
 #include "things.h"
-#include "command.h"
 
 using namespace std;
 
@@ -92,6 +91,7 @@ Level* F_LoadLevel(string LevelName)
 							wall.Vertices.push_back(vt);
 						}
 
+						Current->AddTexture(tokens[1]);	// Add texture to cache
 						Current->ptrWalls.push_back(wall);
 					}
 					else

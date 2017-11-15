@@ -138,10 +138,14 @@ struct Wall
 	float Light = 1;	// Must be between 0 (dark) and 1 (full bright)
 };
 
-struct Level
+class Level
 {
+public:
 	Cache<Texture> cache;
 	vector<Wall> ptrWalls;
+
+	void AddTexture(const string& name);	// Add texture to cache if missing
+	void UseTexture(const string& name);	// Bind texture
 };
 
 struct SpawnSpot

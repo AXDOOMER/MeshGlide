@@ -17,8 +17,12 @@
 // Data structures (player, walls, etc. ) used in the World
 
 #include <cmath>
+#include <iostream>
+using namespace std;
 
 #include "things.h"
+#include "texture.h"
+#include "cache.h"
 
 const float PI = atan(1) * 4;
 
@@ -113,4 +117,20 @@ int Player::Radius()
 void Player::HealthChange(int Change)
 {
 	Health = Health + Change;
+}
+
+void Level::AddTexture(const string& name)
+{
+	if (!cache.Has(name))
+	{
+		Texture* t = new Texture(name);
+		cache.Add(name, t);
+		cout << "Added texture " << name << endl;
+	}
+}
+
+void Level::UseTexture(const string& name)
+{
+	Texture* tex = cache.Get(name);
+	tex->Bind();
 }
