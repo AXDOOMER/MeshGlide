@@ -39,7 +39,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	const char* const VERSION = "0.04 (dev)";		// A serial number for the version
+	const char* const VERSION = "0.05 (dev)";		// A serial number for the version
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -263,7 +263,8 @@ int main(int argc, char *argv[])
 
 		auto end = chrono::system_clock::now();
 		auto diff = chrono::duration_cast<chrono::milliseconds>(end - start).count();
-		SetWindowTitle(window, WindowTitle + " (" + to_string(1000 / diff) + "fps)");
+		if (TicCount % 5 == 0)
+			SetWindowTitle(window, WindowTitle + " (" + to_string(1000 / diff) + "fps)");
 
 		// Detect OpenGL errors
 		GLenum ErrorCode;
@@ -277,11 +278,13 @@ int main(int argc, char *argv[])
 	if (DemoWrite.is_open())
 	{
 		DemoWrite.close();
+		cout << "Demo written to disk." << endl;
 	}
 
 	if (DemoRead.is_open())
 	{
 		DemoRead.close();
+		cout << "Demo playback ended." << endl;
 	}
 
 	// Close OpenGL stuff
