@@ -2,6 +2,6 @@
 #THING	TYPE	X	Y	Z 	ANGLE
 thing	player	0	0	0	90
 thing	plant	128	128	0	0
-#POLY	TEXTURE	IMPASSA	DBLSIDE	ScaleX	ScaleY	AlignX	AlignY	X	Y	Z	X	Y	Z	X	Y	Z	X	Y	Z
-poly	rock.bmp	1	0	0	0	0	0	10	10	-5	-10	10	-5	-10	-10	-5	10	-10	-5
-poly	rock-tile.bmp	1	1	1	0	0	0	15	10	15	15	0	15	15	0	5	15	10	5
+#POLY	TEXTURE		IMPASSA	DBLSIDE	ScaleX	ScaleY	AlignX	AlignY	Light	X	Y	Z	X	Y	Z	X	Y	Z	X	Y	Z
+poly	rock.bmp	1	0	0	0	0	0	1	10	10	-5	-10	10	-5	-10	-10	-5	10	-10	-5
+poly	rock-tile.bmp	1	1	1	0	0	0	0.2	15	10	15	15	0	15	15	0	5	15	10	5

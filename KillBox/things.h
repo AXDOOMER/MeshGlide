@@ -131,7 +131,7 @@ struct Wall
 	float Yscale = 0;
 	float Xoff = 0;
 	float Yoff = 0;
-	float Light = 0;
+	float Light = 1;	// Must be between 0 (dark) and 1 (full bright)
 };
 
 struct Level

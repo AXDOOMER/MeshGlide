@@ -39,7 +39,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	const char* const VERSION = "0.03 (dev)";		// A serial number for the version
+	const char* const VERSION = "0.04 (dev)";		// A serial number for the version
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;

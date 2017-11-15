@@ -73,16 +73,17 @@ Level* F_LoadLevel(string LevelName)
 					{
 						cout << tokens[1] << endl;
 					}
-					else if (tokens[0] == "poly" && tokens.size() == 20)
+					else if (tokens[0] == "poly" && tokens.size() == 21)
 					{
 						cout << tokens[1] << endl;
 						Wall wall;
 						wall.Texture = tokens[1];
 						wall.Impassable = FirstCharToBoolean(tokens[2]);
 						wall.TwoSided = FirstCharToBoolean(tokens[3]);
+						wall.Light = atof(tokens[8].c_str());
 
 						// polygons are quads for now
-						for (int i = 8; i < 20; i += 3)
+						for (int i = 9; i < 21; i += 3)
 						{
 							Vertex vt;
 							vt.Xpos = atof(tokens[i].c_str());

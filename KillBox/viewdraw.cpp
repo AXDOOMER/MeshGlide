@@ -175,7 +175,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 			glPushMatrix();
 			{
 				//glTranslatef(0, 0, 0);
-				glColor3f(1.0f, 1.0f, 1.0f);
+				glColor3f(lvl->ptrWalls[i].Light, lvl->ptrWalls[i].Light, lvl->ptrWalls[i].Light);	// "Light": Could be made tint (RGB) later
 				// Polygons are quads for now
 				glBegin(GL_QUADS);
 				{
