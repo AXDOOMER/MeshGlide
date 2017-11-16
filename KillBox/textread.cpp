@@ -31,14 +31,15 @@ using namespace std;
 
 bool CharToBoolean(char c)
 {
-	if (c == '1')
-		return true;
+	if (c == '0')
+		return false;
 	// else
-	return false;
+	return true;
 }
 
 bool FirstCharToBoolean(string s)
 {
+	// Earth will explode if the string is empty
 	return CharToBoolean(s[0]);
 }
 

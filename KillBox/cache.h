@@ -19,33 +19,32 @@
 #ifndef _CACHE_H
 #define _CACHE_H
 
-#include <string>
 #include <map>
 using namespace std;
 
-template <class T>
+template <class K, class T>
 class Cache
 {
 private:
-	map<string, T*> _store;
-	string _prev;	// Previous used key when doing a Get()
+	map<K, T*> _store;
+	K _prev;	// Previous used key when doing a Get()
 public:
 	Cache()
 	{
 		_prev = "";
 	}
 
-	void Add(const string& key, T* data)
+	void Add(const K& key, T* data)
 	{
-		_store.insert(pair<const string&, T*>(key, data));
+		_store.insert(pair<const K&, T*>(key, data));
 	}
 
-	bool Has(const string& key) const
+	bool Has(const K& key) const
 	{
 		return _store.find(key) != _store.end();
 	}
 
-	T* Get(const string& key)
+	T* Get(const K& key)
 	{
 		_prev = key;
 		return _store.at(key);
@@ -56,7 +55,7 @@ public:
 		return _store.count();
 	}
 
-	string Previous() const
+	K Previous() const
 	{
 		return _prev;
 	}

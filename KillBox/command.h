@@ -16,12 +16,11 @@
 // command.h
 // Command line parameter
 
-
 #include <string>
 using namespace std;
 
-// Return position of an argument
+// Returns the position of an argument
 int FindArgumentPosition(int argc, char *argv[], string Argument);
 
-// Return a parameter to an argument
-string FindArgumentParameter(int argc, char *argv[], string Argument);
+// Returns a parameter to an argument (the fourth function argument is optional)
+string FindArgumentParameter(int argc, char *argv[], string Argument, string Default = "");

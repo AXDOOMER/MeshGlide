@@ -14,14 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // main.cpp
-// The main stuff is here, like the game loop.
-
-// These instructions tell where to put them:
-// http://stackoverflow.com/questions/22539047/how-can-i-set-up-freeglut-and-glew-for-use-in-visual-studio-2013
-#include <GLFW/glfw3.h>
-#include <GL/freeglut.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+// The main stuff is here, like the game loop and initialization.
 
 #include <iostream>
 #include <string>
@@ -29,17 +22,21 @@
 #include <stdlib.h>     /* atoi */
 #include <fstream>
 #include <chrono>
+using namespace std;
+
+#include <GLFW/glfw3.h>
+#include <GL/freeglut.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 #include "viewdraw.h"
 #include "command.h"
 #include "things.h"
 #include "textread.h"
 
-using namespace std;
-
 int main(int argc, char *argv[])
 {
-	const char* const VERSION = "0.08 (dev)";		// A serial number for the version
+	const char* const VERSION = "0.09 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -60,7 +57,7 @@ int main(int argc, char *argv[])
 	/****************************** DEMO FILES ******************************/
 
 	string DemoName = FindArgumentParameter(argc, argv, "-playdemo");
-	if (DemoName.size() > 0 && DemoName[0] != '-')
+	if (!DemoName.empty())
 	{
 		cout << "Playing demo: " << DemoName << endl;
 		DemoRead = ifstream(DemoName);
@@ -72,23 +69,18 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		DemoName = "";
-	}
-
-	DemoName = FindArgumentParameter(argc, argv, "-record");
-	if (DemoName.size() > 0 && DemoName[0] != '-')
-	{
-		cout << "Recoring demo: " << DemoName << endl;
-		DemoWrite = ofstream(DemoName);
-		if (!DemoWrite.is_open())
+		// Playing a demo has priority over recording a demo
+		DemoName = FindArgumentParameter(argc, argv, "-record");
+		if (!DemoName.empty())
 		{
-			cout << "Could not open demo file to write to: " << DemoName << endl;
-			exit(EXIT_FAILURE);
+			cout << "Recoring demo: " << DemoName << endl;
+			DemoWrite = ofstream(DemoName);
+			if (!DemoWrite.is_open())
+			{
+				cout << "Could not open demo file to write to: " << DemoName << endl;
+				exit(EXIT_FAILURE);
+			}
 		}
-	}
-	else
-	{
-		DemoName = "";
 	}
 
 	/****************************** OPENGL HANDLING ******************************/
@@ -112,13 +104,9 @@ int main(int argc, char *argv[])
 
 	/****************************** LEVEL LOADING ******************************/
 
-	string LevelName = FindArgumentParameter(argc, argv, "-level");
-	if (LevelName.size() == 0 || LevelName[0] == '-')
-	{
-		LevelName = "level.txt";
-	}
+	string LevelName = FindArgumentParameter(argc, argv, "-level", "level.txt");
 
-	if (LevelName.length() > 0)
+	if (!LevelName.empty())
 	{
 		cout << "Loading level '" + LevelName << "'" << endl;
 	}
@@ -132,7 +120,7 @@ int main(int argc, char *argv[])
 	Level* CurrentLevel = F_LoadLevel(LevelName);
 	if (!CurrentLevel)
 	{
-		cout << "FATAL ERROR: Cannot load level '" << LevelName << "'" << endl;
+		cout << "ERROR: Cannot load level '" << LevelName << "'" << endl;
 		exit(EXIT_FAILURE);
 	}
 
@@ -166,20 +154,28 @@ int main(int argc, char *argv[])
 
 		if (DemoRead.is_open())
 		{
-			string line;
-			//Demo Play is True
-			if (!getline(DemoRead, line))
+			try
+			{
+				string line;
+				//Demo Play is True
+				if (!getline(DemoRead, line))
+					Quit = true;
+				if (!line.empty())
+					CurrentLevel->play->Cmd.forward = stoi(line);
+				if (!getline(DemoRead, line))
+					Quit = true;
+				if (!line.empty())
+					CurrentLevel->play->Cmd.lateral = stoi(line);
+				if (!getline(DemoRead, line))
+					Quit = true;
+				if (!line.empty())
+					CurrentLevel->play->Cmd.rotation = stoi(line);
+			}
+			catch (...)
+			{
+				cerr << "ERROR: Demo file contains invalid data." << endl;
 				Quit = true;
-			if (!line.empty())
-				CurrentLevel->play->Cmd.forward = stoi(line);
-			if (!getline(DemoRead, line))
-				Quit = true;
-			if (!line.empty())
-				CurrentLevel->play->Cmd.lateral = stoi(line);
-			if (!getline(DemoRead, line))
-				Quit = true;
-			if (!line.empty())
-				CurrentLevel->play->Cmd.rotation = stoi(line);
+			}
 		}
 		else
 		{
@@ -262,10 +258,12 @@ int main(int argc, char *argv[])
 		//Play sound
 
         // Status of the player for debugging purposes
-        if (Debug)
-            cout << 'x' << static_cast<int>(CurrentLevel->play->PosX)
-                 << "\ty" << static_cast<int>(CurrentLevel->play->PosY)
-                 << '\t' << CurrentLevel->play->Angle << endl;
+		if (Debug)
+		{
+			cout << "X: " << static_cast<int>(CurrentLevel->play->PosX)
+				<< "\tY: " << static_cast<int>(CurrentLevel->play->PosY)
+				<< "\tA: " << CurrentLevel->play->Angle << endl;
+		}
 
 		TicCount++;
 
@@ -273,14 +271,14 @@ int main(int argc, char *argv[])
 
 		auto end = chrono::system_clock::now();
 		auto diff = chrono::duration_cast<chrono::milliseconds>(end - start).count();
-		if (TicCount % 5 == 0)
+		if (Debug && TicCount % 5 == 0)
 			SetWindowTitle(window, WindowTitle + " (" + to_string(1000 / diff) + "fps)");
 
 		// Detect OpenGL errors
 		GLenum ErrorCode;
 		while ((ErrorCode = glGetError()) != GL_NO_ERROR)
 		{
-			cout << (const char*)gluErrorString(ErrorCode) << endl;
+			cerr << (const char*)gluErrorString(ErrorCode) << endl;
 		}
     }
 	while (!Quit && !glfwWindowShouldClose(window));

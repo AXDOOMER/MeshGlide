@@ -26,11 +26,10 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+using namespace std;
 
 #include "viewdraw.h"
 #include "things.h"
-
-using namespace std;
 
 void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {

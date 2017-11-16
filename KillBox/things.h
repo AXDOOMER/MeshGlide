@@ -141,7 +141,7 @@ struct Wall
 class Level
 {
 public:
-	Cache<Texture> cache;
+	Cache<string, Texture> cache;
 	vector<Wall> ptrWalls;
 	Player* play;
 

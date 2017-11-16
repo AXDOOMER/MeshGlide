@@ -16,17 +16,14 @@
 // command.cpp
 // Command line parameters
 
-#include <iostream>
 #include <string>
 #include <string.h>     //Used for strcmp()
-#include <sstream>
-#include <fstream>
 
 #include "command.h"
 
 using namespace std;
 
-//Return position of an argument
+// Returns the position of an argument
 int FindArgumentPosition(int argc, char *argv[], string Argument)
 {
 	for (int i = 1; i < argc; i++)
@@ -40,14 +37,16 @@ int FindArgumentPosition(int argc, char *argv[], string Argument)
 	return 0;
 }
 
-// IMPROVE: Add an optional fourth parameter that is to be used as the default if not found
-// IMPROVE: Add a check to see if the parameter is not an argument (i.e.: Doesn't start with '-')
-string FindArgumentParameter(int argc, char *argv[], string Argument)
+// Returns a parameter to an argument (the fourth function argument is optional)
+string FindArgumentParameter(int argc, char *argv[], string Argument, string Default)
 {
 	int argpos = FindArgumentPosition(argc, argv, Argument);
 	if (argpos > 0 && argpos + 1 < argc)
 	{
-		return argv[argpos + 1];
+		if (argv[argpos + 1][0] != '-')
+		{
+			return argv[argpos + 1];
+		}
 	}
-	return "";
+	return Default;
 }

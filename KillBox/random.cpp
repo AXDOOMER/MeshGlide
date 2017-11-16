@@ -18,11 +18,10 @@
 
 #include "random.h"
 
-// How it works: R_Random( % , * , + )
-// Default values should be ( 256, 1, 0) for the wider range of results
+// Return the next "random" number
 int R_Random()
 {
-	Index = Index % 256;
+	Index = Index % NUMBERS;
 	return PRNG[Index++];
 }
 
