@@ -16,17 +16,15 @@
 // things.h
 // Data structures (player, walls, etc. ) used in the World
 
-
 #ifndef _THINGS_H
 #define _THINGS_H
+
+#include "texture.h"
+#include "cache.h"
 
 #include <string>
 #include <cmath>
 #include <vector>
-
-#include "texture.h"	// For the cache inside of the level
-#include "cache.h"
-
 using namespace std;
 
 const float GRAVITY = 9.81;

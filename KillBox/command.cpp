@@ -16,11 +16,10 @@
 // command.cpp
 // Command line parameters
 
-#include <string>
-#include <string.h>     //Used for strcmp()
-
 #include "command.h"
 
+#include <string>
+#include <string.h>     /* strcmp */
 using namespace std;
 
 // Returns the position of an argument

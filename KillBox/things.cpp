@@ -16,13 +16,13 @@
 // things.cpp
 // Data structures (player, walls, etc. ) used in the World
 
-#include <cmath>
-#include <iostream>
-using namespace std;
-
 #include "things.h"
 #include "texture.h"
 #include "cache.h"
+
+#include <cmath>
+#include <iostream>
+using namespace std;
 
 const float PI = atan(1) * 4;
 

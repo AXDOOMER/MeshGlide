@@ -16,9 +16,9 @@
 // physics.cpp
 // What affects a thing's movement in space
 
-#include <cmath>
-
 #include "things.h"
+
+#include <cmath>
 
 void Teleport(Player &Teleported, float NewPosX, float NewPosY, float NewPosZ, unsigned short NewAngle)
 {

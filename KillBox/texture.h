@@ -30,10 +30,9 @@ private:
 	unsigned short _Width;
 	unsigned short _Height;
 public:
+	Texture() = delete;
 	Texture(const string& Path);
 	~Texture();
-
-	Texture() = delete;
 
 	string Name() const;
 	unsigned int Id() const;

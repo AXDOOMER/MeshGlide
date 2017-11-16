@@ -17,31 +17,15 @@
 // Handles text data reading from file & writing.
 // Used for config files, levels and demo files.
 
-// basic file operations
+#include "things.h"
+
 #include <iostream>
 #include <string>
 #include <vector>
 #include <fstream>
 #include <sstream>
 #include <iterator>
-
-#include "things.h"
-
 using namespace std;
-
-bool CharToBoolean(char c)
-{
-	if (c == '0')
-		return false;
-	// else
-	return true;
-}
-
-bool FirstCharToBoolean(string s)
-{
-	// Earth will explode if the string is empty
-	return CharToBoolean(s[0]);
-}
 
 //Load le niveau et retourne son pointeur
 Level* F_LoadLevel(string LevelName)
@@ -84,8 +68,8 @@ Level* F_LoadLevel(string LevelName)
 					{
 						Wall wall;
 						wall.Texture = tokens[1];
-						wall.Impassable = FirstCharToBoolean(tokens[2]);
-						wall.TwoSided = FirstCharToBoolean(tokens[3]);
+						wall.Impassable = tokens[2][0] != '0';
+						wall.TwoSided = tokens[3][0] != '0';
 						wall.Light = atof(tokens[8].c_str());
 
 						// polygons are quads for now

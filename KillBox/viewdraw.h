@@ -19,12 +19,14 @@
 #ifndef _VIEWDRAW_H
 #define _VIEWDRAW_H
 
+#include <GLFW/glfw3.h>
+
 #include <string>
 using namespace std;
 
 #include "things.h"
 
-const string WindowTitle = "Les animaux de la nature";
+const string WindowTitle = "Snowballs";
 
 void SetWindowTitle(GLFWwindow* window, string Title);
 
@@ -34,7 +36,7 @@ void InitProjection(GLFWwindow* window);
 
 void DrawScreen(GLFWwindow* window, Player* play, Level* lvl);
 
-int Close_OpenGL(GLFWwindow* window);
+void Close_OpenGL(GLFWwindow* window);
 
 #endif /* _VIEWDRAW_H */
 

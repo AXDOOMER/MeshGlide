@@ -16,23 +16,22 @@
 // main.cpp
 // The main stuff is here, like the game loop and initialization.
 
-#include <iostream>
-#include <string>
-#include <string.h>     //Used for strcmp()
-#include <stdlib.h>     /* atoi */
-#include <fstream>
-#include <chrono>
-using namespace std;
+#include "viewdraw.h"
+#include "command.h"
+#include "things.h"
+#include "textread.h"
 
 #include <GLFW/glfw3.h>
 #include <GL/freeglut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "viewdraw.h"
-#include "command.h"
-#include "things.h"
-#include "textread.h"
+#include <iostream>
+#include <string>
+#include <cstdlib> /* EXIT_FAILURE, EXIT_SUCCESS */
+#include <fstream>
+#include <chrono>
+using namespace std;
 
 int main(int argc, char *argv[])
 {
@@ -181,7 +180,8 @@ int main(int argc, char *argv[])
 		{
 			//Get Input from Keyboard
 			// Input for tests
-			if (!((glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP)) && (glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN))))
+			if (!((glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP))
+				&& (glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN))))
 			{
 				if (glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP))
 				{

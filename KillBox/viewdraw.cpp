@@ -16,20 +16,20 @@
 // viewdraw.cpp
 // OpenGL camera functions for screen drawing
 
+#include "viewdraw.h"
+#include "things.h"
+
 #include <GLFW/glfw3.h>
 #include <GL/freeglut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include <stdlib.h> /* EXIT_FAILURE */
+#include <cstdlib>	/* EXIT_FAILURE */
 
 #include <iostream>
 #include <string>
 #include <cmath>
 using namespace std;
-
-#include "viewdraw.h"
-#include "things.h"
 
 void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -272,9 +272,8 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 	glfwSwapBuffers(window);
 }
 
-int Close_OpenGL(GLFWwindow* window)
+void Close_OpenGL(GLFWwindow* window)
 {
 	glfwDestroyWindow(window);
 	glfwTerminate();
-	return true;
 }

@@ -16,20 +16,18 @@
 // textures.cpp
 // Texture loader
 
-#include <string>
-#include <iostream>
-#include <stdexcept>
-#include <utility>	// swap
-using namespace std;
+#include "texture.h"
 
 #include <SDL/SDL.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GLFW/glfw3.h>
 
-#include "texture.h"
-
-//http://www.opengl-tutorial.org/beginners-tutorials/tutorial-5-a-textured-cube/#compressed-textures
+#include <string>
+#include <iostream>
+#include <stdexcept>
+#include <utility>	// swap
+using namespace std;
 
 Texture::Texture(const string& Path)
 {

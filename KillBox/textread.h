@@ -17,10 +17,9 @@
 // Handles text data reading from file & writing
 // Used for config files, levels and demo files.
 
+#include "things.h"
 
 #include <string>
-
-#include "things.h"
 using namespace std;
 
 //Load le niveau et retourne son pointeur
