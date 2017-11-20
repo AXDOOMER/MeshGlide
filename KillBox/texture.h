@@ -13,11 +13,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// textures.h
+// texture.h
 // Texture loader
 
 #ifndef _TEXTURE_H
 #define _TEXTURE_H
+
+#include <GL/gl.h>
 
 #include <string>
 using namespace std;
@@ -26,7 +28,7 @@ class Texture
 {
 private:
 	string _Name;
-	unsigned int _Id;
+	GLuint _Id;
 	unsigned short _Width;
 	unsigned short _Height;
 public:

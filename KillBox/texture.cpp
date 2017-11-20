@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// textures.cpp
+// texture.cpp
 // Texture loader
 
 #include "texture.h"
@@ -21,7 +21,6 @@
 #include <SDL/SDL.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <GLFW/glfw3.h>
 
 #include <string>
 #include <iostream>
@@ -97,7 +96,7 @@ string Texture::Name() const
 	return _Name;
 }
 
-unsigned int Texture::Id() const
+GLuint Texture::Id() const
 {
 	return _Id;
 }
