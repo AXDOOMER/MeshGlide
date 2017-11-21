@@ -22,8 +22,8 @@
 #include <string>
 using namespace std;
 
-//Load le niveau et retourne son pointeur
-Level* F_LoadLevel(string LevelName);
+// Load a level and return its pointer
+Level* F_LoadLevel(const string& LevelName);
 
-//Loader une démo pour se servir de son input
+// Load a demo
 //int F_LoadDemo(string DemoName);

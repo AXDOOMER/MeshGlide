@@ -20,7 +20,7 @@
 using namespace std;
 
 // Returns the position of an argument
-int FindArgumentPosition(int argc, char *argv[], string Argument);
+int FindArgumentPosition(const int argc, const char* argv[], const string& Argument);
 
 // Returns a parameter to an argument (the fourth function argument is optional)
-string FindArgumentParameter(int argc, char *argv[], string Argument, string Default = "");
+string FindArgumentParameter(const int argc, const char* argv[], const string& Argument, const string& Default = "");

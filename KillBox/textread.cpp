@@ -28,7 +28,7 @@
 using namespace std;
 
 //Load le niveau et retourne son pointeur
-Level* F_LoadLevel(string LevelName)
+Level* F_LoadLevel(const string& LevelName)
 {
 	Level* Current = new Level;
 

@@ -33,7 +33,7 @@
 #include <chrono>
 using namespace std;
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
 	const char* const VERSION = "0.09 (dev)";
 
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 	// Load OpenGL
 	GLFWwindow* window = Init_OpenGL();
 	// Initialize GLUT, else we can't draw spheres and cones
-	glutInit(&argc, argv);
+	glutInit(&argc, const_cast<char**>(argv));
 
 	if (!window)
 	{
