@@ -19,19 +19,15 @@
 #include "command.h"
 
 #include <string>
-#include <string.h>     /* strcmp */
+#include <string.h>		/* strcmp */
 using namespace std;
 
 // Returns the position of an argument
 int FindArgumentPosition(const int argc, const char* argv[], const string& Argument)
 {
 	for (int i = 1; i < argc; i++)
-	{
 		if (strcmp(argv[i], Argument.c_str()) == 0)
-		{
 			return i;
-		}
-	}
 
 	return 0;
 }
@@ -41,11 +37,8 @@ string FindArgumentParameter(const int argc, const char* argv[], const string& A
 {
 	int argpos = FindArgumentPosition(argc, argv, Argument);
 	if (argpos > 0 && argpos + 1 < argc)
-	{
 		if (argv[argpos + 1][0] != '-')
-		{
 			return argv[argpos + 1];
-		}
-	}
+
 	return Default;
 }

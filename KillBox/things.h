@@ -29,7 +29,7 @@ using namespace std;
 
 const float GRAVITY = 9.81;
 //const float PI = atan(1) * 4;
-const int MAXOWNEDWEAPONS = 16;
+const int MAXOWNEDWEAPONS = 10;
 
 class TicCmd
 {
