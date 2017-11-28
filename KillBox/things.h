@@ -52,7 +52,7 @@ public:
 
 	float PosX = 0;
 	float PosY = 0;
-	float PosZ = 128;
+	float PosZ = 2;
 	char MoX = 0;		//Speed vector (momentum)
 	char MoY = 0;
 	char MoZ = 0;		//Used by gravity
@@ -69,8 +69,8 @@ public:
 	Player(); // We need a constructor for the weapons array
 
 private:
-	const int MaxWalkSpeed = 40;
-	const int MaxRunSpeed = 70;
+	const float MaxWalkSpeed = 0.6f;
+	const float MaxRunSpeed = 1.1f;
 
 	const int ViewZ = 42;
 	char Damages = 0;	//Damage location indicator: 0=none, 1=both, 2=left, 3=right
@@ -125,6 +125,7 @@ struct Vertex
 
 struct Wall
 {
+	// TODO: Compute the 3D orentation of a poly and keep the unit vector data for collision detection
     string Texture;
 	bool Impassable = true;
 	bool TwoSided = false;
@@ -142,6 +143,7 @@ public:
 	Cache<string, Texture> cache;
 	vector<Wall> ptrWalls;
 	Player* play;
+	float scaling = 1;
 
 	void AddTexture(const string& name);	// Add texture to cache if missing
 	void UseTexture(const string& name);	// Bind texture

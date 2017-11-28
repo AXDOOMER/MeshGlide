@@ -35,7 +35,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.09 (dev)";
+	const char* const VERSION = "0.10 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -43,7 +43,7 @@ int main(int argc, const char *argv[])
 	ofstream DemoWrite;
 	ifstream DemoRead;
 
-	cout << "                KILLBOX -- " << VERSION << "\n\n";
+	cout << "                KILLZONE -- " << VERSION << "\n\n";
 
 	/****************************** SYSTEM OPTIONS ******************************/
 
@@ -229,18 +229,18 @@ int main(int argc, const char *argv[])
 			CurrentLevel->play->Angle = 0;
 			CurrentLevel->play->PosX = 0;
 			CurrentLevel->play->PosY = 0;
-			CurrentLevel->play->PosZ = 128;
+			CurrentLevel->play->PosZ = 2;
 			CurrentLevel->play->MoX = 0;
 			CurrentLevel->play->MoY = 0;
 			CurrentLevel->play->MoZ = 0;
 		}
 		if (glfwGetKey(window, GLFW_KEY_SPACE))
 		{
-			CurrentLevel->play->PosZ = CurrentLevel->play->PosZ + 10;
+			CurrentLevel->play->PosZ = CurrentLevel->play->PosZ + 0.15625f;
 		}
 		if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL))
 		{
-			CurrentLevel->play->PosZ = CurrentLevel->play->PosZ - 10;
+			CurrentLevel->play->PosZ = CurrentLevel->play->PosZ - 0.15625f;
 		}
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE))
 		{
@@ -262,6 +262,7 @@ int main(int argc, const char *argv[])
 		{
 			cout << "X: " << static_cast<int>(CurrentLevel->play->PosX)
 				<< "\tY: " << static_cast<int>(CurrentLevel->play->PosY)
+				<< "\tZ: " << static_cast<int>(CurrentLevel->play->PosZ)
 				<< "\tA: " << CurrentLevel->play->Angle << endl;
 		}
 

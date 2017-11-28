@@ -133,10 +133,9 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 	glEnable(GL_TEXTURE_2D);
 
 	gluLookAt(
-		play->PosY/64, play->PosZ/64, play->PosX / 64,		// Camera's position
-		play->PosY / 64 + sin(play->GetRadianAngle(play->Angle)), 	// What the camera will look at
-		play->PosZ/64,
-		play->PosX / 64 + cos(play->GetRadianAngle(play->Angle)),	// What the camera will look at
+		play->PosY, play->PosZ, play->PosX,		// Camera's position
+		play->PosY + sin(play->GetRadianAngle(play->Angle)), 	// What the camera will look at
+		play->PosZ, play->PosX + cos(play->GetRadianAngle(play->Angle)),	// What the camera will look at
 		0.0, 1.0, 0.0);	// This is for the camera's frame rotation
 
 	//glRotatef( xrot, 1.0f, 0.0f, 0.0f); /* Rotate On The X Axis */
@@ -188,12 +187,12 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 	{
 		for (int j = -3; j <= 3; j++)
 		{
-			float distance = pow(play->PosX/64 - j*10, 2) + pow(play->PosY/64 - i*10, 2);
+			float distance = pow(play->PosX - j*10, 2) + pow(play->PosY - i*10, 2);
 			if (distance <= 500)
 			{
 				glColor3f(1.0f, 1.0f, 1.0f);
 				glPushMatrix();
-				glTranslatef(i*10.0f, 0.0f, j * 10.0f);
+				glTranslatef(i * 10.0f, 0.0f, j * 10.0f);
 				// Big body snow ball
 				glTranslatef(0.0f, 0.75f, 0.0f);
 				glutSolidSphere(0.75f, 20, 20);
@@ -217,7 +216,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 			{
 				glColor3f(1.0f, 1.0f, 1.0f);
 				glPushMatrix();
-				glTranslatef(i*10.0f, 0.0f, j * 10.0f);
+				glTranslatef(i * 10.0f, 0.0f, j * 10.0f);
 				// Big body snow ball
 				glTranslatef(0.0f, 0.75f, 0.0f);
 				glutSolidSphere(0.75f, 10, 5);
@@ -260,11 +259,11 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 		glColor3f(153.0f / 256.0f, 217.0f / 256.0f, 234.0f / 256.0f);
 		glBegin(GL_QUADS);
 			// (Xpos, Zpos, Ypos)
-			// TODO: Use this for sky coords: glTranslatef(play->PosY/64, play->PosZ/64, play->PosX / 64);
-			glVertex3f(play->PosY / 64 + 100.0f, 10.0f, play->PosX / 64 - 100.0f);
-			glVertex3f(play->PosY / 64 + 100.0f, 10.0f, play->PosX / 64 + 100.0f);
-			glVertex3f(play->PosY / 64 - 100.0f, 10.0f, play->PosX / 64 + 100.0f);
-			glVertex3f(play->PosY / 64 - 100.0f, 10.0f, play->PosX / 64 - 100.0f);
+			// TODO: Use this for sky coords: glTranslatef(play->PosY, play->PosZ, play->PosX);
+			glVertex3f(play->PosY + 100.0f, 10.0f, play->PosX - 100.0f);
+			glVertex3f(play->PosY + 100.0f, 10.0f, play->PosX + 100.0f);
+			glVertex3f(play->PosY - 100.0f, 10.0f, play->PosX + 100.0f);
+			glVertex3f(play->PosY - 100.0f, 10.0f, play->PosX - 100.0f);
 		glEnd();
 	glPopMatrix();
 

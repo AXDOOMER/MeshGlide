@@ -26,7 +26,7 @@ using namespace std;
 
 #include "things.h"
 
-const string WindowTitle = "Snowballs";
+const string WindowTitle = "KillZone";
 
 void SetWindowTitle(GLFWwindow* window, string Title);
 
