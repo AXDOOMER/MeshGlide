@@ -3,5 +3,6 @@
 thing	player	0	0	2	90
 thing	plant	128	128	0	0
 #POLY	TEXTURE		IMPASSA	DBLSIDE	ScaleX	ScaleY	AlignX	AlignY	Light	X	Y	Z	X	Y	Z	X	Y	Z	X	Y	Z
+poly	green.bmp	1	0	1	1	0	0	1	-35	0	-35	-35	0	35	35	0	35	35	0	-35
 poly	rock.bmp	1	0	0	0	0	0	1	10	10	-5	-10	10	-5	-10	-10	-5	10	-10	-5
 poly	rock-tile.bmp	1	1	1	0	0	0	0.2	15	10	15	15	0	15	15	0	5	15	10	5

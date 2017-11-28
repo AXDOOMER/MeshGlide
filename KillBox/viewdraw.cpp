@@ -239,21 +239,6 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 		}
 	}
 
-	// Draw ground
-	glPushMatrix();
-		glColor3f(0.0f, 0.5f, 0.0f);
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0, 0.0);
-			glVertex3f(-35.0f, 0.0f, -35.0f);
-			glTexCoord2f(1.0, 0.0);
-			glVertex3f(-35.0f, 0.0f, 35.0f);
-			glTexCoord2f(1.0, 1.0);
-			glVertex3f(35.0f, 0.0f, 35.0f);
-			glTexCoord2f(0.0, 1.0);
-			glVertex3f(35.0f, 0.0f, -35.0f);
-		glEnd();
-	glPopMatrix();
-
 	// Draw sky (relative to player)
 	glPushMatrix();
 		glColor3f(153.0f / 256.0f, 217.0f / 256.0f, 234.0f / 256.0f);
