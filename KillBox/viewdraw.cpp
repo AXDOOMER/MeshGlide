@@ -162,11 +162,11 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 				// Polygons are quads for now
 				glBegin(GL_QUADS);
 				{
-					glTexCoord2f(0, 1);
+					glTexCoord2f(0, 1 * lvl->ptrWalls[i].Yscale);
 					glVertex3f(lvl->ptrWalls[i].Vertices[0].Xpos, lvl->ptrWalls[i].Vertices[0].Ypos, lvl->ptrWalls[i].Vertices[0].Zpos);
-					glTexCoord2f(1, 1);
+					glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 1 * lvl->ptrWalls[i].Yscale);
 					glVertex3f(lvl->ptrWalls[i].Vertices[1].Xpos, lvl->ptrWalls[i].Vertices[1].Ypos, lvl->ptrWalls[i].Vertices[1].Zpos);
-					glTexCoord2f(1, 0);
+					glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 0);
 					glVertex3f(lvl->ptrWalls[i].Vertices[2].Xpos, lvl->ptrWalls[i].Vertices[2].Ypos, lvl->ptrWalls[i].Vertices[2].Zpos);
 					glTexCoord2f(0, 0);
 					glVertex3f(lvl->ptrWalls[i].Vertices[3].Xpos, lvl->ptrWalls[i].Vertices[3].Ypos, lvl->ptrWalls[i].Vertices[3].Zpos);

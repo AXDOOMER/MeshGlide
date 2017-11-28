@@ -70,6 +70,8 @@ Level* F_LoadLevel(const string& LevelName)
 						wall.Texture = tokens[1];
 						wall.Impassable = tokens[2][0] != '0';
 						wall.TwoSided = tokens[3][0] != '0';
+						wall.Xscale = atof(tokens[4].c_str());
+						wall.Yscale = atof(tokens[5].c_str());
 						wall.Light = atof(tokens[8].c_str());
 
 						// polygons are quads for now
