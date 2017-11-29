@@ -64,7 +64,7 @@ Level* F_LoadLevel(const string& LevelName)
 							Current->play->Angle = (short)atoi(tokens[5].c_str()) * 91.0222222222f;
 						}
 					}
-					else if (tokens[0] == "poly" && tokens.size() == 21)
+					else if (tokens[0] == "poly" && (tokens.size() == 21 || tokens.size() == 18))
 					{
 						Wall wall;
 						wall.Texture = tokens[1];
@@ -75,7 +75,7 @@ Level* F_LoadLevel(const string& LevelName)
 						wall.Light = atof(tokens[8].c_str());
 
 						// polygons are quads for now
-						for (int i = 9; i < 21; i += 3)
+						for (int i = 9; i < tokens.size(); i += 3)
 						{
 							Vertex vt;
 							vt.Xpos = atof(tokens[i].c_str());

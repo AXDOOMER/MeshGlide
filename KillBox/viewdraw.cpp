@@ -159,19 +159,37 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 			{
 				//glTranslatef(0, 0, 0);
 				glColor3f(lvl->ptrWalls[i].Light, lvl->ptrWalls[i].Light, lvl->ptrWalls[i].Light);	// "Light": Could be made tint (RGB) later
-				// Polygons are quads for now
-				glBegin(GL_QUADS);
+
+				if (lvl->ptrWalls[i].Vertices.size() == 4)
 				{
-					glTexCoord2f(0, 1 * lvl->ptrWalls[i].Yscale);
-					glVertex3f(lvl->ptrWalls[i].Vertices[0].Xpos, lvl->ptrWalls[i].Vertices[0].Ypos, lvl->ptrWalls[i].Vertices[0].Zpos);
-					glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 1 * lvl->ptrWalls[i].Yscale);
-					glVertex3f(lvl->ptrWalls[i].Vertices[1].Xpos, lvl->ptrWalls[i].Vertices[1].Ypos, lvl->ptrWalls[i].Vertices[1].Zpos);
-					glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 0);
-					glVertex3f(lvl->ptrWalls[i].Vertices[2].Xpos, lvl->ptrWalls[i].Vertices[2].Ypos, lvl->ptrWalls[i].Vertices[2].Zpos);
-					glTexCoord2f(0, 0);
-					glVertex3f(lvl->ptrWalls[i].Vertices[3].Xpos, lvl->ptrWalls[i].Vertices[3].Ypos, lvl->ptrWalls[i].Vertices[3].Zpos);
+					// Polygons that are square
+					glBegin(GL_QUADS);
+					{
+						glTexCoord2f(0, 1 * lvl->ptrWalls[i].Yscale);
+						glVertex3f(lvl->ptrWalls[i].Vertices[0].Xpos, lvl->ptrWalls[i].Vertices[0].Ypos, lvl->ptrWalls[i].Vertices[0].Zpos);
+						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 1 * lvl->ptrWalls[i].Yscale);
+						glVertex3f(lvl->ptrWalls[i].Vertices[1].Xpos, lvl->ptrWalls[i].Vertices[1].Ypos, lvl->ptrWalls[i].Vertices[1].Zpos);
+						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 0);
+						glVertex3f(lvl->ptrWalls[i].Vertices[2].Xpos, lvl->ptrWalls[i].Vertices[2].Ypos, lvl->ptrWalls[i].Vertices[2].Zpos);
+						glTexCoord2f(0, 0);
+						glVertex3f(lvl->ptrWalls[i].Vertices[3].Xpos, lvl->ptrWalls[i].Vertices[3].Ypos, lvl->ptrWalls[i].Vertices[3].Zpos);
+					}
+					glEnd();
 				}
-				glEnd();
+				else if (lvl->ptrWalls[i].Vertices.size() == 3)
+				{
+					// Polygons have a triangular shape
+					glBegin(GL_TRIANGLES);
+					{
+						glTexCoord2f(0, 1 * lvl->ptrWalls[i].Yscale);
+						glVertex3f(lvl->ptrWalls[i].Vertices[0].Xpos, lvl->ptrWalls[i].Vertices[0].Ypos, lvl->ptrWalls[i].Vertices[0].Zpos);
+						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 1 * lvl->ptrWalls[i].Yscale);
+						glVertex3f(lvl->ptrWalls[i].Vertices[1].Xpos, lvl->ptrWalls[i].Vertices[1].Ypos, lvl->ptrWalls[i].Vertices[1].Zpos);
+						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 0);
+						glVertex3f(lvl->ptrWalls[i].Vertices[2].Xpos, lvl->ptrWalls[i].Vertices[2].Ypos, lvl->ptrWalls[i].Vertices[2].Zpos);
+					}
+					glEnd();
+				}
 			}
 			glPopMatrix();
 

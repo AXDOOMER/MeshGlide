@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <string>
+#include <cmath>		/* round */
 #include <cstdlib>		/* EXIT_FAILURE, EXIT_SUCCESS */
 #include <fstream>
 #include <chrono>
@@ -260,10 +261,10 @@ int main(int argc, const char *argv[])
         // Status of the player for debugging purposes
 		if (Debug)
 		{
-			cout << "X: " << static_cast<int>(CurrentLevel->play->PosX)
-				<< "\tY: " << static_cast<int>(CurrentLevel->play->PosY)
-				<< "\tZ: " << static_cast<int>(CurrentLevel->play->PosZ)
-				<< "\tA: " << CurrentLevel->play->Angle << endl;
+			cout << "X: " << static_cast<int>(round(CurrentLevel->play->PosX))
+				<< "\tY: " << static_cast<int>(round(CurrentLevel->play->PosY))
+				<< "\tZ: " << static_cast<int>(round(CurrentLevel->play->PosZ))
+				<< "\tA: " << CurrentLevel->play->Angle;
 		}
 
 		TicCount++;
@@ -273,7 +274,12 @@ int main(int argc, const char *argv[])
 		auto end = chrono::system_clock::now();
 		auto diff = chrono::duration_cast<chrono::milliseconds>(end - start).count();
 		if (Debug && TicCount % 5 == 0)
+		{
 			SetWindowTitle(window, WindowTitle + " (" + to_string(1000 / diff) + "fps)");
+			cout << "\tFPS: " << to_string(1000 / diff);
+		}
+
+		cout << endl;
 
 		// Detect OpenGL errors
 		GLenum ErrorCode;
