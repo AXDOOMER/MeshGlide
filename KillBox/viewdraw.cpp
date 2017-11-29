@@ -178,7 +178,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 				}
 				else if (lvl->ptrWalls[i].Vertices.size() == 3)
 				{
-					// Polygons have a triangular shape
+					// Polygons that have a triangular shape
 					glBegin(GL_TRIANGLES);
 					{
 						glTexCoord2f(0, 1 * lvl->ptrWalls[i].Yscale);

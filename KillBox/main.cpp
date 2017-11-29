@@ -36,7 +36,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.11 (dev)";
+	const char* const VERSION = "0.12 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -279,7 +279,8 @@ int main(int argc, const char *argv[])
 			cout << "\tFPS: " << to_string(1000 / diff);
 		}
 
-		cout << endl;
+		if (Debug)
+			cout << endl;
 
 		// Detect OpenGL errors
 		GLenum ErrorCode;
