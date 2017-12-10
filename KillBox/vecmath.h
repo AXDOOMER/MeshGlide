@@ -20,12 +20,10 @@
 #define _VECMATH_H
 
 #include <vector>
-#include <cmath>	// sqrt
-#include <limits>	// numeric_limits<float>::quiet_NaN()
 
 using namespace std;
 
-// Can be used to define a data that can be expressed as a 3D point, like a vertex or a vector.
+// Can be used to define a data that can be expressed as a 3D coordinate, such as a vertex or a vector.
 struct Float3
 {
 	float x;

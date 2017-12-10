@@ -38,7 +38,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.13 (dev)";
+	const char* const VERSION = "0.14 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -230,18 +230,6 @@ int main(int argc, const char *argv[])
 				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.lateral) << endl;
 				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.rotation) << endl;
 			}
-		}
-
-		// Keys that don't affect the player
-		if (glfwGetKey(window, GLFW_KEY_R))
-		{
-			CurrentLevel->play->Angle = 0;
-			CurrentLevel->play->PosX = 0;
-			CurrentLevel->play->PosY = 0;
-			CurrentLevel->play->PosZ = 2;
-			CurrentLevel->play->MoX = 0;
-			CurrentLevel->play->MoY = 0;
-			CurrentLevel->play->MoZ = 0;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE))

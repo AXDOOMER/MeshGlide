@@ -123,6 +123,7 @@ void InitProjection(GLFWwindow* window)
 	WindowResize_Callback(window, width, height);
 }
 
+// Render the screen. Convert in-game axes system to OpenGL axes.
 void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 {
 	// Reset colors and depth buffer
@@ -135,8 +136,8 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 
 	gluLookAt(
 		play->PosY, play->PosZ, play->PosX,		// Camera's position
-		play->PosY + sin(play->GetRadianAngle(play->Angle)), 	// What the camera will look at
-		play->PosZ, play->PosX + cos(play->GetRadianAngle(play->Angle)),	// What the camera will look at
+		play->PosY + sin(play->GetRadianAngle(play->Angle)),
+			play->PosZ, play->PosX + cos(play->GetRadianAngle(play->Angle)),	// What the camera will look at
 		0.0, 1.0, 0.0);	// This is for the camera's frame rotation
 
 	//glRotatef( xrot, 1.0f, 0.0f, 0.0f); /* Rotate On The X Axis */
@@ -159,7 +160,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 			glPushMatrix();
 			{
 				//glTranslatef(0, 0, 0);
-				glColor3f(lvl->ptrWalls[i].Light, lvl->ptrWalls[i].Light, lvl->ptrWalls[i].Light);	// "Light": Could be made tint (RGB) later
+				glColor3f(lvl->ptrWalls[i].Light, lvl->ptrWalls[i].Light, lvl->ptrWalls[i].Light);	// Light: Could be made tint (RGB) later
 
 				if (lvl->ptrWalls[i].Vertices.size() == 4)
 				{
@@ -167,13 +168,13 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 					glBegin(GL_QUADS);
 					{
 						glTexCoord2f(0, 1 * lvl->ptrWalls[i].Yscale);
-						glVertex3f(lvl->ptrWalls[i].Vertices[0].x, lvl->ptrWalls[i].Vertices[0].y, lvl->ptrWalls[i].Vertices[0].z);
+						glVertex3f(lvl->ptrWalls[i].Vertices[0].y, lvl->ptrWalls[i].Vertices[0].z, lvl->ptrWalls[i].Vertices[0].x);
 						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 1 * lvl->ptrWalls[i].Yscale);
-						glVertex3f(lvl->ptrWalls[i].Vertices[1].x, lvl->ptrWalls[i].Vertices[1].y, lvl->ptrWalls[i].Vertices[1].z);
+						glVertex3f(lvl->ptrWalls[i].Vertices[1].y, lvl->ptrWalls[i].Vertices[1].z, lvl->ptrWalls[i].Vertices[1].x);
 						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 0);
-						glVertex3f(lvl->ptrWalls[i].Vertices[2].x, lvl->ptrWalls[i].Vertices[2].y, lvl->ptrWalls[i].Vertices[2].z);
+						glVertex3f(lvl->ptrWalls[i].Vertices[2].y, lvl->ptrWalls[i].Vertices[2].z, lvl->ptrWalls[i].Vertices[2].x);
 						glTexCoord2f(0, 0);
-						glVertex3f(lvl->ptrWalls[i].Vertices[3].x, lvl->ptrWalls[i].Vertices[3].y, lvl->ptrWalls[i].Vertices[3].z);
+						glVertex3f(lvl->ptrWalls[i].Vertices[3].y, lvl->ptrWalls[i].Vertices[3].z, lvl->ptrWalls[i].Vertices[3].x);
 					}
 					glEnd();
 				}
@@ -183,11 +184,11 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 					glBegin(GL_TRIANGLES);
 					{
 						glTexCoord2f(0, 1 * lvl->ptrWalls[i].Yscale);
-						glVertex3f(lvl->ptrWalls[i].Vertices[0].x, lvl->ptrWalls[i].Vertices[0].y, lvl->ptrWalls[i].Vertices[0].z);
+						glVertex3f(lvl->ptrWalls[i].Vertices[0].y, lvl->ptrWalls[i].Vertices[0].z, lvl->ptrWalls[i].Vertices[0].x);
 						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 1 * lvl->ptrWalls[i].Yscale);
-						glVertex3f(lvl->ptrWalls[i].Vertices[1].x, lvl->ptrWalls[i].Vertices[1].y, lvl->ptrWalls[i].Vertices[1].z);
+						glVertex3f(lvl->ptrWalls[i].Vertices[1].y, lvl->ptrWalls[i].Vertices[1].z, lvl->ptrWalls[i].Vertices[1].x);
 						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 0);
-						glVertex3f(lvl->ptrWalls[i].Vertices[2].x, lvl->ptrWalls[i].Vertices[2].y, lvl->ptrWalls[i].Vertices[2].z);
+						glVertex3f(lvl->ptrWalls[i].Vertices[2].y, lvl->ptrWalls[i].Vertices[2].z, lvl->ptrWalls[i].Vertices[2].x);
 					}
 					glEnd();
 				}

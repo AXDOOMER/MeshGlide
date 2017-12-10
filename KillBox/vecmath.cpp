@@ -27,10 +27,11 @@ using namespace std;
 bool pointInPoly(float x, float y, vector<Float3> vertices) {
 	bool inside = false;
 	for(int i = 0, j = vertices.size() - 1; i < vertices.size(); j = i++) {
-		float xi = vertices[i].z;
-		float yi = vertices[i].x;
-		float xj = vertices[j].z;
-		float yj = vertices[j].x;
+		// Create new variables for readability
+		float xi = vertices[i].x;
+		float yi = vertices[i].y;
+		float xj = vertices[j].x;
+		float yj = vertices[j].y;
 
 		bool intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
 		if (intersect)
@@ -79,36 +80,35 @@ float dotProduct(Float3 u, Float3 v)
 // Parameters: ray, origin of ray, polygon's normal, center of polygon
 float RayIntersect(Float3 ray, Float3 origin, Float3 normal, Float3 center)
 {
-    // Result of dot's product of ray direction
-    float denominator = dotProduct(ray, normal);
+	// Result of dot's product of ray direction
+	float denominator = dotProduct(ray, normal);
 
 	// Direction and plane parallel, no intersection
-    if (abs(denominator) < 0.00001) return numeric_limits<float>::quiet_NaN();
+	if (abs(denominator) < 0.00001) return numeric_limits<float>::quiet_NaN();
 
 	Float3 difference = subVectors(center, origin);
-    float t = dotProduct(difference, normal) / denominator;
-    if (t < 0) return numeric_limits<float>::quiet_NaN();	// plane behind ray's origin
+	float t = dotProduct(difference, normal) / denominator;
+	if (t < 0) return numeric_limits<float>::quiet_NaN();	// plane behind ray's origin
 
 	Float3 contact = addVectors(origin , scaleVector(t, normalize(ray)));
-    return contact.z;
+	return contact.z;
 }
 
 // Find the intersection of a ray that aims down on a polygon
 // Parameters: ray, origin of ray, polygon's normal, center of polygon
 float RayIntersect2(Float3 ray, Float3 origin, Float3 normal, Float3 center) {
-    if (dotProduct(normal, ray) == 0) {	// Use an epsilon here? (> 0.0001f)
-        return numeric_limits<float>::quiet_NaN();	// No intersection, the line is parallel to the plane
-    }
+	if (dotProduct(normal, ray) == 0) {	// Use an epsilon here? (< 0.0001f)
+		return numeric_limits<float>::quiet_NaN();	// No intersection, the line is parallel to the plane
+	}
 
-    // Get denominator value
-    float d = dotProduct(normal, center);
+	// Get denominator value
+	float d = dotProduct(normal, center);
 
-    // Compute the X value for the directed line ray intersecting the plane
-    float x = (d - dotProduct(normal, origin)) / dotProduct(normal, ray);
+	// Compute the X value for the directed line ray intersecting the plane
+	float x = (d - dotProduct(normal, origin)) / dotProduct(normal, ray);
 
-    // Output contact point, make sure the ray is normalized.
-    Float3 contact = addVectors(origin , scaleVector(x, normalize(ray)));
-    return contact.z;
+	// Output contact point, make sure the ray is normalized.
+	return addVectors(origin , scaleVector(x, normalize(ray))).z;
 }
 
 // Takes a X, Y, Z position to test with polygon and the polygon's vertices
@@ -116,17 +116,18 @@ float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices) {
 
 	Float3 origin = {x, y, z};
 
-	float x0 = vertices[0].z;	// X
-	float y0 = vertices[0].x;	// Y
-	float z0 = vertices[0].y;	// Z
+	// Create variables for readability
+	float x0 = vertices[0].x;
+	float y0 = vertices[0].y;
+	float z0 = vertices[0].z;
 
-	float x1 = vertices[1].z;
-	float y1 = vertices[1].x;
-	float z1 = vertices[1].y;	// Z
+	float x1 = vertices[1].x;
+	float y1 = vertices[1].y;
+	float z1 = vertices[1].z;
 
-	float x2 = vertices[2].z;
-	float y2 = vertices[2].x;
-	float z2 = vertices[2].y;	// Z
+	float x2 = vertices[2].x;
+	float y2 = vertices[2].y;
+	float z2 = vertices[2].z;
 
 	// Vector 'u'
 	Float3 u = {x1 - x0, y1 - y0, z1 - z0};
@@ -145,9 +146,9 @@ float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices) {
 	Float3 total = {0, 0, 0};
 	for (int i = 0; i < vertices.size(); i++)
 	{
-		total.x += vertices[i].z;
-		total.y += vertices[i].x;
-		total.z += vertices[i].y;
+		total.x += vertices[i].x;
+		total.y += vertices[i].y;
+		total.z += vertices[i].z;
 	}
 	Float3 center = {total.x / vertices.size(), total.y / vertices.size(), total.z / vertices.size()};
 
