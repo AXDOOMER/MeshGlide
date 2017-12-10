@@ -18,6 +18,7 @@
 
 #include "viewdraw.h"
 #include "things.h"
+#include "vecmath.h" // Float3
 
 #include <GLFW/glfw3.h>
 #include <GL/freeglut.h>
@@ -166,13 +167,13 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 					glBegin(GL_QUADS);
 					{
 						glTexCoord2f(0, 1 * lvl->ptrWalls[i].Yscale);
-						glVertex3f(lvl->ptrWalls[i].Vertices[0].Xpos, lvl->ptrWalls[i].Vertices[0].Ypos, lvl->ptrWalls[i].Vertices[0].Zpos);
+						glVertex3f(lvl->ptrWalls[i].Vertices[0].x, lvl->ptrWalls[i].Vertices[0].y, lvl->ptrWalls[i].Vertices[0].z);
 						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 1 * lvl->ptrWalls[i].Yscale);
-						glVertex3f(lvl->ptrWalls[i].Vertices[1].Xpos, lvl->ptrWalls[i].Vertices[1].Ypos, lvl->ptrWalls[i].Vertices[1].Zpos);
+						glVertex3f(lvl->ptrWalls[i].Vertices[1].x, lvl->ptrWalls[i].Vertices[1].y, lvl->ptrWalls[i].Vertices[1].z);
 						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 0);
-						glVertex3f(lvl->ptrWalls[i].Vertices[2].Xpos, lvl->ptrWalls[i].Vertices[2].Ypos, lvl->ptrWalls[i].Vertices[2].Zpos);
+						glVertex3f(lvl->ptrWalls[i].Vertices[2].x, lvl->ptrWalls[i].Vertices[2].y, lvl->ptrWalls[i].Vertices[2].z);
 						glTexCoord2f(0, 0);
-						glVertex3f(lvl->ptrWalls[i].Vertices[3].Xpos, lvl->ptrWalls[i].Vertices[3].Ypos, lvl->ptrWalls[i].Vertices[3].Zpos);
+						glVertex3f(lvl->ptrWalls[i].Vertices[3].x, lvl->ptrWalls[i].Vertices[3].y, lvl->ptrWalls[i].Vertices[3].z);
 					}
 					glEnd();
 				}
@@ -182,11 +183,11 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 					glBegin(GL_TRIANGLES);
 					{
 						glTexCoord2f(0, 1 * lvl->ptrWalls[i].Yscale);
-						glVertex3f(lvl->ptrWalls[i].Vertices[0].Xpos, lvl->ptrWalls[i].Vertices[0].Ypos, lvl->ptrWalls[i].Vertices[0].Zpos);
+						glVertex3f(lvl->ptrWalls[i].Vertices[0].x, lvl->ptrWalls[i].Vertices[0].y, lvl->ptrWalls[i].Vertices[0].z);
 						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 1 * lvl->ptrWalls[i].Yscale);
-						glVertex3f(lvl->ptrWalls[i].Vertices[1].Xpos, lvl->ptrWalls[i].Vertices[1].Ypos, lvl->ptrWalls[i].Vertices[1].Zpos);
+						glVertex3f(lvl->ptrWalls[i].Vertices[1].x, lvl->ptrWalls[i].Vertices[1].y, lvl->ptrWalls[i].Vertices[1].z);
 						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 0);
-						glVertex3f(lvl->ptrWalls[i].Vertices[2].Xpos, lvl->ptrWalls[i].Vertices[2].Ypos, lvl->ptrWalls[i].Vertices[2].Zpos);
+						glVertex3f(lvl->ptrWalls[i].Vertices[2].x, lvl->ptrWalls[i].Vertices[2].y, lvl->ptrWalls[i].Vertices[2].z);
 					}
 					glEnd();
 				}

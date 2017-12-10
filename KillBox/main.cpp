@@ -20,6 +20,7 @@
 #include "command.h"
 #include "things.h"
 #include "textread.h"
+#include "vecmath.h"	// Custom library for vector math, collision with planes, etc.
 
 #include <GLFW/glfw3.h>
 #include <GL/freeglut.h>
@@ -28,15 +29,16 @@
 
 #include <iostream>
 #include <string>
-#include <cmath>		/* round */
+#include <cmath>		/* round, isnan */
 #include <cstdlib>		/* EXIT_FAILURE, EXIT_SUCCESS */
 #include <fstream>
 #include <chrono>
+#include <limits>		/* numeric_limits<float>::lowest() */
 using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.12 (dev)";
+	const char* const VERSION = "0.13 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -157,7 +159,7 @@ int main(int argc, const char *argv[])
 			try
 			{
 				string line;
-				//Demo Play is True
+				// Demo Play is True
 				if (!getline(DemoRead, line))
 					Quit = true;
 				if (!line.empty())
@@ -179,40 +181,46 @@ int main(int argc, const char *argv[])
 		}
 		else
 		{
-			//Get Input from Keyboard
+			// Get Input from Keyboard
+			int multiplicator = 1;
+			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT))
+			{
+				multiplicator *= 2;
+			}
+
 			// Input for tests
 			if (!((glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP))
 				&& (glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN))))
 			{
 				if (glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP))
 				{
-					CurrentLevel->play->Cmd.forward = 10;
+					CurrentLevel->play->Cmd.forward = 10 * multiplicator;
 				}
 				if (glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN))
 				{
-					CurrentLevel->play->Cmd.forward = -10;
+					CurrentLevel->play->Cmd.forward = -10 * multiplicator;
 				}
 			}
 			if (!(glfwGetKey(window, GLFW_KEY_A) && glfwGetKey(window, GLFW_KEY_D)))
 			{
 				if (glfwGetKey(window, GLFW_KEY_A))
 				{
-					CurrentLevel->play->Cmd.lateral = -10;
+					CurrentLevel->play->Cmd.lateral = -10 * multiplicator;
 				}
 				if (glfwGetKey(window, GLFW_KEY_D))
 				{
-					CurrentLevel->play->Cmd.lateral = 10;
+					CurrentLevel->play->Cmd.lateral = 10 * multiplicator;
 				}
 			}
 			if (!(glfwGetKey(window, GLFW_KEY_LEFT) && glfwGetKey(window, GLFW_KEY_RIGHT)))
 			{
 				if (glfwGetKey(window, GLFW_KEY_LEFT))
 				{
-					CurrentLevel->play->Cmd.rotation = 200;
+					CurrentLevel->play->Cmd.rotation = 200 * multiplicator;
 				}
 				if (glfwGetKey(window, GLFW_KEY_RIGHT))
 				{
-					CurrentLevel->play->Cmd.rotation = -200;
+					CurrentLevel->play->Cmd.rotation = -200 * multiplicator;
 				}
 			}
 
@@ -235,28 +243,47 @@ int main(int argc, const char *argv[])
 			CurrentLevel->play->MoY = 0;
 			CurrentLevel->play->MoZ = 0;
 		}
-		if (glfwGetKey(window, GLFW_KEY_SPACE))
-		{
-			CurrentLevel->play->PosZ = CurrentLevel->play->PosZ + 0.15625f;
-		}
-		if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL))
-		{
-			CurrentLevel->play->PosZ = CurrentLevel->play->PosZ - 0.15625f;
-		}
+
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE))
 		{
 			Quit = true;
 		}
 
-		//Send Commands over Network
+		// Send Commands over Network
 
-		//Update game logic
+		// Update game logic
 		CurrentLevel->play->ExecuteTicCmd();
 
-		//Draw Screen
+		// Draw Screen
 		DrawScreen(window, CurrentLevel->play, CurrentLevel);
 
-		//Play sound
+		// Play sound
+
+		// Collision detection with floors
+		float k = numeric_limits<float>::lowest();
+		bool new_height = false;
+		for (int i = 0; i < CurrentLevel->ptrWalls.size(); i++)
+		{
+			if (pointInPoly(CurrentLevel->play->PosX, CurrentLevel->play->PosY, CurrentLevel->ptrWalls[i].Vertices))
+			{
+				float collision_point_z = PointHeightOnPoly(CurrentLevel->play->PosX, CurrentLevel->play->PosY,
+											CurrentLevel->play->PosZ, CurrentLevel->ptrWalls[i].Vertices);
+				if (!isnan(collision_point_z) && collision_point_z > k)
+				{
+					k = collision_point_z;
+					new_height = true;
+				}
+
+				if (Debug)
+				{
+					cout << TicCount << ": Player inside poly " << i  << " at height " << collision_point_z << endl;
+				}
+			}
+		}
+		if (new_height)
+		{
+			CurrentLevel->play->PosZ = k + 2;
+		}
 
         // Status of the player for debugging purposes
 		if (Debug)

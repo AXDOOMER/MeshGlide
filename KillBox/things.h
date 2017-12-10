@@ -21,6 +21,7 @@
 
 #include "texture.h"
 #include "cache.h"
+#include "vecmath.h"	// Custom library for vector math, collision with planes, etc.
 
 #include <string>
 #include <cmath>
@@ -116,20 +117,13 @@ public:
 	void Move();
 };
 
-struct Vertex
-{
-	float Xpos;
-	float Ypos;
-	float Zpos;
-};
-
 struct Wall
 {
 	// TODO: Compute the 3D orentation of a poly and keep the unit vector data for collision detection
     string Texture;
 	bool Impassable = true;
 	bool TwoSided = false;
-	vector<Vertex> Vertices;
+	vector<Float3> Vertices;
 	float Xscale = 0;
 	float Yscale = 0;
 	float Xoff = 0;

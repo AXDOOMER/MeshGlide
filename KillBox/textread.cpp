@@ -18,6 +18,7 @@
 // Used for config files, levels and demo files.
 
 #include "things.h"
+#include "vecmath.h" // Float3
 
 #include <iostream>
 #include <string>
@@ -77,10 +78,10 @@ Level* F_LoadLevel(const string& LevelName)
 						// polygons are quads for now
 						for (int i = 9; i < tokens.size(); i += 3)
 						{
-							Vertex vt;
-							vt.Xpos = atof(tokens[i].c_str());
-							vt.Ypos = atof(tokens[i+1].c_str());
-							vt.Zpos = atof(tokens[i+2].c_str());
+							Float3 vt;
+							vt.x = atof(tokens[i].c_str());
+							vt.y = atof(tokens[i+1].c_str());
+							vt.z = atof(tokens[i+2].c_str());
 							wall.Vertices.push_back(vt);
 						}
 
