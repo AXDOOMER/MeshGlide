@@ -47,6 +47,7 @@ public:
 	T* Get(const K& key)
 	{
 		_prev = key;
+		// Will throw 'std::out_of_range' if key is not found
 		return _store.at(key);
 	}
 

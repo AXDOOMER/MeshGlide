@@ -28,7 +28,7 @@
 #include <vector>
 using namespace std;
 
-const float GRAVITY = 9.81;
+const float GRAVITY = 0.2f;
 //const float PI = atan(1) * 4;
 const int MAXOWNEDWEAPONS = 10;
 
@@ -49,18 +49,21 @@ public:
 	TicCmd Cmd = TicCmd();
 
 	// Object-oriented programming is a pain. Made it public so it's easily accessible. 
-	short Angle = 8192;	// Should use shorts to avoid a lost of accuracy in MP games...
+	short Angle = 8192;	// Should use shorts to avoid a lost of accuracy in multiplayer game
+	float VerticalAim = 0;
 
 	float PosX = 0;
 	float PosY = 0;
-	float PosZ = 2;
-	char MoX = 0;		//Speed vector (momentum)
+	float PosZ = 0;	// height of player's feet
+	const float ViewZ = 2.0f;
+	char MoX = 0;		// Speed vector (momentum)
 	char MoY = 0;
-	char MoZ = 0;		//Used by gravity
+	char MoZ = 0;		// Used by gravity
+	const float MaxStep = 1.5f;
 
 	// Weapons that are in the player's possession
-	bool OwnedWeapons[MAXOWNEDWEAPONS] /*= { false, false, false, false, false, false, false, false,
-							  false, false, false, false, false, false, false, false }*/;
+	bool OwnedWeapons[MAXOWNEDWEAPONS];
+
 	// Ammo types
 	short Ammo = 0;
 	short Shells = 0;
@@ -73,7 +76,7 @@ private:
 	const float MaxWalkSpeed = 0.6f;
 	const float MaxRunSpeed = 1.1f;
 
-	const int ViewZ = 42;
+//	const int ViewZ = 42;
 	char Damages = 0;	//Damage location indicator: 0=none, 1=both, 2=left, 3=right
 
 	int radius = 16;
@@ -137,7 +140,9 @@ public:
 	Cache<string, Texture> cache;
 	vector<Wall> ptrWalls;
 	Player* play;
-	float scaling = 1;
+	float scaling = 1.0f;	// Level scaling
+	float SkyHeigth = 5.0f;	// Sky elevation
+	string SkyTexture;
 
 	void AddTexture(const string& name);	// Add texture to cache if missing
 	void UseTexture(const string& name);	// Bind texture

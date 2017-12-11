@@ -103,7 +103,7 @@ GLFWwindow* Init_OpenGL()
 	glfwSetWindowSizeCallback(window, WindowResize_Callback);
 
 	// Make the background gray
-	glClearColor(0.0, 0.0, 0.5, 0.0);
+	glClearColor(80.0f/256.0f, 119.0f/256.0f, 157.0f/256.0f, 0.0);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);		// Draw objects at the appropriate Z
 	glEnable(GL_CULL_FACE);		// Don't draw faces behind polygons
@@ -135,14 +135,18 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 	glEnable(GL_TEXTURE_2D);
 
 	gluLookAt(
-		play->PosY, play->PosZ, play->PosX,		// Camera's position
-		play->PosY + sin(play->GetRadianAngle(play->Angle)),
-			play->PosZ, play->PosX + cos(play->GetRadianAngle(play->Angle)),	// What the camera will look at
+		play->PosY, play->PosZ + play->ViewZ, play->PosX,		// Camera's position
+		play->PosY + sin(play->GetRadianAngle(play->Angle)), play->PosZ + play->ViewZ + play->VerticalAim,
+						play->PosX + cos(play->GetRadianAngle(play->Angle)),	// What the camera will look at
 		0.0, 1.0, 0.0);	// This is for the camera's frame rotation
 
 	//glRotatef( xrot, 1.0f, 0.0f, 0.0f); /* Rotate On The X Axis */
 	//glRotatef( yrot, 0.0f, 1.0f, 0.0f); /* Rotate On The Y Axis */
 	//glRotatef( zrot, 0.0f, 0.0f, 1.0f); /* Rotate On The Z Axis */
+
+	//glTranslatef(256.0f, 256.0f, 0.0f);
+	//glRotatef(min_angle, 0.0f, 0.0f, 1.0f);
+	//glScalef(x_minScale, y_minScale, 1.0f);
 
 	// Check if level is not a null pointer to avoid errors and draw its content
 	if (lvl != nullptr)
@@ -196,6 +200,27 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 			glPopMatrix();
 
 		}
+	}
+
+	if (!lvl->SkyTexture.empty())
+	{
+		// Draw sky (relative to player)
+		lvl->UseTexture(lvl->SkyTexture);	// "cloud.bmp"
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glPushMatrix();
+			glBegin(GL_QUADS);
+				// (Xpos, Zpos, Ypos)
+				// TODO: Use this for sky coords: glTranslatef(play->PosY, play->PosZ, play->PosX);
+				glTexCoord2f(-1, 1);
+				glVertex3f(play->PosY + 200.0f, play->PosZ + lvl->SkyHeigth, play->PosX - 200.0f);
+				glTexCoord2f(1, 1);
+				glVertex3f(play->PosY + 200.0f, play->PosZ + lvl->SkyHeigth, play->PosX + 200.0f);
+				glTexCoord2f(1, -1);
+				glVertex3f(play->PosY - 200.0f, play->PosZ + lvl->SkyHeigth, play->PosX + 200.0f);
+				glTexCoord2f(-1, -1);
+				glVertex3f(play->PosY - 200.0f, play->PosZ + lvl->SkyHeigth, play->PosX - 200.0f);
+			glEnd();
+		glPopMatrix();
 	}
 
 	glEnable(GL_CULL_FACE);
@@ -258,19 +283,6 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 			}
 		}
 	}
-
-	// Draw sky (relative to player)
-	glPushMatrix();
-		glColor3f(153.0f / 256.0f, 217.0f / 256.0f, 234.0f / 256.0f);
-		glBegin(GL_QUADS);
-			// (Xpos, Zpos, Ypos)
-			// TODO: Use this for sky coords: glTranslatef(play->PosY, play->PosZ, play->PosX);
-			glVertex3f(play->PosY + 100.0f, 10.0f, play->PosX - 100.0f);
-			glVertex3f(play->PosY + 100.0f, 10.0f, play->PosX + 100.0f);
-			glVertex3f(play->PosY - 100.0f, 10.0f, play->PosX + 100.0f);
-			glVertex3f(play->PosY - 100.0f, 10.0f, play->PosX - 100.0f);
-		glEnd();
-	glPopMatrix();
 
 	// Swap the front and back buffers
 	glfwSwapBuffers(window);

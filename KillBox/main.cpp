@@ -38,7 +38,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.14 (dev)";
+	const char* const VERSION = "0.15 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -224,6 +224,28 @@ int main(int argc, const char *argv[])
 				}
 			}
 
+			if (glfwGetKey(window, GLFW_KEY_END))
+			{
+				CurrentLevel->play->VerticalAim = 0;
+			}
+			else if (!(glfwGetKey(window, GLFW_KEY_PAGE_UP) && glfwGetKey(window, GLFW_KEY_PAGE_DOWN)))
+			{
+				if (glfwGetKey(window, GLFW_KEY_PAGE_UP))
+				{
+					if (CurrentLevel->play->VerticalAim < 1.0f)
+					{
+						CurrentLevel->play->VerticalAim += 0.05f;
+					}
+				}
+				if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN))
+				{
+					if (CurrentLevel->play->VerticalAim > -1.0f)
+					{
+						CurrentLevel->play->VerticalAim -= 0.05f;
+					}
+				}
+			}
+
 			if (DemoWrite.is_open())
 			{
 				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.forward) << endl;
@@ -242,11 +264,6 @@ int main(int argc, const char *argv[])
 		// Update game logic
 		CurrentLevel->play->ExecuteTicCmd();
 
-		// Draw Screen
-		DrawScreen(window, CurrentLevel->play, CurrentLevel);
-
-		// Play sound
-
 		// Collision detection with floors
 		float k = numeric_limits<float>::lowest();
 		bool new_height = false;
@@ -258,28 +275,36 @@ int main(int argc, const char *argv[])
 											CurrentLevel->play->PosZ, CurrentLevel->ptrWalls[i].Vertices);
 				if (!isnan(collision_point_z) && collision_point_z > k)
 				{
-					k = collision_point_z;
-					new_height = true;
-				}
-
-				if (Debug)
-				{
-					cout << TicCount << ": Player inside poly " << i  << " at height " << collision_point_z << endl;
+					if (collision_point_z <= CurrentLevel->play->PosZ + CurrentLevel->play->MaxStep)
+					{
+						k = collision_point_z;
+						new_height = true;
+					}
 				}
 			}
 		}
 		if (new_height)
 		{
-			CurrentLevel->play->PosZ = k + 2;
+			if (CurrentLevel->play->PosZ <= k + GRAVITY)
+			{
+				CurrentLevel->play->PosZ = k;
+			}
+			else
+			{
+				CurrentLevel->play->PosZ -= GRAVITY;
+			}
 		}
+
+		// Draw Screen
+		DrawScreen(window, CurrentLevel->play, CurrentLevel);
+
+		// Play sound
 
         // Status of the player for debugging purposes
 		if (Debug)
 		{
-			cout << "X: " << static_cast<int>(round(CurrentLevel->play->PosX))
-				<< "\tY: " << static_cast<int>(round(CurrentLevel->play->PosY))
-				<< "\tZ: " << static_cast<int>(round(CurrentLevel->play->PosZ))
-				<< "\tA: " << CurrentLevel->play->Angle;
+			cout << "X: " << CurrentLevel->play->PosX << "\t\tY: " << CurrentLevel->play->PosY
+				<< "\t\tZ: " << CurrentLevel->play->PosZ << "\t\tA: " << CurrentLevel->play->Angle;
 		}
 
 		TicCount++;

@@ -88,6 +88,18 @@ Level* F_LoadLevel(const string& LevelName)
 						Current->AddTexture(tokens[1]);	// Add texture to cache
 						Current->ptrWalls.push_back(wall);
 					}
+					else if (tokens[0] == "setting" && tokens.size() == 3)
+					{
+						if (tokens[1] == "skytex")
+						{
+							Current->AddTexture(tokens[2]);
+							Current->SkyTexture = tokens[2];
+						}
+						else if (tokens[1] == "skyele")
+						{
+							Current->SkyHeigth = atof(tokens[2].c_str());
+						}
+					}
 					else
 					{
 						cout << "INVALID LINE IGNORED AT: " << Count << endl;
