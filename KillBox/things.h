@@ -49,12 +49,12 @@ public:
 	TicCmd Cmd = TicCmd();
 
 	// Object-oriented programming is a pain. Made it public so it's easily accessible. 
-	short Angle = 8192;	// Should use shorts to avoid a lost of accuracy in multiplayer game
+	short Angle = 8192;	// Should use shorts to avoid a lost of accuracy in multiplayer games
 	float VerticalAim = 0;
 
 	float PosX = 0;
 	float PosY = 0;
-	float PosZ = 0;	// height of player's feet
+	float PosZ = 0;		// Height of player's feet
 	const float ViewZ = 2.0f;
 	char MoX = 0;		// Speed vector (momentum)
 	char MoY = 0;

@@ -26,6 +26,7 @@
 #include <GL/freeglut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <SDL/SDL.h>	/* SDL_Delay */
 
 #include <iostream>
 #include <string>
@@ -38,13 +39,14 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.15 (dev)";
+	const char* const VERSION = "0.16 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
 	static bool Debug = false;
 	ofstream DemoWrite;
 	ifstream DemoRead;
+	string FrameDelay = "";
 
 	cout << "                KILLZONE -- " << VERSION << "\n\n";
 
@@ -296,7 +298,7 @@ int main(int argc, const char *argv[])
 		}
 
 		// Draw Screen
-		DrawScreen(window, CurrentLevel->play, CurrentLevel);
+		DrawScreen(window, CurrentLevel->play, CurrentLevel, FrameDelay);
 
 		// Play sound
 
@@ -304,23 +306,19 @@ int main(int argc, const char *argv[])
 		if (Debug)
 		{
 			cout << "X: " << CurrentLevel->play->PosX << "\t\tY: " << CurrentLevel->play->PosY
-				<< "\t\tZ: " << CurrentLevel->play->PosZ << "\t\tA: " << CurrentLevel->play->Angle;
+				<< "\t\tZ: " << CurrentLevel->play->PosZ << "\t\tA: " << CurrentLevel->play->Angle << endl;
 		}
 
 		TicCount++;
 
-		//SDL_Delay(30);
-
 		auto end = chrono::system_clock::now();
 		auto diff = chrono::duration_cast<chrono::milliseconds>(end - start).count();
-		if (Debug && TicCount % 5 == 0)
-		{
-			SetWindowTitle(window, WindowTitle + " (" + to_string(1000 / diff) + "fps)");
-			cout << "\tFPS: " << to_string(1000 / diff);
-		}
+		FrameDelay = to_string(diff);
 
-		if (Debug)
-			cout << endl;
+		const int FRAMERATE = 60;
+		const float DELAY = 1000 / FRAMERATE;
+		if (diff < DELAY)
+			SDL_Delay(DELAY - diff);
 
 		// Detect OpenGL errors
 		GLenum ErrorCode;

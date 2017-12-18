@@ -54,7 +54,7 @@ void WindowResize_Callback(GLFWwindow* window, int width, int height)
 	}
 
 	glViewport(0.0f, 0.0f, width, height);
-	gluPerspective(fov, ratio, 0.1f, 1000.0f);
+	gluPerspective(fov, ratio, 0.01f, 1000.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -123,8 +123,58 @@ void InitProjection(GLFWwindow* window)
 	WindowResize_Callback(window, width, height);
 }
 
+void RenderText(Level* lvl, string text, float x, float y, float sx, float sy)
+{
+	// https://forum.libcinder.org/topic/beginner-question-changing-alpha-of-a-texture
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	gluOrtho2D(-1, 1, -1, 1);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	glEnable(GL_TEXTURE_2D);
+
+	lvl->AddTexture("chars.bmp");
+	lvl->UseTexture("chars.bmp");	// bind
+
+	for (int p = 0; p < text.size(); p++)
+	{
+		unsigned char letter = text[p];
+
+		if (letter >= '!' && letter <= '~')
+		{
+			letter = letter - '!';	// ! == letter[0]
+
+			// Shift the texture coordinates over the texture to show different letters
+			const float dim = 1056.0f / 96.0f / 1036.0f;	// ~ 0.0106235521236f
+			float shift = dim * letter;
+			float pos = p * sx;
+
+			glColor3f(1.0f, 1.0f, 0.0f);	// Make the texture background green
+
+			glPushMatrix();
+				glBegin(GL_QUADS);
+					glTexCoord2d(1.0f - shift, 0.0f);
+					glVertex2d(x + pos, y - sy);
+
+					glTexCoord2d(0.99f - shift, 0.0f);
+					glVertex2d(x + sx + pos, y - sy);
+
+					glTexCoord2d(0.99f - shift, 1.0f);
+					glVertex2d(x + sx + pos, y);
+
+					glTexCoord2d(1.0f - shift, 1.0f);
+					glVertex2d(x + pos, y);
+				glEnd();
+			glPopMatrix();
+		}
+	}
+}
+
 // Render the screen. Convert in-game axes system to OpenGL axes.
-void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
+void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay)
 {
 	// Reset colors and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -164,7 +214,8 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 			glPushMatrix();
 			{
 				//glTranslatef(0, 0, 0);
-				glColor3f(lvl->ptrWalls[i].Light, lvl->ptrWalls[i].Light, lvl->ptrWalls[i].Light);	// Light: Could be made tint (RGB) later
+				// Light: Could be made RGB tint later
+				glColor3f(lvl->ptrWalls[i].Light, lvl->ptrWalls[i].Light, lvl->ptrWalls[i].Light);
 
 				if (lvl->ptrWalls[i].Vertices.size() == 4)
 				{
@@ -207,6 +258,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 		// Draw sky (relative to player)
 		lvl->UseTexture(lvl->SkyTexture);	// "cloud.bmp"
 		glColor3f(1.0f, 1.0f, 1.0f);
+		glDisable(GL_CULL_FACE);
 		glPushMatrix();
 			glBegin(GL_QUADS);
 				// (Xpos, Zpos, Ypos)
@@ -283,6 +335,14 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl)
 			}
 		}
 	}
+
+	// Render text as the last thing because else it will break the rendering
+	RenderText(lvl, FrameDelay + " ms", -0.9f, 0.8f, 0.05f, 0.15f);
+
+	// Resetting display to 3D
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+	WindowResize_Callback(window, width, height);
 
 	// Swap the front and back buffers
 	glfwSwapBuffers(window);

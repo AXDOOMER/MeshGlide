@@ -27,6 +27,7 @@ using namespace std;
 #include "things.h"
 
 const string WindowTitle = "3D engine";
+const string chars = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
 void SetWindowTitle(GLFWwindow* window, string Title);
 
@@ -34,7 +35,7 @@ GLFWwindow* Init_OpenGL();
 
 void InitProjection(GLFWwindow* window);
 
-void DrawScreen(GLFWwindow* window, Player* play, Level* lvl);
+void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay);
 
 void Close_OpenGL(GLFWwindow* window);
 
