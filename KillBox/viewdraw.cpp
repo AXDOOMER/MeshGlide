@@ -54,7 +54,7 @@ void WindowResize_Callback(GLFWwindow* window, int width, int height)
 	}
 
 	glViewport(0.0f, 0.0f, width, height);
-	gluPerspective(fov, ratio, 0.01f, 1000.0f);
+	gluPerspective(fov, ratio, 0.01f, 200.0f);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -125,7 +125,6 @@ void InitProjection(GLFWwindow* window)
 
 void RenderText(Level* lvl, string text, float x, float y, float sx, float sy)
 {
-	// https://forum.libcinder.org/topic/beginner-question-changing-alpha-of-a-texture
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -136,8 +135,9 @@ void RenderText(Level* lvl, string text, float x, float y, float sx, float sy)
 
 	glEnable(GL_TEXTURE_2D);
 
+	// Add texture (will be added if not in cache) and bind it
 	lvl->AddTexture("chars.png");
-	lvl->UseTexture("chars.png");	// bind
+	lvl->UseTexture("chars.png");
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);	// Reset the texture colorization to be neutral
 

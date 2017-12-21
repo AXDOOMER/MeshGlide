@@ -21,6 +21,7 @@
 #include "things.h"
 #include "textread.h"
 #include "vecmath.h"	// Custom library for vector math, collision with planes, etc.
+#include "physics.h"
 
 #include <GLFW/glfw3.h>
 #include <GL/freeglut.h>
@@ -30,16 +31,14 @@
 
 #include <iostream>
 #include <string>
-#include <cmath>		/* round, isnan */
 #include <cstdlib>		/* EXIT_FAILURE, EXIT_SUCCESS */
 #include <fstream>
 #include <chrono>
-#include <limits>		/* numeric_limits<float>::lowest() */
 using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.16 (dev)";
+	const char* const VERSION = "0.18 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -256,6 +255,11 @@ int main(int argc, const char *argv[])
 			}
 		}
 
+		if (glfwGetKey(window, GLFW_KEY_SPACE))
+		{
+			CurrentLevel->play->PosZ = CurrentLevel->play->PosZ + GRAVITY * 2;
+		}
+
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE))
 		{
 			Quit = true;
@@ -267,35 +271,7 @@ int main(int argc, const char *argv[])
 		CurrentLevel->play->ExecuteTicCmd();
 
 		// Collision detection with floors
-		float k = numeric_limits<float>::lowest();
-		bool new_height = false;
-		for (int i = 0; i < CurrentLevel->ptrWalls.size(); i++)
-		{
-			if (pointInPoly(CurrentLevel->play->PosX, CurrentLevel->play->PosY, CurrentLevel->ptrWalls[i].Vertices))
-			{
-				float collision_point_z = PointHeightOnPoly(CurrentLevel->play->PosX, CurrentLevel->play->PosY,
-											CurrentLevel->play->PosZ, CurrentLevel->ptrWalls[i].Vertices);
-				if (!isnan(collision_point_z) && collision_point_z > k)
-				{
-					if (collision_point_z <= CurrentLevel->play->PosZ + CurrentLevel->play->MaxStep)
-					{
-						k = collision_point_z;
-						new_height = true;
-					}
-				}
-			}
-		}
-		if (new_height)
-		{
-			if (CurrentLevel->play->PosZ <= k + GRAVITY)
-			{
-				CurrentLevel->play->PosZ = k;
-			}
-			else
-			{
-				CurrentLevel->play->PosZ -= GRAVITY;
-			}
-		}
+		AdjustPlayerToFloor(CurrentLevel->play, CurrentLevel);
 
 		// Draw Screen
 		DrawScreen(window, CurrentLevel->play, CurrentLevel, FrameDelay);
