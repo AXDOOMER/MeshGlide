@@ -32,13 +32,12 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 	bool new_height = false;
 	for (int i = 0; i < lvl->ptrWalls.size(); i++)
 	{
-		if (pointInPoly(lvl->play->PosX, lvl->play->PosY, lvl->ptrWalls[i].Vertices))
+		if (pointInPoly(play->PosX, play->PosY, lvl->ptrWalls[i].Vertices))
 		{
-			float collision_point_z = PointHeightOnPoly(lvl->play->PosX, lvl->play->PosY,
-										lvl->play->PosZ, lvl->ptrWalls[i].Vertices);
+			float collision_point_z = PointHeightOnPoly(play->PosX, play->PosY, play->PosZ, lvl->ptrWalls[i].Vertices);
 			if (!isnan(collision_point_z) && collision_point_z > k)
 			{
-				if (collision_point_z <= lvl->play->PosZ + lvl->play->MaxStep)
+				if (collision_point_z <= play->PosZ + play->MaxStep)
 				{
 					k = collision_point_z;
 					new_height = true;
@@ -48,13 +47,13 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 	}
 	if (new_height)
 	{
-		if (lvl->play->PosZ <= k + GRAVITY)
+		if (play->PosZ <= k + GRAVITY)
 		{
-			lvl->play->PosZ = k;
+			play->PosZ = k;
 		}
 		else
 		{
-			lvl->play->PosZ -= GRAVITY;
+			play->PosZ -= GRAVITY;
 		}
 	}
 
