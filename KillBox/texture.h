@@ -37,6 +37,7 @@ public:
 	~Texture();
 
 	string Name() const;
+	string Extension() const;
 	unsigned int Id() const;
 	unsigned short Width() const;
 	unsigned short Height() const;

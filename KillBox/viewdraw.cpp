@@ -136,8 +136,10 @@ void RenderText(Level* lvl, string text, float x, float y, float sx, float sy)
 
 	glEnable(GL_TEXTURE_2D);
 
-	lvl->AddTexture("chars.bmp");
-	lvl->UseTexture("chars.bmp");	// bind
+	lvl->AddTexture("chars.png");
+	lvl->UseTexture("chars.png");	// bind
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);	// Reset the texture colorization to be neutral
 
 	for (int p = 0; p < text.size(); p++)
 	{
@@ -151,8 +153,6 @@ void RenderText(Level* lvl, string text, float x, float y, float sx, float sy)
 			const float dim = 1056.0f / 96.0f / 1036.0f;	// ~ 0.0106235521236f
 			float shift = dim * letter;
 			float pos = p * sx;
-
-			glColor3f(1.0f, 1.0f, 0.0f);	// Make the texture background green
 
 			glPushMatrix();
 				glBegin(GL_QUADS);
@@ -256,7 +256,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 	if (!lvl->SkyTexture.empty())
 	{
 		// Draw sky (relative to player)
-		lvl->UseTexture(lvl->SkyTexture);	// "cloud.bmp"
+		lvl->UseTexture(lvl->SkyTexture);	// "clouds.png"
 		glColor3f(1.0f, 1.0f, 1.0f);
 		glDisable(GL_CULL_FACE);
 		glPushMatrix();
@@ -335,6 +335,9 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 			}
 		}
 	}
+
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Render text as the last thing because else it will break the rendering
 	RenderText(lvl, FrameDelay + " ms", -0.9f, 0.8f, 0.05f, 0.15f);

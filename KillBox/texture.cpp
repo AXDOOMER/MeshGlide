@@ -18,29 +18,29 @@
 
 #include "texture.h"
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
 #include <string>
 #include <iostream>
 #include <stdexcept>
-#include <utility>	// swap
+#include <utility>	/* swap */
 using namespace std;
 
 Texture::Texture(const string& Path)
 {
 	// Surface: Blue, Green, Red
-	SDL_Surface* Image = SDL_LoadBMP(Path.c_str());
+	SDL_Surface* Surface = IMG_Load(Path.c_str());
 
-	if (!Image)
+	if (!Surface)
 	{
 		throw runtime_error("Error loading texture: " + Path);
 	}
 
 	_Name = Path;
-	_Width = Image->w;
-	_Height = Image->h;
+	_Width = Surface->w;
+	_Height = Surface->h;
 
 	// Create an OpenGL texture
 	GLuint textureID;
@@ -49,24 +49,52 @@ Texture::Texture(const string& Path)
 	// Bind the texture so that the next functions will modify that texture
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
-	// Protect the following code from a segmentation fault if the picture
-	// doesn't contain the expected number of bits per pixel.
-	// Improvement: SDL_ConvertSurfaceFormat ?
-	if (Image->format->BitsPerPixel != 24)
+	// Don't support other file extensions because they were not tested
+	if (Extension() != "jpg" && Extension() != "png")
 	{
-		throw runtime_error("Texture " + Path + " is not 24 bits per pixel!");
+		throw runtime_error("File " + Path + " has unsupported extension.");
 	}
 
-	// Flip the buffer.
-	Uint8 *pixels = (Uint8 *)Image->pixels;
-	unsigned int bytes = Image->w * Image->h * 3;
-	for (int i = 0; i < bytes / 2; i++)
+	GLint Mode;
+
+	string bits = to_string(Surface->format->BitsPerPixel);
+
+	if (Surface->format->BitsPerPixel == 24)
 	{
-		swap(pixels[i], pixels[bytes - i - 1]);
+		Mode = GL_RGB;
+
+		// Flip the buffer by 180 degrees.
+		Uint8* pixels = (Uint8*)Surface->pixels;
+		unsigned int bytes = Surface->w * Surface->h * 3;
+		for (int i = 0; i < bytes / 2; i++)
+		{
+			swap(pixels[i], pixels[bytes - i - 1]);
+		}
+		// Because of the flip, colors are now in BGR format. Swap blue and red bytes to become RGB.
+		for (int i = 0; i < bytes; i += 3)
+		{
+			swap(pixels[i], pixels[i + 2]);
+		}
+	}
+	else if (Surface->format->BitsPerPixel == 32)
+	{
+		Mode = GL_RGBA;
+
+		// Flip the buffer by 180 degrees.
+		Uint32* pixels = (Uint32*)Surface->pixels;
+		unsigned int bytes = Surface->w * Surface->h;
+		for (int i = 0; i < bytes / 2; i++)
+		{
+			swap(pixels[i], pixels[bytes - i - 1]);
+		}
+	}
+	else
+	{
+		throw runtime_error("Texture " + Path + " has an unsupported number of bits per pixel: " + bits);
 	}
 
 	// Load the texture. The GL_BGR format should be used, but the bytes of the buffer have been flipped above.
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Image->w, Image->h, 0, GL_RGB, GL_UNSIGNED_BYTE, Image->pixels);
+	glTexImage2D(GL_TEXTURE_2D, 0, Mode, Surface->w, Surface->h, 0, Mode, GL_UNSIGNED_BYTE, Surface->pixels);
 
 	// Repeat texture
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -86,14 +114,21 @@ Texture::Texture(const string& Path)
 
 	// Set the ID and free the surface
 	_Id = textureID;
-	SDL_FreeSurface(Image);
+	SDL_FreeSurface(Surface);
 
-	cout << "Texture loaded: '" << Path << "' is " << Image->w << "x" << Image->h << endl;	// Debug
+	cout << "Texture loaded: '" << Path << "' is " << Surface->w << 'x' << Surface->h << 'x' << bits << endl;
 }
 
 string Texture::Name() const
 {
 	return _Name;
+}
+
+string Texture::Extension() const
+{
+	if (_Name.find_last_of(".") != string::npos)
+		return _Name.substr(_Name.find_last_of(".") + 1);
+	return "";
 }
 
 GLuint Texture::Id() const

@@ -26,7 +26,7 @@
 #include <GL/freeglut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <SDL/SDL.h>	/* SDL_Delay */
+#include <SDL2/SDL.h>	/* SDL_Delay */
 
 #include <iostream>
 #include <string>
