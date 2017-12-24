@@ -37,6 +37,7 @@ Level* F_LoadLevel(const string& LevelName)
 	ifstream LevelFile(FileName.c_str());   //can't do it all on this line.
 	if (LevelFile.is_open())
 	{
+		bool blurTextures = false;
 		unsigned int Count = 0;
 		string Line;
 		while (!LevelFile.eof())     //Read the entire file until the end
@@ -86,7 +87,7 @@ Level* F_LoadLevel(const string& LevelName)
 
 						if (tokens[1] != "NOTEXTURE")
 						{
-							Current->AddTexture(tokens[1]);	// Add texture to cache
+							Current->AddTexture(tokens[1], blurTextures);	// Add texture to cache
 							p->Texture = tokens[1];
 						}
 
@@ -95,9 +96,13 @@ Level* F_LoadLevel(const string& LevelName)
 					}
 					else if (tokens[0] == "setting" && tokens.size() == 3)
 					{
-						if (tokens[1] == "skytex")
+						if (tokens[1] == "blur")
 						{
-							Current->AddTexture(tokens[2]);
+							blurTextures = tokens[2][0] != '0';
+						}
+						else if (tokens[1] == "skytex")
+						{
+							Current->AddTexture(tokens[2], blurTextures);
 							Current->SkyTexture = tokens[2];
 						}
 						else if (tokens[1] == "skyele")

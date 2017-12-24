@@ -33,7 +33,7 @@ private:
 	unsigned short _Height;
 public:
 	Texture() = delete;
-	Texture(const string& Path);
+	Texture(const string& Path, bool enableFiltering);
 	~Texture();
 
 	string Name() const;

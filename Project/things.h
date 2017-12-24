@@ -148,7 +148,7 @@ public:
 	float SkyHeigth = 5.0f;	// Sky elevation
 	string SkyTexture;
 
-	void AddTexture(const string& name);	// Add texture to cache if missing
+	void AddTexture(const string& name, bool enableFiltering);	// Add texture to cache if missing
 	void UseTexture(const string& name);	// Bind texture
 
 	~Level();

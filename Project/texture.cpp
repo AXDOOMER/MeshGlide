@@ -28,7 +28,7 @@
 #include <utility>	/* swap */
 using namespace std;
 
-Texture::Texture(const string& Path)
+Texture::Texture(const string& Path, bool enableFiltering)
 {
 	// Surface: Blue, Green, Red
 	SDL_Surface* Surface = IMG_Load(Path.c_str());
@@ -101,8 +101,16 @@ Texture::Texture(const string& Path)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	// Filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	if (!enableFiltering)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	}
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 

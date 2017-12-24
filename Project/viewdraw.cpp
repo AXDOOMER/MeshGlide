@@ -136,7 +136,7 @@ void RenderText(Level* lvl, string text, float x, float y, float sx, float sy)
 	glEnable(GL_TEXTURE_2D);
 
 	// Init font texture
-	lvl->AddTexture(fontfile);
+	lvl->AddTexture(fontfile, false);
 
 	// Bind the texture that has the fonts
 	lvl->UseTexture(fontfile);
