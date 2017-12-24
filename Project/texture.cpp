@@ -20,7 +20,7 @@
 
 #include <SDL2/SDL_image.h>
 #include <GL/gl.h>
-#include <GL/glu.h>
+#include <GL/glu.h>	/* gluErrorString */
 
 #include <string>
 #include <iostream>
@@ -52,7 +52,7 @@ Texture::Texture(const string& Path)
 	// Don't support other file extensions because they were not tested
 	if (Extension() != "jpg" && Extension() != "png")
 	{
-		throw runtime_error("File " + Path + " has unsupported extension.");
+		throw runtime_error("File " + Path + " has extension '" + Extension() + "' which is an unsupported format.");
 	}
 
 	GLint Mode;
