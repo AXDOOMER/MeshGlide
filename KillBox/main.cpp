@@ -63,7 +63,7 @@ int main(int argc, const char *argv[])
 	if (!DemoName.empty())
 	{
 		cout << "Playing demo: " << DemoName << endl;
-		DemoRead = ifstream(DemoName);
+		DemoRead.open(DemoName);
 		if (!DemoRead.is_open())
 		{
 			cout << "Could not open demo: " << DemoName << endl;
@@ -77,7 +77,7 @@ int main(int argc, const char *argv[])
 		if (!DemoName.empty())
 		{
 			cout << "Recoring demo: " << DemoName << endl;
-			DemoWrite = ofstream(DemoName);
+			DemoWrite.open(DemoName);
 			if (!DemoWrite.is_open())
 			{
 				cout << "Could not open demo file to write to: " << DemoName << endl;
