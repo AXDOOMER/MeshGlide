@@ -1,4 +1,4 @@
-# FPS_test (previously a prototype for [KillBox](https://github.com/AXDOOMER/KillBox))
+# FPS_simple (previously a prototype for [KillBox](https://github.com/AXDOOMER/KillBox))
 
 A simple FPS game that uses GLFW for the graphics and input. It is distributed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
@@ -6,13 +6,13 @@ It was a prototype to test the feasibility of a homemade OpenGL engine for [Kill
 
 It is now under development. The goal is to create an engine better than the [KillBox](https://github.com/AXDOOMER/KillBox) engine.
 
-### Dev
+### Development
 
-Compile and run on Linux: `g++ *.cpp -std=c++11 -lglfw -lGL -lGLU -lglut -lSDL -o FPS_test && ./FPS_test`
+Compile and run on Linux: `g++ *.cpp -std=c++11 -lglfw -lGL -lGLU -lglut -lSDL -o FPS_simple && ./FPS_simple`
 
 You may need to remove `physics.cpp`. It is preferable to compile and run the program using the `run.sh` script.
 
-Packages that may need to be installed (Debian): `apt-get install libglfw3 libglfw3-dev libsdl2-image-2.0-0 libsdl2-image-dev freeglut3 freeglut3-dev`
+Packages that may need to be installed (Debian): `libglfw3 libglfw3-dev libsdl2-image-2.0-0 libsdl2-image-dev freeglut3 freeglut3-dev`
 
 ### Random screenshots
 
