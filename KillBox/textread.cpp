@@ -67,13 +67,12 @@ Level* F_LoadLevel(const string& LevelName)
 					}
 					else if (tokens[0] == "poly" && (tokens.size() == 21 || tokens.size() == 18))
 					{
-						Wall wall;
-						wall.Texture = tokens[1];
-						wall.Impassable = tokens[2][0] != '0';
-						wall.TwoSided = tokens[3][0] != '0';
-						wall.Xscale = atof(tokens[4].c_str());
-						wall.Yscale = atof(tokens[5].c_str());
-						wall.Light = atof(tokens[8].c_str());
+						Plane* p = new Plane();
+						p->Impassable = tokens[2][0] != '0';
+						p->TwoSided = tokens[3][0] != '0';
+						p->Xscale = atof(tokens[4].c_str());
+						p->Yscale = atof(tokens[5].c_str());
+						p->Light = atof(tokens[8].c_str());
 
 						// polygons are quads for now
 						for (int i = 9; i < tokens.size(); i += 3)
@@ -82,11 +81,17 @@ Level* F_LoadLevel(const string& LevelName)
 							vt.x = atof(tokens[i].c_str());
 							vt.y = atof(tokens[i+1].c_str());
 							vt.z = atof(tokens[i+2].c_str());
-							wall.Vertices.push_back(vt);
+							p->Vertices.push_back(vt);
 						}
 
-						Current->AddTexture(tokens[1]);	// Add texture to cache
-						Current->ptrWalls.push_back(wall);
+						if (tokens[1] != "NOTEXTURE")
+						{
+							Current->AddTexture(tokens[1]);	// Add texture to cache
+							p->Texture = tokens[1];
+						}
+
+						p->ComputeWallInfo();			// Comment this line to become a ghost
+						Current->planes.push_back(p);
 					}
 					else if (tokens[0] == "setting" && tokens.size() == 3)
 					{

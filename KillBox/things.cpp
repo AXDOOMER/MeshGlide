@@ -21,6 +21,7 @@
 #include "cache.h"
 
 #include <cmath>
+#include <limits>		/* numeric_limits<float>::lowest() */
 #include <iostream>
 using namespace std;
 
@@ -100,24 +101,23 @@ void Player::Height(int newHeight)
 	height = newHeight;
 }
 
-int Player::M()
-{
-	return PosZ + height / 2;
-}
-
-int Player::V()
-{
-	return height * 4 / 3;
-}
-
 int Player::Radius()
 {
 	return radius;
 }
 
-void Player::HealthChange(int Change)
+Level::~Level()
 {
-	Health = Health + Change;
+	if (play != nullptr)
+	{
+		delete play;
+	}
+
+	// Delete planes
+	for (int i = 0; i < planes.size(); i++)
+	{
+		delete planes[i];
+	}
 }
 
 void Level::AddTexture(const string& name)
@@ -132,4 +132,76 @@ void Level::AddTexture(const string& name)
 void Level::UseTexture(const string& name)
 {
 	cache.Get(name)->Bind();
+}
+
+Plane::~Plane()
+{
+	if (WallInfo != nullptr)
+	{
+		delete WallInfo;
+	}
+}
+
+void Plane::ComputeWallInfo()
+{
+	int count = 0;
+
+	// Must find at least two points which are above each other to consider this a wall
+	for (int j = 0; j < Vertices.size(); j++)
+	{
+		for (int k = 0; k < Vertices.size(); k++)
+		{
+			if (j != k)	// Same, so skip
+			{
+				if (Vertices[j].x == Vertices[k].x &&
+					Vertices[j].y == Vertices[k].y)
+				{
+					// Above each other
+					count++;
+				}
+			}
+		}
+	}
+
+	if (count >= 2)
+	{
+		// Considered a wall
+		WallInfo = new Wall;
+
+		WallInfo->Length = 0;
+		WallInfo->LowZ = numeric_limits<float>::max();
+		WallInfo->HighZ = numeric_limits<float>::lowest();
+
+		for (int j = 0; j < Vertices.size(); j++)
+		{
+			// Height checks
+			if (Vertices[j].z < WallInfo->LowZ)
+			{
+				WallInfo->LowZ = Vertices[j].z;
+			}
+
+			if (Vertices[j].z > WallInfo->HighZ)
+			{
+				WallInfo->HighZ = Vertices[j].z;
+			}
+
+			// Find vertices which are the farthest apart
+			for (int k = 0; k < Vertices.size(); k++)
+			{
+				if (j != k)	// Same, so skip
+				{
+					float distance = pow(Vertices[j].x - Vertices[k].x, 2) + pow(Vertices[j].y - Vertices[k].y, 2);
+					if (distance > WallInfo->Length)
+					{
+						WallInfo->Length = distance;
+						WallInfo->Vertex1 = Vertices[j];
+						WallInfo->Vertex2 = Vertices[k];
+					}
+				}
+			}
+		}
+
+		// Angle between those two vertices
+		WallInfo->Angle = atan2(WallInfo->Vertex1.y - WallInfo->Vertex2.y, WallInfo->Vertex1.x - WallInfo->Vertex2.x);
+	}
 }

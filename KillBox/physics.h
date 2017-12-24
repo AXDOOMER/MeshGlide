@@ -20,6 +20,7 @@
 #define _PHYSICS_H
 
 #include "things.h"
+#include "vecmath.h"	// Custom library for vector math, collision with planes, etc.
 
 #include <cmath>		/* round, isnan */
 #include <limits>		/* numeric_limits<float>::lowest() */
@@ -28,28 +29,28 @@ using namespace std;
 // Collision detection with floors
 bool AdjustPlayerToFloor(Player* play, Level* lvl)
 {
-	float k = numeric_limits<float>::lowest();
-	bool new_height = false;
-	for (int i = 0; i < lvl->ptrWalls.size(); i++)
+	float TempHeight = numeric_limits<float>::lowest();
+	bool NewHeight = false;
+	for (int i = 0; i < lvl->planes.size(); i++)
 	{
-		if (pointInPoly(play->PosX, play->PosY, lvl->ptrWalls[i].Vertices))
+		if (pointInPoly(play->PosX, play->PosY, lvl->planes[i]->Vertices))
 		{
-			float collision_point_z = PointHeightOnPoly(play->PosX, play->PosY, play->PosZ, lvl->ptrWalls[i].Vertices);
-			if (!isnan(collision_point_z) && collision_point_z > k)
+			float collision_point_z = PointHeightOnPoly(play->PosX, play->PosY, play->PosZ, lvl->planes[i]->Vertices);
+			if (!isnan(collision_point_z) && collision_point_z > TempHeight)
 			{
 				if (collision_point_z <= play->PosZ + play->MaxStep)
 				{
-					k = collision_point_z;
-					new_height = true;
+					TempHeight = collision_point_z;
+					NewHeight = true;
 				}
 			}
 		}
 	}
-	if (new_height)
+	if (NewHeight)
 	{
-		if (play->PosZ <= k + GRAVITY)
+		if (play->PosZ <= TempHeight + GRAVITY)
 		{
-			play->PosZ = k;
+			play->PosZ = TempHeight;
 		}
 		else
 		{
@@ -57,7 +58,62 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 		}
 	}
 
-	return new_height;
+	return NewHeight;
 }
 
-#endif
+// Distance smaller than length (inside or touch)
+bool CompareDistanceToLength(float DiffX, float DiffY, float Length)
+{
+	return pow(DiffX, 2) + pow(DiffY, 2) <= Length * Length;
+}
+
+// Returns true if the vector hits any walls
+bool HitsWall(Float3 origin, Float3 target, Level* lvl)
+{
+	for (int i = 0; i < lvl->planes.size(); i++)
+	{
+		// Test vertical planes which are walls
+		if (lvl->planes[i]->WallInfo != nullptr)
+		{
+			// Wall above or bellow player.
+			if (lvl->planes[i]->WallInfo->HighZ <= origin.z + lvl->play->MaxStep || lvl->planes[i]->WallInfo->LowZ >= origin.z + 3.0f)
+			{
+				// Can't be any collision.
+				continue;
+			}
+
+			// Player can touch this wall.
+			const float RadiusToUse = 1;	// BAD HARDCODED VALUE
+
+			// Create new variables for readability
+			Float3 First = lvl->planes[i]->WallInfo->Vertex1;
+			Float3 Second = lvl->planes[i]->WallInfo->Vertex2;
+
+			// Get the orthogonal vector, so invert the use of 'sin' and 'cos' here.
+			float OrthVectorStartX = origin.x + sin(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
+			float OrthVectorStartY = origin.y + cos(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
+			float OrthVectorEndX = target.x - sin(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
+			float OrthVectorEndY = target.y - cos(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
+
+			// Cramer's rule, inspiration taken from here: https://stackoverflow.com/a/1968345
+			float WallDiffX = Second.x - First.x;    // Vector's X from (0,0)
+			float WallDiffY = Second.y - First.y;    // Vector's Y from (0,0)
+			float VectorWallOrthDiffX = OrthVectorEndX - OrthVectorStartX;
+			float VectorWallOrthDiffY = OrthVectorEndY - OrthVectorStartY;
+
+			float Denominator = -VectorWallOrthDiffX * WallDiffY + WallDiffX * VectorWallOrthDiffY;
+			float PointWall = (-WallDiffY * (First.x - OrthVectorStartX) + WallDiffX * (First.y - OrthVectorStartY)) / Denominator;
+			float PointVectorOrth = (VectorWallOrthDiffX * (First.y - OrthVectorStartY) - VectorWallOrthDiffY * (First.x - OrthVectorStartX)) / Denominator;
+
+			// Check if a collision is detected (Not checking if touching an endpoint)
+			if (PointWall >= 0 && PointWall <= 1 && PointVectorOrth >= 0 && PointVectorOrth <= 1)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+#endif	// _PHYSICS_H

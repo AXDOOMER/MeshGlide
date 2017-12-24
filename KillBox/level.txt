@@ -1,12 +1,12 @@
-# Use tabs with a width of 8 to view this file
+# Use tabs with a width of 4 to view this file. It can also be opened as a CSV file where values are separated with tabs.
 #THING	TYPE	X	Y	Z 	ANGLE
 thing	player	0	-5	2	90
 thing	plant	128	128	0	0
 setting	skytex	clouds.jpg
 setting	skyele	10
-#POLY	TEXTURE		BLC	DBS	ScX	ScY	AlX	AlY	Lit	X	Y	Z	X	Y	Z	X	Y	Z	X	Y	Z
+#POLY	NOTEXTURE	BLC	DBS	ScX	ScY	AlX	AlY	Lit	X	Y	Z	X	Y	Z	X	Y	Z	X	Y	Z
 poly	grass.png	1	0	16	16	0	0	1	-35	-35	0	35	-35	0	35	35	0	-35	35	0
-poly	skyblue.jpg	1	0	1	1	0	0	1	-5	10	10	-5	-10	10	-5	-10	-10	-5	10	-10
+poly	skyblue.jpg	1	1	1	1	0	0	1	-5	10	10	-5	-10	10	-5	-10	-10	-5	10	-10
 poly	rock.jpg	1	1	1	1	0	0	0.2	15	15	10	15	15	0	5	15	0	5	15	10
 poly	cliff.png	1	1	1	1	0	0	1	-2	5	1	8	5	1	4	-8	1
 # Build the rock construction at the edge of the map
@@ -33,7 +33,7 @@ poly	concrete.jpg	1	0	1	1	0	0	1	-12	-3	4.5	-12	-12	4.5	-12	-12	0	-12	-2	0
 poly	concrete.jpg	1	0	1	1	0	0	1	-21	-3	4.5	-12	-3	4.5	-12	-2	0	-21	-2	0
 poly	concrete.jpg	1	0	1	1	0	0	1	-21	-12	4.5	-21	-3	4.5	-21	-2	0	-21	-12	0
 poly	concrete.jpg	1	0	1	1	0	0	1	-12	-12	4.5	-21	-12	4.5	-21	-12	0	-12	-12	0
-poly	concrete.jpg	1	1	1	1	0	0	0.5	-12	-6	6	-12	-9	6	-12	-9	4.5	-12	-6	4.5
+poly	concrete.jpg	1	1	1	1	0	0	0.5	-12	-6	6.2	-12	-9	6.2	-12	-9	4.5	-12	-6	4.5
 # Build the walls for the previous structure: Walls of the pillar at the top of the stairs
 poly	concrete.jpg	1	0	1	1	0	0	1	-18	-24	4	-15	-24	4	-15	-24	0	-18	-24	0
 poly	concrete.jpg	1	0	1	1	0	0	1	-18	-27	4	-18	-24	4	-18	-24	0	-18	-27	0

@@ -28,6 +28,7 @@ using namespace std;
 
 const string WindowTitle = "3D engine";
 const string chars = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+const string fontfile = "chars.png";
 
 void SetWindowTitle(GLFWwindow* window, string Title);
 

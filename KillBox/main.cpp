@@ -20,7 +20,7 @@
 #include "command.h"
 #include "things.h"
 #include "textread.h"
-#include "vecmath.h"	// Custom library for vector math, collision with planes, etc.
+#include "vecmath.h"	// Remove when Float3 is removed from this file
 #include "physics.h"
 
 #include <GLFW/glfw3.h>
@@ -38,7 +38,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.18 (dev)";
+	const char* const VERSION = "0.19 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -257,7 +257,7 @@ int main(int argc, const char *argv[])
 
 		if (glfwGetKey(window, GLFW_KEY_SPACE))
 		{
-			CurrentLevel->play->PosZ = CurrentLevel->play->PosZ + GRAVITY * 2;
+			CurrentLevel->play->PosZ = CurrentLevel->play->PosZ + GRAVITY * 1.5f;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE))
@@ -268,9 +268,20 @@ int main(int argc, const char *argv[])
 		// Send Commands over Network
 
 		// Update game logic
+		Float3 pt = {CurrentLevel->play->PosX, CurrentLevel->play->PosY, CurrentLevel->play->PosZ};
+
+		TicCmd tc = CurrentLevel->play->Cmd;
 		CurrentLevel->play->ExecuteTicCmd();
 
 		// Collision detection with floors
+		if (HitsWall({CurrentLevel->play->PosX, CurrentLevel->play->PosY, CurrentLevel->play->PosZ}, pt, CurrentLevel))
+		{
+			tc.forward = -tc.forward;
+			tc.lateral = -tc.lateral;
+			CurrentLevel->play->Cmd = tc;
+			CurrentLevel->play->ExecuteTicCmd();
+		}
+
 		AdjustPlayerToFloor(CurrentLevel->play, CurrentLevel);
 
 		// Draw Screen

@@ -135,9 +135,11 @@ void RenderText(Level* lvl, string text, float x, float y, float sx, float sy)
 
 	glEnable(GL_TEXTURE_2D);
 
-	// Add texture (will be added if not in cache) and bind it
-	lvl->AddTexture("chars.png");
-	lvl->UseTexture("chars.png");
+	// Init font texture
+	lvl->AddTexture(fontfile);
+
+	// Bind the texture that has the fonts
+	lvl->UseTexture(fontfile);
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);	// Reset the texture colorization to be neutral
 
@@ -202,54 +204,56 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 	if (lvl != nullptr)
 	{
 		// Draw walls
-		for (int i = 0; i < lvl->ptrWalls.size(); i++)
+		for (int i = 0; i < lvl->planes.size(); i++)
 		{
-			lvl->UseTexture(lvl->ptrWalls[i].Texture);
-
-			if (lvl->ptrWalls[i].TwoSided)
-				glDisable(GL_CULL_FACE);
-			else
-				glEnable(GL_CULL_FACE);
-
-			glPushMatrix();
+			if (!lvl->planes[i]->Texture.empty())
 			{
-				//glTranslatef(0, 0, 0);
-				// Light: Could be made RGB tint later
-				glColor3f(lvl->ptrWalls[i].Light, lvl->ptrWalls[i].Light, lvl->ptrWalls[i].Light);
+				lvl->UseTexture(lvl->planes[i]->Texture);
 
-				if (lvl->ptrWalls[i].Vertices.size() == 4)
+				if (lvl->planes[i]->TwoSided)
+					glDisable(GL_CULL_FACE);
+				else
+					glEnable(GL_CULL_FACE);
+
+				glPushMatrix();
 				{
-					// Polygons that are square
-					glBegin(GL_QUADS);
+					//glTranslatef(0, 0, 0);
+					// Light: Could be made RGB tint later
+					glColor3f(lvl->planes[i]->Light, lvl->planes[i]->Light, lvl->planes[i]->Light);
+
+					if (lvl->planes[i]->Vertices.size() == 4)
 					{
-						glTexCoord2f(0, 1 * lvl->ptrWalls[i].Yscale);
-						glVertex3f(lvl->ptrWalls[i].Vertices[0].y, lvl->ptrWalls[i].Vertices[0].z, lvl->ptrWalls[i].Vertices[0].x);
-						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 1 * lvl->ptrWalls[i].Yscale);
-						glVertex3f(lvl->ptrWalls[i].Vertices[1].y, lvl->ptrWalls[i].Vertices[1].z, lvl->ptrWalls[i].Vertices[1].x);
-						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 0);
-						glVertex3f(lvl->ptrWalls[i].Vertices[2].y, lvl->ptrWalls[i].Vertices[2].z, lvl->ptrWalls[i].Vertices[2].x);
-						glTexCoord2f(0, 0);
-						glVertex3f(lvl->ptrWalls[i].Vertices[3].y, lvl->ptrWalls[i].Vertices[3].z, lvl->ptrWalls[i].Vertices[3].x);
+						// Polygons that are square
+						glBegin(GL_QUADS);
+						{
+							glTexCoord2f(0, 1 * lvl->planes[i]->Yscale);
+							glVertex3f(lvl->planes[i]->Vertices[0].y, lvl->planes[i]->Vertices[0].z, lvl->planes[i]->Vertices[0].x);
+							glTexCoord2f(1 * lvl->planes[i]->Xscale, 1 * lvl->planes[i]->Yscale);
+							glVertex3f(lvl->planes[i]->Vertices[1].y, lvl->planes[i]->Vertices[1].z, lvl->planes[i]->Vertices[1].x);
+							glTexCoord2f(1 * lvl->planes[i]->Xscale, 0);
+							glVertex3f(lvl->planes[i]->Vertices[2].y, lvl->planes[i]->Vertices[2].z, lvl->planes[i]->Vertices[2].x);
+							glTexCoord2f(0, 0);
+							glVertex3f(lvl->planes[i]->Vertices[3].y, lvl->planes[i]->Vertices[3].z, lvl->planes[i]->Vertices[3].x);
+						}
+						glEnd();
 					}
-					glEnd();
-				}
-				else if (lvl->ptrWalls[i].Vertices.size() == 3)
-				{
-					// Polygons that have a triangular shape
-					glBegin(GL_TRIANGLES);
+					else if (lvl->planes[i]->Vertices.size() == 3)
 					{
-						glTexCoord2f(0, 1 * lvl->ptrWalls[i].Yscale);
-						glVertex3f(lvl->ptrWalls[i].Vertices[0].y, lvl->ptrWalls[i].Vertices[0].z, lvl->ptrWalls[i].Vertices[0].x);
-						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 1 * lvl->ptrWalls[i].Yscale);
-						glVertex3f(lvl->ptrWalls[i].Vertices[1].y, lvl->ptrWalls[i].Vertices[1].z, lvl->ptrWalls[i].Vertices[1].x);
-						glTexCoord2f(1 * lvl->ptrWalls[i].Xscale, 0);
-						glVertex3f(lvl->ptrWalls[i].Vertices[2].y, lvl->ptrWalls[i].Vertices[2].z, lvl->ptrWalls[i].Vertices[2].x);
+						// Polygons that have a triangular shape
+						glBegin(GL_TRIANGLES);
+						{
+							glTexCoord2f(0, 1 * lvl->planes[i]->Yscale);
+							glVertex3f(lvl->planes[i]->Vertices[0].y, lvl->planes[i]->Vertices[0].z, lvl->planes[i]->Vertices[0].x);
+							glTexCoord2f(1 * lvl->planes[i]->Xscale, 1 * lvl->planes[i]->Yscale);
+							glVertex3f(lvl->planes[i]->Vertices[1].y, lvl->planes[i]->Vertices[1].z, lvl->planes[i]->Vertices[1].x);
+							glTexCoord2f(1 * lvl->planes[i]->Xscale, 0);
+							glVertex3f(lvl->planes[i]->Vertices[2].y, lvl->planes[i]->Vertices[2].z, lvl->planes[i]->Vertices[2].x);
+						}
+						glEnd();
 					}
-					glEnd();
 				}
+				glPopMatrix();
 			}
-			glPopMatrix();
-
 		}
 	}
 

@@ -76,18 +76,10 @@ private:
 	const float MaxWalkSpeed = 0.6f;
 	const float MaxRunSpeed = 1.1f;
 
-//	const int ViewZ = 42;
-	char Damages = 0;	//Damage location indicator: 0=none, 1=both, 2=left, 3=right
-
 	int radius = 16;
 	int height = 56;
-	int Health = 100;	//The player's life condition
-	int Armor = 100;	//Recharging Energy Shield
-	char ArmorClass = 0;
 
-	unsigned int Tags;		//Encode weapons and special proprieties
-
-	int Kills = 0;		//For deathmatch
+	int Kills = 0;		// For deathmatch
 	int Deaths = 0;
 
 public:
@@ -97,14 +89,11 @@ public:
 	void ForwardMove(int Thrust);
 	void LateralMove(int Thrust);
 	void AngleTurn(short AngleChange);
-	void Fall(/* Map*  */);
 
 	// Way to do OOP
 	int Height();					// Get height
 	void Height(int newHeight);		// Set height
 
-	int M();						// Get middle height
-	int V();						// Get view height
 	int Radius();					// Get radius;
 	void HealthChange(int Change);	// Change the player's health
 };
@@ -122,30 +111,47 @@ public:
 
 struct Wall
 {
+	float LowZ;	// Lowest point of the wall
+	float HighZ;	// Highest point of the wall
+	float Length;	// Length from one vertex to the other
+	Float3 Vertex1;	// Vertex where the wall starts
+	Float3 Vertex2;	// Vertex where the wall ends
+	float Angle;	// Angle formed between the vertices
+};
+
+class Plane
+{
+public:
 	// TODO: Compute the 3D orentation of a poly and keep the unit vector data for collision detection
     string Texture;
 	bool Impassable = true;
 	bool TwoSided = false;
 	vector<Float3> Vertices;
+	Wall* WallInfo = nullptr;
 	float Xscale = 0;
 	float Yscale = 0;
 	float Xoff = 0;
 	float Yoff = 0;
 	float Light = 1;	// Must be between 0 (dark) and 1 (full bright)
+
+	void ComputeWallInfo();
+	~Plane();
 };
 
 class Level
 {
 public:
 	Cache<string, Texture> cache;
-	vector<Wall> ptrWalls;
-	Player* play;
+	vector<Plane*> planes;
+	Player* play = nullptr;
 	float scaling = 1.0f;	// Level scaling
 	float SkyHeigth = 5.0f;	// Sky elevation
 	string SkyTexture;
 
 	void AddTexture(const string& name);	// Add texture to cache if missing
 	void UseTexture(const string& name);	// Bind texture
+
+	~Level();
 };
 
 struct SpawnSpot
