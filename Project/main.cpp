@@ -274,7 +274,7 @@ int main(int argc, const char *argv[])
 		CurrentLevel->play->ExecuteTicCmd();
 
 		// Collision detection with floors
-		if (HitsWall({CurrentLevel->play->PosX, CurrentLevel->play->PosY, CurrentLevel->play->PosZ}, pt, CurrentLevel))
+		if (HitsWall({CurrentLevel->play->PosX, CurrentLevel->play->PosY, CurrentLevel->play->PosZ}, pt, CurrentLevel->play->Radius, CurrentLevel))
 		{
 			tc.forward = -tc.forward;
 			tc.lateral = -tc.lateral;

@@ -67,8 +67,8 @@ bool CompareDistanceToLength(float DiffX, float DiffY, float Length)
 	return pow(DiffX, 2) + pow(DiffY, 2) <= Length * Length;
 }
 
-// Returns true if the vector hits any walls
-bool HitsWall(Float3 origin, Float3 target, Level* lvl)
+// Returns true if the vector hits any walls. The vector has a circular endpoint.
+bool HitsWall(Float3 origin, Float3 target, float RadiusToUse, Level* lvl)
 {
 	for (int i = 0; i < lvl->planes.size(); i++)
 	{
@@ -82,9 +82,6 @@ bool HitsWall(Float3 origin, Float3 target, Level* lvl)
 				continue;
 			}
 
-			// Player can touch this wall.
-			const float RadiusToUse = 1;	// BAD HARDCODED VALUE
-
 			// Create new variables for readability
 			Float3 First = lvl->planes[i]->WallInfo->Vertex1;
 			Float3 Second = lvl->planes[i]->WallInfo->Vertex2;
@@ -92,8 +89,8 @@ bool HitsWall(Float3 origin, Float3 target, Level* lvl)
 			// Get the orthogonal vector, so invert the use of 'sin' and 'cos' here.
 			float OrthVectorStartX = origin.x + sin(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
 			float OrthVectorStartY = origin.y + cos(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
-			float OrthVectorEndX = target.x - sin(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
-			float OrthVectorEndY = target.y - cos(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
+			float OrthVectorEndX = origin.x - sin(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
+			float OrthVectorEndY = origin.y - cos(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
 
 			// Cramer's rule, inspiration taken from here: https://stackoverflow.com/a/1968345
 			float WallDiffX = Second.x - First.x;    // Vector's X from (0,0)
@@ -108,8 +105,12 @@ bool HitsWall(Float3 origin, Float3 target, Level* lvl)
 			// Check if a collision is detected (Not checking if touching an endpoint)
 			if (PointWall >= 0 && PointWall <= 1 && PointVectorOrth >= 0 && PointVectorOrth <= 1)
 			{
+				// Collision detected
+//				cout << "Collision at " << First.x + (PointVectorOrth * WallDiffX) << ", " << First.y + (PointVectorOrth * WallDiffY) << endl;	// DEBUG
 				return true;
 			}
+
+			// TODO: Check for a collision with both endpoints of the wall
 		}
 	}
 

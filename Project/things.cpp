@@ -91,21 +91,6 @@ void Player::AngleTurn(short AngleChange)
 	}
 }
 
-int Player::Height()
-{
-	return height;
-}
-
-void Player::Height(int newHeight)
-{
-	height = newHeight;
-}
-
-int Player::Radius()
-{
-	return radius;
-}
-
 Level::~Level()
 {
 	if (play != nullptr)

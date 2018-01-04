@@ -60,6 +60,7 @@ public:
 	char MoY = 0;
 	char MoZ = 0;		// Used by gravity
 	const float MaxStep = 1.5f;
+	const float Radius = 1.0f;
 
 	// Weapons that are in the player's possession
 	bool OwnedWeapons[MAXOWNEDWEAPONS];
@@ -76,8 +77,7 @@ private:
 	const float MaxWalkSpeed = 0.6f;
 	const float MaxRunSpeed = 1.1f;
 
-	int radius = 16;
-	int height = 56;
+	const float Height = 2.0f;
 
 	int Kills = 0;		// For deathmatch
 	int Deaths = 0;
@@ -89,13 +89,6 @@ public:
 	void ForwardMove(int Thrust);
 	void LateralMove(int Thrust);
 	void AngleTurn(short AngleChange);
-
-	// Way to do OOP
-	int Height();					// Get height
-	void Height(int newHeight);		// Set height
-
-	int Radius();					// Get radius;
-	void HealthChange(int Change);	// Change the player's health
 };
 
 class Critter
