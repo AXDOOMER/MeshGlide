@@ -52,9 +52,7 @@ public:
 	short Angle = 8192;	// Yaw
 	float VerticalAim = 0;	// Pitch
 
-	float PosX = 0;
-	float PosY = 0;
-	float PosZ = 0;		// Height of player's feet
+	Float3 pos_;		// Position of player's feet
 	const float ViewZ = 2.0f;
 	char MoX = 0;		// Speed vector (momentum)
 	char MoY = 0;
@@ -76,6 +74,9 @@ public:
 	short Cells = 0;
 
 	Player(); // We need a constructor for the weapons array
+	float PosX();
+	float PosY();
+	float PosZ();
 
 private:
 	const float MaxWalkSpeed = 0.6f;

@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2017 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2018 Alexandre-Xavier Labonté-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -60,9 +60,9 @@ Level* F_LoadLevel(const string& LevelName)
 						if (tokens[1] == "player")
 						{
 							Current->play = new Player;
-							Current->play->PosX = atof(tokens[2].c_str());
-							Current->play->PosY = atof(tokens[3].c_str());
-							Current->play->PosZ = atof(tokens[4].c_str());
+							Current->play->pos_.x = atof(tokens[2].c_str());
+							Current->play->pos_.y = atof(tokens[3].c_str());
+							Current->play->pos_.z = atof(tokens[4].c_str());
 							Current->play->Angle = (short)atoi(tokens[5].c_str()) * 91.0222222222f;
 						}
 					}

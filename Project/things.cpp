@@ -40,16 +40,16 @@ Player::Player()
 // TODO: Improve the movement system so the division by 64 can be avoided
 void Player::ForwardMove(int Thrust)
 {
-	PosX += ((float)Thrust / 64) * cos(GetRadianAngle(Angle));
-	PosY += ((float)Thrust / 64) * sin(GetRadianAngle(Angle));
+	pos_.x += ((float)Thrust / 64) * cos(GetRadianAngle(Angle));
+	pos_.y += ((float)Thrust / 64) * sin(GetRadianAngle(Angle));
 }
 
 void Player::LateralMove(int Thrust)
 {
 	float LateralAngle = GetRadianAngle(Angle) - PI / 2;
 
-	PosX += ((float)Thrust / 64) * cos(LateralAngle);
-	PosY += ((float)Thrust / 64) * sin(LateralAngle);
+	pos_.x += ((float)Thrust / 64) * cos(LateralAngle);
+	pos_.y += ((float)Thrust / 64) * sin(LateralAngle);
 }
 
 void Player::ExecuteTicCmd()
@@ -91,6 +91,21 @@ void Player::AngleTurn(short AngleChange)
 			Angle = Angle + 32768;
 		}
 	}
+}
+
+float Player::PosX()
+{
+	return pos_.x;
+}
+
+float Player::PosY()
+{
+	return pos_.y;
+}
+
+float Player::PosZ()
+{
+	return pos_.z;
 }
 
 Level::~Level()

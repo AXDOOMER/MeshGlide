@@ -33,12 +33,12 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 	bool ChangeHeight = false;
 	for (int i = 0; i < lvl->planes.size(); i++)
 	{
-		if (pointInPoly(play->PosX, play->PosY, lvl->planes[i]->Vertices))
+		if (pointInPoly(play->PosX(), play->PosY(), lvl->planes[i]->Vertices))
 		{
-			float collision_point_z = PointHeightOnPoly(play->PosX, play->PosY, play->PosZ, lvl->planes[i]->Vertices);
+			float collision_point_z = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), lvl->planes[i]->Vertices);
 			if (!isnan(collision_point_z) && collision_point_z > NewHeight)
 			{
-				if (collision_point_z <= play->PosZ + play->MaxStep)
+				if (collision_point_z <= play->PosZ() + play->MaxStep)
 				{
 					NewHeight = collision_point_z;
 					ChangeHeight = true;
@@ -48,16 +48,16 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 	}
 	if (ChangeHeight)
 	{
-		if (play->PosZ <= NewHeight + GRAVITY)
+		if (play->PosZ() <= NewHeight + GRAVITY)
 		{
-			play->PosZ = NewHeight;
+			play->pos_.z = NewHeight;
 			play->AirTime = 0;
 			play->Jump = false;
 			play->Fly = false;
 		}
 		else
 		{
-			play->PosZ -= GRAVITY * 0.1f * play->AirTime;
+			play->pos_.z -= GRAVITY * 0.1f * play->AirTime;
 			play->AirTime++;
 			play->Fly = true;	// If player is falling, but has not jumped, he must not be able to jump.
 		}

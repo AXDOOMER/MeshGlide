@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2017 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2018 Alexandre-Xavier Labonté-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -187,9 +187,9 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 	glEnable(GL_TEXTURE_2D);
 
 	gluLookAt(
-		play->PosY, play->PosZ + play->ViewZ, play->PosX,		// Camera's position
-		play->PosY + sin(play->GetRadianAngle(play->Angle)), play->PosZ + play->ViewZ + play->VerticalAim,
-						play->PosX + cos(play->GetRadianAngle(play->Angle)),	// What the camera will look at
+		play->PosY(), play->PosZ() + play->ViewZ, play->PosX(),		// Camera's position
+		play->PosY() + sin(play->GetRadianAngle(play->Angle)), play->PosZ() + play->ViewZ + play->VerticalAim,
+						play->PosX() + cos(play->GetRadianAngle(play->Angle)),	// What the camera will look at
 		0.0, 1.0, 0.0);	// This is for the camera's frame rotation
 
 	//glRotatef( xrot, 1.0f, 0.0f, 0.0f); /* Rotate On The X Axis */
@@ -268,13 +268,13 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 				// (Xpos, Zpos, Ypos)
 				// TODO: Use this for sky coords: glTranslatef(play->PosY, play->PosZ, play->PosX);
 				glTexCoord2f(-1, 1);
-				glVertex3f(play->PosY + lvl->SkyHeigth * 20.0f, play->PosZ + lvl->SkyHeigth, play->PosX - lvl->SkyHeigth * 20.0f);
+				glVertex3f(play->PosY() + lvl->SkyHeigth * 20.0f, play->PosZ() + lvl->SkyHeigth, play->PosX() - lvl->SkyHeigth * 20.0f);
 				glTexCoord2f(1, 1);
-				glVertex3f(play->PosY + lvl->SkyHeigth * 20.0f, play->PosZ + lvl->SkyHeigth, play->PosX + lvl->SkyHeigth * 20.0f);
+				glVertex3f(play->PosY() + lvl->SkyHeigth * 20.0f, play->PosZ() + lvl->SkyHeigth, play->PosX() + lvl->SkyHeigth * 20.0f);
 				glTexCoord2f(1, -1);
-				glVertex3f(play->PosY - lvl->SkyHeigth * 20.0f, play->PosZ + lvl->SkyHeigth, play->PosX + lvl->SkyHeigth * 20.0f);
+				glVertex3f(play->PosY() - lvl->SkyHeigth * 20.0f, play->PosZ() + lvl->SkyHeigth, play->PosX() + lvl->SkyHeigth * 20.0f);
 				glTexCoord2f(-1, -1);
-				glVertex3f(play->PosY - lvl->SkyHeigth * 20.0f, play->PosZ + lvl->SkyHeigth, play->PosX - lvl->SkyHeigth * 20.0f);
+				glVertex3f(play->PosY() - lvl->SkyHeigth * 20.0f, play->PosZ() + lvl->SkyHeigth, play->PosX() - lvl->SkyHeigth * 20.0f);
 			glEnd();
 		glPopMatrix();
 	}
@@ -288,7 +288,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 	{
 		for (int j = -3; j <= 3; j++)
 		{
-			float distance = pow(play->PosX - j*10, 2) + pow(play->PosY - i*10, 2);
+			float distance = pow(play->PosX() - j*10, 2) + pow(play->PosY() - i*10, 2);
 			if (distance <= 500)
 			{
 				glColor3f(1.0f, 1.0f, 1.0f);

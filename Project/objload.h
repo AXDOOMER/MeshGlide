@@ -77,9 +77,7 @@ public:
 
 			// Create player for level
 			lvl->play = new Player;
-			lvl->play->PosX = 0;
-			lvl->play->PosY = 0;
-			lvl->play->PosZ = 50;	// This value is set intentionally high
+			lvl->play->pos_ = {0, 0, 50};	// Height is intentionally set high
 			lvl->play->Angle = 0;
 
 			while (!model.eof())

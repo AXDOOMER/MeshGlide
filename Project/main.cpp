@@ -39,7 +39,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.22 (dev)";
+	const char* const VERSION = "0.23 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -274,7 +274,7 @@ int main(int argc, const char *argv[])
 				CurrentLevel->play->Jump = true;
 
 			if (CurrentLevel->play->Jump)
-				CurrentLevel->play->PosZ = CurrentLevel->play->PosZ + GRAVITY * 1.5f;
+				CurrentLevel->play->pos_.z = CurrentLevel->play->PosZ() + GRAVITY * 1.5f;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE))
@@ -285,13 +285,13 @@ int main(int argc, const char *argv[])
 		// Send Commands over Network
 
 		// Update game logic
-		Float3 pt = {CurrentLevel->play->PosX, CurrentLevel->play->PosY, CurrentLevel->play->PosZ};
+		Float3 pt = {CurrentLevel->play->PosX(), CurrentLevel->play->PosY(), CurrentLevel->play->PosZ()};
 
 		TicCmd tc = CurrentLevel->play->Cmd;
 		CurrentLevel->play->ExecuteTicCmd();
 
 		// Collision detection with floors
-		if (HitsWall({CurrentLevel->play->PosX, CurrentLevel->play->PosY, CurrentLevel->play->PosZ}, pt, CurrentLevel->play->Radius, CurrentLevel))
+		if (HitsWall({CurrentLevel->play->PosX(), CurrentLevel->play->PosY(), CurrentLevel->play->PosZ()}, pt, CurrentLevel->play->Radius, CurrentLevel))
 		{
 			tc.forward = -tc.forward;
 			tc.lateral = -tc.lateral;
@@ -309,8 +309,8 @@ int main(int argc, const char *argv[])
         // Status of the player for debugging purposes
 		if (Debug)
 		{
-			cout << "X: " << CurrentLevel->play->PosX << "\t\tY: " << CurrentLevel->play->PosY
-				<< "\t\tZ: " << CurrentLevel->play->PosZ << "\t\tA: " << CurrentLevel->play->Angle << endl;
+			cout << "X: " << CurrentLevel->play->PosX() << "\t\tY: " << CurrentLevel->play->PosY()
+				<< "\t\tZ: " << CurrentLevel->play->PosZ() << "\t\tA: " << CurrentLevel->play->Angle << endl;
 		}
 
 		TicCount++;
