@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2017 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2018 Alexandre-Xavier Labonté-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #include "command.h"
 #include "things.h"
 #include "textread.h"
+#include "objload.h"
 #include "vecmath.h"	// Remove when Float3 is removed from this file
 #include "physics.h"
 
@@ -38,7 +39,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.20 (dev)";
+	const char* const VERSION = "0.21 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -120,12 +121,26 @@ int main(int argc, const char *argv[])
 		cin >> LevelName;
 	}
 
-	Level* CurrentLevel = F_LoadLevel(LevelName);
+	Level* CurrentLevel;	// Holds the level data
+
+	if (LevelName.rfind(".obj") == LevelName.size() - 4)
+	{
+		Obj obj = Obj(LevelName);
+		CurrentLevel = obj.lvl;
+		AdjustPlayerToFloor(CurrentLevel->play, CurrentLevel);
+	}
+	else
+	{
+		CurrentLevel = F_LoadLevel(LevelName);
+	}
+
 	if (!CurrentLevel)
 	{
 		cout << "ERROR: Cannot load level '" << LevelName << "'" << endl;
 		exit(EXIT_FAILURE);
 	}
+
+
 
 	/****************************** SETUP PHASE ******************************/
 
@@ -255,9 +270,13 @@ int main(int argc, const char *argv[])
 			}
 		}
 
-		if (glfwGetKey(window, GLFW_KEY_SPACE))
+		if (glfwGetKey(window, GLFW_KEY_SPACE) || CurrentLevel->play->Jump)
 		{
-			CurrentLevel->play->PosZ = CurrentLevel->play->PosZ + GRAVITY * 1.5f;
+			if (!CurrentLevel->play->Fly)
+				CurrentLevel->play->Jump = true;
+
+			if (CurrentLevel->play->Jump)
+				CurrentLevel->play->PosZ = CurrentLevel->play->PosZ + GRAVITY * 1.5f;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE))

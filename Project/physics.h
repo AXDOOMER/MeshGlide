@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2017 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2018 Alexandre-Xavier Labonté-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,39 +29,44 @@ using namespace std;
 // Collision detection with floors
 bool AdjustPlayerToFloor(Player* play, Level* lvl)
 {
-	float TempHeight = numeric_limits<float>::lowest();
-	bool NewHeight = false;
+	float NewHeight = numeric_limits<float>::lowest();
+	bool ChangeHeight = false;
 	for (int i = 0; i < lvl->planes.size(); i++)
 	{
 		if (pointInPoly(play->PosX, play->PosY, lvl->planes[i]->Vertices))
 		{
 			float collision_point_z = PointHeightOnPoly(play->PosX, play->PosY, play->PosZ, lvl->planes[i]->Vertices);
-			if (!isnan(collision_point_z) && collision_point_z > TempHeight)
+			if (!isnan(collision_point_z) && collision_point_z > NewHeight)
 			{
 				if (collision_point_z <= play->PosZ + play->MaxStep)
 				{
-					TempHeight = collision_point_z;
-					NewHeight = true;
+					NewHeight = collision_point_z;
+					ChangeHeight = true;
 				}
 			}
 		}
 	}
-	if (NewHeight)
+	if (ChangeHeight)
 	{
-		if (play->PosZ <= TempHeight + GRAVITY)
+		if (play->PosZ <= NewHeight + GRAVITY)
 		{
-			play->PosZ = TempHeight;
+			play->PosZ = NewHeight;
+			play->AirTime = 0;
+			play->Jump = false;
+			play->Fly = false;
 		}
 		else
 		{
-			play->PosZ -= GRAVITY;
+			play->PosZ -= GRAVITY * 0.1f * play->AirTime;
+			play->AirTime++;
+			play->Fly = true;	// If player is falling, but has not jumped, he must not be able to jump.
 		}
 	}
 
-	return NewHeight;
+	return ChangeHeight;
 }
 
-// Distance smaller than length (inside or touch)
+// Distance smaller than length (inside or touches)
 bool CompareDistanceToLength(float DiffX, float DiffY, float Length)
 {
 	return pow(DiffX, 2) + pow(DiffY, 2) <= Length * Length;

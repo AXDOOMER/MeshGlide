@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2017 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2018 Alexandre-Xavier Labonté-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@
 #include <cmath>
 #include <limits>		/* numeric_limits<float>::lowest() */
 #include <iostream>
+#include <algorithm>	/* mismatch */
+#include <utility>	/* pair */
 using namespace std;
 
 const float PI = atan(1) * 4;

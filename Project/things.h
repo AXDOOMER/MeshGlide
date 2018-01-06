@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2017 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2018 Alexandre-Xavier Labonté-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -48,9 +48,9 @@ class Player
 public:
 	TicCmd Cmd = TicCmd();
 
-	// Object-oriented programming is a pain. Made it public so it's easily accessible. 
-	short Angle = 8192;	// Should use shorts to avoid a lost of accuracy in multiplayer games
-	float VerticalAim = 0;
+	// Object-oriented programming is a pain. Made it public so it's easily accessible.
+	short Angle = 8192;	// Yaw
+	float VerticalAim = 0;	// Pitch
 
 	float PosX = 0;
 	float PosY = 0;
@@ -61,6 +61,10 @@ public:
 	char MoZ = 0;		// Used by gravity
 	const float MaxStep = 1.5f;
 	const float Radius = 1.0f;
+
+	int AirTime = 0;
+	bool Jump = false;
+	bool Fly = false;
 
 	// Weapons that are in the player's possession
 	bool OwnedWeapons[MAXOWNEDWEAPONS];
@@ -112,7 +116,7 @@ struct Wall
 	float Angle;	// Angle formed between the vertices
 };
 
-class Plane
+class Plane	// TODO should probably be moved inside of the Level class
 {
 public:
 	// TODO: Compute the 3D orentation of a poly and keep the unit vector data for collision detection
@@ -126,6 +130,8 @@ public:
 	float Xoff = 0;
 	float Yoff = 0;
 	float Light = 1;	// Must be between 0 (dark) and 1 (full bright)
+
+	vector<Plane*> Edges;
 
 	void ComputeWallInfo();
 	~Plane();

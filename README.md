@@ -8,11 +8,13 @@ It is now under development. The goal is to create an engine better than the [Ki
 
 ### Development
 
-Compile and run on Linux: `g++ *.cpp -std=c++11 -lglfw -lGL -lGLU -lglut -lSDL -o FPS_simple && ./FPS_simple`
+Compile and run on Linux: `g++ *.cpp -std=c++14 -lglfw -lGL -lGLU -lglut -lSDL2 -lSDL2_image-std=c++11 -lglfw -lGL -lGLU -lglut -lSDL -o FPS_simple && ./FPS_simple`
 
-You may need to remove `physics.cpp`. It is preferable to compile and run the program using the `run.sh` script.
+You may need to remove `physics.cpp`. It is preferable to compile and run the program using the `run.sh` script because it is tested.
 
-Packages that may need to be installed (Debian): `libglfw3 libglfw3-dev libsdl2-image-2.0-0 libsdl2-image-dev freeglut3 freeglut3-dev`
+#### Installation
+
+Packages that may need to be installed (Debian/Ubuntu): `libglfw3 libglfw3-dev libsdl2-image-2.0-0 libsdl2-image-dev freeglut3 freeglut3-dev libsdl2-2.0-0 libsdl2-dev libsdl2-image-2.0-0 libsdl2-image-dev`
 
 ### Random screenshots
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2017 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2017-2018 Alexandre-Xavier Labonté-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,6 +22,11 @@
 #include <cmath>	// sqrt
 #include <limits>	// numeric_limits<float>::quiet_NaN()
 using namespace std;
+
+bool operator==(const Float3& lhs, const Float3& rhs)
+{
+    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+}
 
 // Ray-casting algorithm used to find if a 2D coordinate is on a 3D polygon
 bool pointInPoly(float x, float y, vector<Float3> vertices) {

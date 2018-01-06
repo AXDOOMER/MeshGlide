@@ -1,4 +1,4 @@
-// Copyright (C) 2017 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2017-2018 Alexandre-Xavier Labonté-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,6 +30,15 @@ struct Float3
 	float y;
 	float z;
 };
+
+struct Float2
+{
+	float x;
+	float y;
+//	float z;
+};
+
+bool operator==(const Float3& lhs, const Float3& rhs);
 
 // Ray-casting algorithm used to find if a 2D coordinate is on a 3D polygon
 bool pointInPoly(float x, float y, vector<Float3> vertices);

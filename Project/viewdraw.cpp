@@ -267,6 +267,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 			glBegin(GL_QUADS);
 				// (Xpos, Zpos, Ypos)
 				// TODO: Use this for sky coords: glTranslatef(play->PosY, play->PosZ, play->PosX);
+				// TODO: Should be scaled according to sky elevation
 				glTexCoord2f(-1, 1);
 				glVertex3f(play->PosY + 200.0f, play->PosZ + lvl->SkyHeigth, play->PosX - 200.0f);
 				glTexCoord2f(1, 1);

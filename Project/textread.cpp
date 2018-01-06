@@ -75,7 +75,7 @@ Level* F_LoadLevel(const string& LevelName)
 						p->Yscale = atof(tokens[5].c_str());
 						p->Light = atof(tokens[8].c_str());
 
-						// polygons are quads for now
+						// polygons are quads or triangles
 						for (int i = 9; i < tokens.size(); i += 3)
 						{
 							Float3 vt;
