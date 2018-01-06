@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2017 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2018 Alexandre-Xavier Labonté-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 using namespace std;
 
 #include "things.h"
+#include "level.h"
 
 const string WindowTitle = "3D engine";
 const string chars = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";

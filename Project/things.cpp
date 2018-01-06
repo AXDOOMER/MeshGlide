@@ -108,34 +108,6 @@ float Player::PosZ()
 	return pos_.z;
 }
 
-Level::~Level()
-{
-	if (play != nullptr)
-	{
-		delete play;
-	}
-
-	// Delete planes
-	for (int i = 0; i < planes.size(); i++)
-	{
-		delete planes[i];
-	}
-}
-
-void Level::AddTexture(const string& name, bool enableFiltering)
-{
-	if (!cache.Has(name))
-	{
-		cache.Add(name, new Texture(name, enableFiltering));
-		cout << "Added texture " << name << endl;
-	}
-}
-
-void Level::UseTexture(const string& name)
-{
-	cache.Get(name)->Bind();
-}
-
 Plane::~Plane()
 {
 	if (WallInfo != nullptr)

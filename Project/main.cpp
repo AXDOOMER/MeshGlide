@@ -19,9 +19,8 @@
 #include "viewdraw.h"
 #include "command.h"
 #include "things.h"
-#include "textread.h"
-#include "objload.h"
-#include "vecmath.h"	// Remove when Float3 is removed from this file
+#include "level.h"
+#include "vecmath.h"	/* Float3 */
 #include "physics.h"
 
 #include <GLFW/glfw3.h>
@@ -39,7 +38,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.23 (dev)";
+	const char* const VERSION = "0.24 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -48,7 +47,7 @@ int main(int argc, const char *argv[])
 	ifstream DemoRead;
 	string FrameDelay = "";
 
-	cout << "                KILLZONE -- " << VERSION << "\n\n";
+	cout << "                MESHGLIDE -- " << VERSION << "\n\n";
 
 	/****************************** SYSTEM OPTIONS ******************************/
 
@@ -121,18 +120,7 @@ int main(int argc, const char *argv[])
 		cin >> LevelName;
 	}
 
-	Level* CurrentLevel;	// Holds the level data
-
-	if (LevelName.rfind(".obj") == LevelName.size() - 4)
-	{
-		Obj obj = Obj(LevelName);
-		CurrentLevel = obj.lvl;
-		AdjustPlayerToFloor(CurrentLevel->play, CurrentLevel);
-	}
-	else
-	{
-		CurrentLevel = F_LoadLevel(LevelName);
-	}
+	Level* CurrentLevel = new Level(LevelName);	// Holds the level data
 
 	if (!CurrentLevel)
 	{

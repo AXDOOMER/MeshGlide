@@ -117,7 +117,7 @@ struct Wall
 	float Angle;	// Angle formed between the vertices
 };
 
-class Plane	// TODO should probably be moved inside of the Level class
+class Plane	// TODO should probably be moved inside of the Level class?
 {
 public:
 	// TODO: Compute the 3D orentation of a poly and keep the unit vector data for collision detection
@@ -136,22 +136,6 @@ public:
 
 	void ComputeWallInfo();
 	~Plane();
-};
-
-class Level
-{
-public:
-	Cache<string, Texture> cache;
-	vector<Plane*> planes;
-	Player* play = nullptr;
-	float scaling = 1.0f;	// Level scaling
-	float SkyHeigth = 5.0f;	// Sky elevation
-	string SkyTexture;
-
-	void AddTexture(const string& name, bool enableFiltering);	// Add texture to cache if missing
-	void UseTexture(const string& name);	// Bind texture
-
-	~Level();
 };
 
 struct SpawnSpot

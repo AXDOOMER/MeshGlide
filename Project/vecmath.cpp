@@ -145,6 +145,7 @@ float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices) {
 		return z0;
 
 	// Cross product to get the normal
+	// TODO: Normals could be computed at level loading and saved in order to be used to detect collisions with walls
 	Float3 n = crossProduct(u, v);
 
 	// Center of polygon

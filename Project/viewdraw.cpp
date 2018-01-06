@@ -18,6 +18,7 @@
 
 #include "viewdraw.h"
 #include "things.h"
+#include "level.h"
 #include "vecmath.h" // Float3
 
 #include <GLFW/glfw3.h>
