@@ -1,14 +1,16 @@
-# FPS_simple (previously a prototype for [KillBox](https://github.com/AXDOOMER/KillBox))
+# MeshGlide
 
-A simple FPS game that uses GLFW for the graphics and input. It's distributed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
+A simple FPS engine that uses GLFW for the graphics and input. It's distributed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
-It was a prototype to test the feasibility of a homemade OpenGL engine for [KillBox](https://github.com/AXDOOMER/KillBox).
+The early version of the engine was used as a prototype to test the feasibility of a homemade OpenGL engine for [KillBox](https://github.com/AXDOOMER/KillBox).
 
 It's now under development. The goal is to create a new engine that's better than the [KillBox](https://github.com/AXDOOMER/KillBox) engine.
 
+It's called the MeshGlide engine.
+
 ### Development
 
-Compile and run on Linux: `g++ *.cpp -std=c++14 -lglfw -lGL -lGLU -lglut -lSDL2 -lSDL2_image -o FPS_simple && ./FPS_simple $@`
+Compile on Linux: `g++ *.cpp -std=c++14 -lglfw -lGL -lGLU -lglut -lSDL2 -lSDL2_image -o MeshGlide`
 
 It's preferable to compile and run the program using the `run.sh` script because it's tested, but this should work too.
 

@@ -38,7 +38,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.24 (dev)";
+	const char* const VERSION = "0.25 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -47,7 +47,7 @@ int main(int argc, const char *argv[])
 	ifstream DemoRead;
 	string FrameDelay = "";
 
-	cout << "                MESHGLIDE -- " << VERSION << "\n\n";
+	cout << "                MESHGLIDE ENGINE -- " << VERSION << "\n\n";
 
 	/****************************** SYSTEM OPTIONS ******************************/
 

@@ -27,7 +27,7 @@ using namespace std;
 #include "things.h"
 #include "level.h"
 
-const string WindowTitle = "3D engine";
+const string WindowTitle = "MeshGlide engine";
 const string chars = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 const string fontfile = "chars.png";
 
