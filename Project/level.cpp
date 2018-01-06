@@ -42,7 +42,7 @@ Level::~Level()
 	}
 
 	// Delete planes
-	for (int i = 0; i < planes.size(); i++)
+	for (unsigned int i = 0; i < planes.size(); i++)
 	{
 		delete planes[i];
 	}
@@ -144,7 +144,7 @@ void Level::LoadNative(const string& LevelName)
 						p->Light = atof(tokens[8].c_str());
 
 						// polygons are quads or triangles
-						for (int i = 9; i < tokens.size(); i += 3)
+						for (unsigned int i = 9; i < tokens.size(); i += 3)
 						{
 							Float3 vt;
 							vt.x = atof(tokens[i].c_str());

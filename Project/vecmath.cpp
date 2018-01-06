@@ -31,7 +31,7 @@ bool operator==(const Float3& lhs, const Float3& rhs)
 // Ray-casting algorithm used to find if a 2D coordinate is on a 3D polygon
 bool pointInPoly(float x, float y, vector<Float3> vertices) {
 	bool inside = false;
-	for(int i = 0, j = vertices.size() - 1; i < vertices.size(); j = i++) {
+	for(unsigned int i = 0, j = vertices.size() - 1; i < vertices.size(); j = i++) {
 		// Create new variables for readability
 		float xi = vertices[i].x;
 		float yi = vertices[i].y;
@@ -150,7 +150,7 @@ float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices) {
 
 	// Center of polygon
 	Float3 total = {0, 0, 0};
-	for (int i = 0; i < vertices.size(); i++)
+	for (unsigned int i = 0; i < vertices.size(); i++)
 	{
 		total.x += vertices[i].x;
 		total.y += vertices[i].y;

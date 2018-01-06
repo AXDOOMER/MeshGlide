@@ -121,9 +121,9 @@ void Plane::ComputeWallInfo()
 	int count = 0;
 
 	// Must find at least two points which are above each other to consider this a wall
-	for (int j = 0; j < Vertices.size(); j++)
+	for (unsigned int j = 0; j < Vertices.size(); j++)
 	{
-		for (int k = 0; k < Vertices.size(); k++)
+		for (unsigned int k = 0; k < Vertices.size(); k++)
 		{
 			if (j != k)	// Same, so skip
 			{
@@ -146,7 +146,7 @@ void Plane::ComputeWallInfo()
 		WallInfo->LowZ = numeric_limits<float>::max();
 		WallInfo->HighZ = numeric_limits<float>::lowest();
 
-		for (int j = 0; j < Vertices.size(); j++)
+		for (unsigned int j = 0; j < Vertices.size(); j++)
 		{
 			// Height checks
 			if (Vertices[j].z < WallInfo->LowZ)
@@ -160,7 +160,7 @@ void Plane::ComputeWallInfo()
 			}
 
 			// Find vertices which are the farthest apart
-			for (int k = 0; k < Vertices.size(); k++)
+			for (unsigned int k = 0; k < Vertices.size(); k++)
 			{
 				if (j != k)	// Same, so skip
 				{

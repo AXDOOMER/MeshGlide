@@ -144,7 +144,7 @@ void RenderText(Level* lvl, string text, float x, float y, float sx, float sy)
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);	// Reset the texture colorization to be neutral
 
-	for (int p = 0; p < text.size(); p++)
+	for (unsigned int p = 0; p < text.size(); p++)
 	{
 		unsigned char letter = text[p];
 
@@ -205,7 +205,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 	if (lvl != nullptr)
 	{
 		// Draw walls
-		for (int i = 0; i < lvl->planes.size(); i++)
+		for (unsigned int i = 0; i < lvl->planes.size(); i++)
 		{
 			if (!lvl->planes[i]->Texture.empty())
 			{

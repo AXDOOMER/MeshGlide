@@ -29,7 +29,7 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 {
 	float NewHeight = numeric_limits<float>::lowest();
 	bool ChangeHeight = false;
-	for (int i = 0; i < lvl->planes.size(); i++)
+	for (unsigned int i = 0; i < lvl->planes.size(); i++)
 	{
 		if (pointInPoly(play->PosX(), play->PosY(), lvl->planes[i]->Vertices))
 		{
@@ -73,7 +73,7 @@ bool CompareDistanceToLength(float DiffX, float DiffY, float Length)
 // Returns true if the vector hits any walls. The vector has a circular endpoint.
 bool HitsWall(Float3 origin, Float3 target, float RadiusToUse, Level* lvl)
 {
-	for (int i = 0; i < lvl->planes.size(); i++)
+	for (unsigned int i = 0; i < lvl->planes.size(); i++)
 	{
 		// Test vertical planes which are walls
 		if (lvl->planes[i]->WallInfo != nullptr)
