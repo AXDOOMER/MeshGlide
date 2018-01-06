@@ -39,7 +39,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.21 (dev)";
+	const char* const VERSION = "0.22 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -139,8 +139,6 @@ int main(int argc, const char *argv[])
 		cout << "ERROR: Cannot load level '" << LevelName << "'" << endl;
 		exit(EXIT_FAILURE);
 	}
-
-
 
 	/****************************** SETUP PHASE ******************************/
 
