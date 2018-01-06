@@ -1,6 +1,6 @@
 # MeshGlide
 
-A simple FPS engine that uses GLFW for the graphics and input. It's distributed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
+A simple FPS engine that uses GLFW 3 for the graphics and input. It's distributed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
 The early version of the engine was used as a prototype to test the feasibility of a homemade OpenGL engine for [KillBox](https://github.com/AXDOOMER/KillBox).
 

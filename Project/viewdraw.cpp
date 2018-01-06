@@ -96,7 +96,8 @@ GLFWwindow* Init_OpenGL()
 	// Make its context current
 	glfwMakeContextCurrent(window);
 
-	// Set icon
+	// Set icon. Feature was added to GLFW 3.2
+#if GLFW_VERSION_MINOR >= 2
 	GLFWimage icon;
 	SDL_Surface* Surface = IMG_Load(WindowIcon.c_str());
 	if (Surface != nullptr)
@@ -107,6 +108,7 @@ GLFWwindow* Init_OpenGL()
 		glfwSetWindowIcon(window, 1, &icon);
 		SDL_FreeSurface(Surface);
 	}
+#endif
 
 	// Vsync?
 	glfwSwapInterval(1);
