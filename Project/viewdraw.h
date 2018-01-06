@@ -28,6 +28,7 @@ using namespace std;
 #include "level.h"
 
 const string WindowTitle = "MeshGlide engine";
+const string WindowIcon = "planet.png";
 const string chars = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 const string fontfile = "chars.png";
 

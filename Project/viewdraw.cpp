@@ -21,6 +21,7 @@
 #include "level.h"
 #include "vecmath.h" // Float3
 
+#include <SDL2/SDL_image.h>
 #include <GLFW/glfw3.h>
 #include <GL/freeglut.h>
 #include <GL/gl.h>
@@ -95,9 +96,23 @@ GLFWwindow* Init_OpenGL()
 	// Make its context current
 	glfwMakeContextCurrent(window);
 
-	glfwSwapInterval(1);	// Vsync?
-	glfwSetKeyCallback(window, Key_Callback);
+	// Set icon
+	GLFWimage icon;
+	SDL_Surface* Surface = IMG_Load(WindowIcon.c_str());
+	if (Surface != nullptr)
+	{
+		icon.width = Surface->w;
+		icon.height = Surface->h;
+		icon.pixels = (unsigned char*)Surface->pixels;
+		glfwSetWindowIcon(window, 1, &icon);
+		SDL_FreeSurface(Surface);
+	}
 
+	// Vsync?
+	glfwSwapInterval(1);
+
+	// Set important stuff
+	glfwSetKeyCallback(window, Key_Callback);
 	InitProjection(window);
 
 	// Set callback
