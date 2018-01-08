@@ -49,6 +49,7 @@ public:
 	void LoadNative(const string& LevelName);
 	void LoadObj(const string& path);
 
+private:
 	// OBJ and OpenGL stuff
 	vector<Float3> vertices_;
 	vector<Float2> uvs_;

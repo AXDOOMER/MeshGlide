@@ -121,14 +121,14 @@ void Plane::ComputeWallInfo()
 	int count = 0;
 
 	// Must find at least two points which are above each other to consider this a wall
-	for (unsigned int j = 0; j < Vertices.size(); j++)
+	for (unsigned int i = 0; i < Vertices.size(); i++)
 	{
-		for (unsigned int k = 0; k < Vertices.size(); k++)
+		for (unsigned int j = 0; j < Vertices.size(); j++)
 		{
-			if (j != k)	// Same, so skip
+			if (i != j)	// Same, so skip
 			{
-				if (Vertices[j].x == Vertices[k].x &&
-					Vertices[j].y == Vertices[k].y)
+				if (Vertices[i].x == Vertices[j].x &&
+					Vertices[i].y == Vertices[j].y)
 				{
 					// Above each other
 					count++;
@@ -146,30 +146,30 @@ void Plane::ComputeWallInfo()
 		WallInfo->LowZ = numeric_limits<float>::max();
 		WallInfo->HighZ = numeric_limits<float>::lowest();
 
-		for (unsigned int j = 0; j < Vertices.size(); j++)
+		for (unsigned int i = 0; i < Vertices.size(); i++)
 		{
 			// Height checks
-			if (Vertices[j].z < WallInfo->LowZ)
+			if (Vertices[i].z < WallInfo->LowZ)
 			{
-				WallInfo->LowZ = Vertices[j].z;
+				WallInfo->LowZ = Vertices[i].z;
 			}
 
-			if (Vertices[j].z > WallInfo->HighZ)
+			if (Vertices[i].z > WallInfo->HighZ)
 			{
-				WallInfo->HighZ = Vertices[j].z;
+				WallInfo->HighZ = Vertices[i].z;
 			}
 
 			// Find vertices which are the farthest apart
-			for (unsigned int k = 0; k < Vertices.size(); k++)
+			for (unsigned int j = 0; j < Vertices.size(); j++)
 			{
-				if (j != k)	// Same, so skip
+				if (i != j)	// Same, so skip
 				{
-					float distance = pow(Vertices[j].x - Vertices[k].x, 2) + pow(Vertices[j].y - Vertices[k].y, 2);
+					float distance = pow(Vertices[i].x - Vertices[j].x, 2) + pow(Vertices[i].y - Vertices[j].y, 2);
 					if (distance > WallInfo->Length)
 					{
 						WallInfo->Length = distance;
-						WallInfo->Vertex1 = Vertices[j];
-						WallInfo->Vertex2 = Vertices[k];
+						WallInfo->Vertex1 = Vertices[i];
+						WallInfo->Vertex2 = Vertices[j];
 					}
 				}
 			}

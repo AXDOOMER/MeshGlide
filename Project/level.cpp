@@ -28,10 +28,16 @@
 #include <fstream>	/* ifstream */
 #include <sstream>	/* istringstream */
 #include <iterator>	/* istream_iterator */
+#include <chrono>
+using namespace std;
 
 Level::Level(const string& level)
 {
+	auto start = chrono::system_clock::now();
 	LoadLevel(level);
+	auto end = chrono::system_clock::now();
+	auto diff = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+	cout << "Level loading took " << diff << "ms." << endl;
 }
 
 Level::~Level()
@@ -113,75 +119,73 @@ void Level::LoadNative(const string& LevelName)
 		{
 			getline(LevelFile, Line);
 
-			if (Line.size() > 0)
+			if (Line.size() > 0 && Line[0] != '#')
 			{
 				Count++;
 
+				//vector<string> tokens = Split(Line, "\t");
 				istringstream buf(Line);
 				istream_iterator<string> beg(buf), end;
 				vector<string> tokens(beg, end);
 
-				if (tokens.size() > 0 && tokens[0][0] != '#')
+				if (tokens[0] == "thing" && tokens.size() == 6)
 				{
-					if (tokens[0] == "thing" && tokens.size() == 6)
+					if (tokens[1] == "player")
 					{
-						if (tokens[1] == "player")
-						{
-							play = new Player;
-							play->pos_.x = atof(tokens[2].c_str());
-							play->pos_.y = atof(tokens[3].c_str());
-							play->pos_.z = atof(tokens[4].c_str());
-							play->Angle = (short)atoi(tokens[5].c_str()) * 91.0222222222f;
-						}
+						play = new Player;
+						play->pos_.x = atof(tokens[2].c_str());
+						play->pos_.y = atof(tokens[3].c_str());
+						play->pos_.z = atof(tokens[4].c_str());
+						play->Angle = (short)atoi(tokens[5].c_str()) * 91.0222222222f;
 					}
-					else if (tokens[0] == "poly" && (tokens.size() == 21 || tokens.size() == 18))
-					{
-						Plane* p = new Plane();
-						p->Impassable = tokens[2][0] != '0';
-						p->TwoSided = tokens[3][0] != '0';
-						p->Xscale = atof(tokens[4].c_str());
-						p->Yscale = atof(tokens[5].c_str());
-						p->Light = atof(tokens[8].c_str());
+				}
+				else if (tokens[0] == "poly" && (tokens.size() == 21 || tokens.size() == 18))
+				{
+					Plane* p = new Plane();
+					p->Impassable = tokens[2][0] != '0';
+					p->TwoSided = tokens[3][0] != '0';
+					p->Xscale = atof(tokens[4].c_str());
+					p->Yscale = atof(tokens[5].c_str());
+					p->Light = atof(tokens[8].c_str());
 
-						// polygons are quads or triangles
-						for (unsigned int i = 9; i < tokens.size(); i += 3)
-						{
-							Float3 vt;
-							vt.x = atof(tokens[i].c_str());
-							vt.y = atof(tokens[i+1].c_str());
-							vt.z = atof(tokens[i+2].c_str());
-							p->Vertices.push_back(vt);
-						}
-
-						if (tokens[1] != "NOTEXTURE")
-						{
-							AddTexture(tokens[1], blurTextures);	// Add texture to cache
-							p->Texture = tokens[1];
-						}
-
-						p->ComputeWallInfo();			// Comment this line to become a ghost
-						planes.push_back(p);
-					}
-					else if (tokens[0] == "setting" && tokens.size() == 3)
+					// polygons are quads or triangles
+					for (unsigned int i = 9; i < tokens.size(); i += 3)
 					{
-						if (tokens[1] == "blur")
-						{
-							blurTextures = tokens[2][0] != '0';
-						}
-						else if (tokens[1] == "skytex")
-						{
-							AddTexture(tokens[2], blurTextures);
-							SkyTexture = tokens[2];
-						}
-						else if (tokens[1] == "skyele")
-						{
-							SkyHeigth = atof(tokens[2].c_str());
-						}
+						Float3 vt;
+						vt.x = atof(tokens[i].c_str());
+						vt.y = atof(tokens[i+1].c_str());
+						vt.z = atof(tokens[i+2].c_str());
+						p->Vertices.push_back(vt);
 					}
-					else
+
+					if (tokens[1] != "NOTEXTURE")
 					{
-						cout << "INVALID LINE IGNORED AT: " << Count << endl;
+						AddTexture(tokens[1], blurTextures);	// Add texture to cache
+						p->Texture = tokens[1];
 					}
+
+					p->ComputeWallInfo();			// Comment out this line to become a ghost
+					planes.push_back(p);
+				}
+				else if (tokens[0] == "setting" && tokens.size() == 3)
+				{
+					if (tokens[1] == "blur")
+					{
+						blurTextures = tokens[2][0] != '0';
+					}
+					else if (tokens[1] == "skytex")
+					{
+						AddTexture(tokens[2], blurTextures);
+						SkyTexture = tokens[2];
+					}
+					else if (tokens[1] == "skyele")
+					{
+						SkyHeigth = atof(tokens[2].c_str());
+					}
+				}
+				else
+				{
+					cout << "INVALID LINE IGNORED AT: " << Count << endl;
 				}
 			}
 		}
@@ -251,7 +255,7 @@ void Level::LoadObj(const string& path)
 					temp_normal.z = atof(slices[3].c_str());
 					temp_normals.push_back(temp_normal);
 				}
-				else if (slices[0] == "f" && slices.size() == 4)	// Defines a face
+				else if (slices[0] == "f" && (slices.size() == 4 || slices.size() == 5))	// Defines a face
 				{
 					// Create a plane for a set of vertices
 					Plane* p = new Plane();
@@ -268,26 +272,26 @@ void Level::LoadObj(const string& path)
 					p->ComputeWallInfo();	// For walls
 
 					// Format: vertex, uv, normal. They are indices that points to the previous data.
-					vector<string> indices = Split(slices[1], "/");
+					for (unsigned int i = 1; i < slices.size(); i++)
+					{
+						vector<string> indices = Split(slices[i], "/");
 
-					vertices_.push_back(temp_vertices[atoi(indices[0].c_str())-1]);
-					p->Vertices.push_back(temp_vertices[atoi(indices[0].c_str())-1]);
-//					uvs_.push_back(temp_uvs[atoi(indices[1].c_str())-1]);
-					normals_.push_back( temp_normals[atoi( indices[2].c_str())-1]);
+						if (indices.size() >= 1)
+						{
+							vertices_.push_back(temp_vertices[atoi(indices[0].c_str())-1]);
+							p->Vertices.push_back(temp_vertices[atoi(indices[0].c_str())-1]);
+						}
 
-					indices = Split(slices[2], "/");
+						if (indices.size() >= 2)
+						{
+							uvs_.push_back(temp_uvs[atoi(indices[1].c_str())-1]);
 
-					vertices_.push_back(temp_vertices[atoi(indices[0].c_str())-1]);
-					p->Vertices.push_back(temp_vertices[atoi(indices[0].c_str())-1]);
-//					uvs_.push_back(temp_uvs[atoi(indices[1].c_str())- 1]);
-					normals_.push_back(temp_normals[atoi(indices[2].c_str())-1]);
-
-					indices = Split(slices[3], "/");
-
-					vertices_.push_back(temp_vertices[atoi(indices[0].c_str())-1]);
-					p->Vertices.push_back(temp_vertices[atoi(indices[0].c_str())-1]);
-//					uvs_.push_back(temp_uvs[atoi(indices[1].c_str())-1]);
-					normals_.push_back(temp_normals[atoi(indices[2].c_str())-1]);
+							if (indices.size() == 3)
+							{
+								normals_.push_back(temp_normals[atoi(indices[2].c_str())-1]);
+							}
+						}
+					}
 
 					planes.push_back(p);
 				}

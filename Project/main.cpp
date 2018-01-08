@@ -38,7 +38,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.25 (dev)";
+	const char* const VERSION = "0.26 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -122,7 +122,7 @@ int main(int argc, const char *argv[])
 
 	Level* CurrentLevel = new Level(LevelName);	// Holds the level data
 
-	if (!CurrentLevel)
+	if (!CurrentLevel || CurrentLevel->planes.size() == 0)
 	{
 		cout << "ERROR: Cannot load level '" << LevelName << "'" << endl;
 		exit(EXIT_FAILURE);
