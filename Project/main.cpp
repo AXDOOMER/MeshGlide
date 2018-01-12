@@ -38,7 +38,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.27 (dev)";
+	const char* const VERSION = "0.28 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -46,6 +46,7 @@ int main(int argc, const char *argv[])
 	ofstream DemoWrite;
 	ifstream DemoRead;
 	string FrameDelay = "";
+	string LevelName = "level.txt";
 
 	cout << "                MESHGLIDE ENGINE -- " << VERSION << "\n\n";
 
@@ -86,6 +87,18 @@ int main(int argc, const char *argv[])
 		}
 	}
 
+	if (DemoRead.is_open())
+	{
+		string line;
+		getline(DemoRead, line);
+		cout << "Demo Version: " << line << endl;
+		getline(DemoRead, line);
+		cout << "Level name: " << line << endl;
+		LevelName = line;
+		getline(DemoRead, line);
+		cout << "# of players: " << line << endl;
+	}
+
 	/****************************** OPENGL HANDLING ******************************/
 
 	// Load OpenGL
@@ -107,7 +120,7 @@ int main(int argc, const char *argv[])
 
 	/****************************** LEVEL LOADING ******************************/
 
-	string LevelName = FindArgumentParameter(argc, argv, "-level", "level.txt");
+	LevelName = FindArgumentParameter(argc, argv, "-level", LevelName);
 
 	if (!LevelName.empty())
 	{
@@ -138,17 +151,6 @@ int main(int argc, const char *argv[])
 		DemoWrite << VERSION << endl;
 		DemoWrite << LevelName << endl;
 		DemoWrite << 1 << endl;	// Number of players
-	}
-
-	if (DemoRead.is_open())
-	{
-		string line;
-		getline(DemoRead, line);
-		cout << "Version: " << line << endl;
-		getline(DemoRead, line);
-		cout << "Level name: " << line << endl;
-		getline(DemoRead, line);
-		cout << "# of players: " << line << endl;
 	}
 
 	/****************************** GAME LOOP ******************************/
@@ -282,7 +284,7 @@ int main(int argc, const char *argv[])
 		CurrentLevel->play->ExecuteTicCmd();
 
 		// Collision detection with floors
-		if (!GetPlayerToNewPosition(pt, CurrentLevel->play->pos_, CurrentLevel->play->Radius, CurrentLevel))
+		if (!MovePlayerToNewPosition(pt, CurrentLevel->play->pos_, CurrentLevel->play))
 		{
 			tc.forward = -tc.forward;
 			tc.lateral = -tc.lateral;

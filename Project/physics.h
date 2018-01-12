@@ -32,10 +32,10 @@ void ApplyGravity(Player* play);
 bool CompareDistanceToLength(float DiffX, float DiffY, float Length);
 
 // Returns true if the vector hits any walls. The vector has a circular endpoint.
-bool HitsWall(Float3 origin, Float3 target, float RadiusToUse, Level* lvl);
+bool HitsWall(Float3 point, float RadiusToUse, Level* lvl);
 
 // Moves the player to a new position. Returns false if it can't.
-bool GetPlayerToNewPosition(Float3 origin, Float3 target, float RadiusToUse, Level* lvl);
+bool MovePlayerToNewPosition(Float3 origin, Float3 target, Player* play);
 
 // Get the plane where the player is standing
 Plane* GetPlaneForPlayer(Player* play, Level* lvl);

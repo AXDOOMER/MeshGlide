@@ -72,19 +72,18 @@ void ApplyGravity(Player* play)
 	float FloorHeight = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), play->plane->Vertices);
 	if (!isnan(FloorHeight))
 	{
-		if (play->PosZ() > FloorHeight)
-		{
-			play->pos_.z -= GRAVITY * 0.1f * play->AirTime;
-			play->AirTime++;
-			play->Fly = true;	// If player is falling, but has not jumped, he must not be able to jump.
-		}
-
-		if (play->PosZ() <= FloorHeight)
+		if (play->PosZ() <= FloorHeight + GRAVITY)
 		{
 			play->pos_.z = FloorHeight;
 			play->AirTime = 0;
 			play->Jump = false;
 			play->Fly = false;
+		}
+		else
+		{
+			play->pos_.z -= GRAVITY * 0.1f * play->AirTime;
+			play->AirTime++;
+			play->Fly = true;	// If player is falling, but has not jumped, he must not be able to jump.
 		}
 	}
 }
@@ -148,9 +147,7 @@ Plane* TraceOnPolygons(Float3 origin, Float3 target, Plane* plane)
 
 		// Skip to the next adjacent plane if this one was already checked
 		if (find(tested.begin(), tested.end(), p) != tested.end())
-		{
 			continue;
-		}
 
 		if (pointInPoly(target.x, target.y, p->Vertices))
 			return p;
@@ -172,49 +169,24 @@ Plane* TraceOnPolygons(Float3 origin, Float3 target, Plane* plane)
 }
 
 // Moves the player to a new position. Returns false if it can't.
-bool GetPlayerToNewPosition(Float3 origin, Float3 target, float RadiusToUse, Level* lvl)
+bool MovePlayerToNewPosition(Float3 origin, Float3 target, Player* play)
 {
-	if (pointInPoly(target.x, target.y, lvl->play->plane->Vertices))
+	if (pointInPoly(target.x, target.y, play->plane->Vertices))
 	{
 		// Player is in the same polygon
-//		lvl->play->pos_.z = PointHeightOnPoly(target.x, target.y, target.z, lvl->play->plane->Vertices);
 		return true;
 	}
 	else // Player has moved to another polygon
 	{
-		for (unsigned int i = 0; i < lvl->play->plane->Neighbors.size(); i++)
-		{
-			Plane* p = lvl->play->plane->Neighbors[i];
+		Plane* p = TraceOnPolygons(origin, target, play->plane);
 
-			for (unsigned int j = 0; j < p->Vertices.size(); j++)
-			{
-				if (CheckVectorIntersection(origin, target, p->Vertices[j], p->Vertices[(j+1) % p->Vertices.size()]))
-				{
-					if (!pointInPoly(target.x, target.y, p->Vertices))
-					{
-						//return false;		// This early return would prevent the player from climbing a stair
+		// GetPlaneForPlayer will return 0 when the player is in the void
+		if (p == nullptr)
+			return false;	// Player may still get stuck, but we avoid a crash.
 
-						// This below will find a new valid position for the player
-						p = TraceOnPolygons(origin, target, lvl->play->plane);
-					}
+		play->plane = p;
 
-					// GetPlaneForPlayer will return 0 when the player is in the void
-					if (p == nullptr)
-						return false;	// Player may still get stuck, but we avoid a crash.
-
-/*					float Height = GetPlayerHeight(lvl->play);
-
-					if (!isnan(Height))
-						lvl->play->pos_.z = Height;
-					else	// Player probably walked into a wall or a stair
-						return false;
-*/
-					lvl->play->plane = p;
-
-					return true;
-				}
-			}
-		}
+		return true;
 	}
 
 	return false;	// When "true", allows the player to move off the edge of a polygon that has no adjacing polygon
@@ -227,7 +199,7 @@ bool CompareDistanceToLength(float DiffX, float DiffY, float Length)
 }
 
 // Returns true if the vector hits any walls. The vector has a circular endpoint.
-bool HitsWall(Float3 origin, Float3 target, float RadiusToUse, Level* lvl)
+bool HitsWall(Float3 point, float RadiusToUse, Level* lvl)
 {
 	for (unsigned int i = 0; i < lvl->planes.size(); i++)
 	{
@@ -235,40 +207,29 @@ bool HitsWall(Float3 origin, Float3 target, float RadiusToUse, Level* lvl)
 		if (lvl->planes[i]->WallInfo != nullptr)
 		{
 			// Wall above or bellow player.
-			if (lvl->planes[i]->WallInfo->HighZ <= origin.z + lvl->play->MaxStep || lvl->planes[i]->WallInfo->LowZ >= origin.z + 3.0f)
+			if (lvl->planes[i]->WallInfo->HighZ <= point.z + lvl->play->MaxStep || lvl->planes[i]->WallInfo->LowZ >= point.z + 3.0f)
 			{
 				// Can't be any collision.
 				continue;
 			}
 
-			// Create new variables for readability
-			Float3 First = lvl->planes[i]->WallInfo->Vertex1;
-			Float3 Second = lvl->planes[i]->WallInfo->Vertex2;
-
 			// Get the orthogonal vector, so invert the use of 'sin' and 'cos' here.
-			float OrthVectorStartX = origin.x + sin(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
-			float OrthVectorStartY = origin.y + cos(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
-			float OrthVectorEndX = origin.x - sin(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
-			float OrthVectorEndY = origin.y - cos(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
+			float OrthVectorStartX = point.x + sin(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
+			float OrthVectorStartY = point.y + cos(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
+			float OrthVectorEndX = point.x - sin(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
+			float OrthVectorEndY = point.y - cos(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
 
-			// Cramer's rule, inspiration taken from here: https://stackoverflow.com/a/1968345
-			float WallDiffX = Second.x - First.x;    // Vector's X from (0,0)
-			float WallDiffY = Second.y - First.y;    // Vector's Y from (0,0)
-			float VectorWallOrthDiffX = OrthVectorEndX - OrthVectorStartX;
-			float VectorWallOrthDiffY = OrthVectorEndY - OrthVectorStartY;
+			bool Collision = CheckVectorIntersection(lvl->planes[i]->WallInfo->Vertex1, lvl->planes[i]->WallInfo->Vertex2,
+						{OrthVectorStartX, OrthVectorStartY, 0}, {OrthVectorEndX, OrthVectorEndY, 0});
 
-			float Denominator = -VectorWallOrthDiffX * WallDiffY + WallDiffX * VectorWallOrthDiffY;
-			float PointWall = (-WallDiffY * (First.x - OrthVectorStartX) + WallDiffX * (First.y - OrthVectorStartY)) / Denominator;
-			float PointVectorOrth = (VectorWallOrthDiffX * (First.y - OrthVectorStartY) - VectorWallOrthDiffY * (First.x - OrthVectorStartX)) / Denominator;
-
-			// Check if a collision is detected (Not checking if touching an endpoint)
-			if (PointWall >= 0 && PointWall <= 1 && PointVectorOrth >= 0 && PointVectorOrth <= 1)
+			if (!Collision)
 			{
-				// Collision detected
+				// TODO: Check for a collision with both endpoints of the wall
+			}
+			else
+			{
 				return true;
 			}
-
-			// TODO: Check for a collision with both endpoints of the wall
 		}
 	}
 
