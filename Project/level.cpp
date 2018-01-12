@@ -118,11 +118,10 @@ void Level::LoadNative(const string& LevelName)
 		while (!LevelFile.eof())     // Read the entire file until the end
 		{
 			getline(LevelFile, Line);
+			Count++;
 
 			if (Line.size() > 0 && Line[0] != '#')
 			{
-				Count++;
-
 				//vector<string> tokens = Split(Line, "\t");
 				istringstream buf(Line);
 				istream_iterator<string> beg(buf), end;
@@ -158,7 +157,7 @@ void Level::LoadNative(const string& LevelName)
 						p->Vertices.push_back(vt);
 					}
 
-					if (tokens[1] != "NOTEXTURE")
+					if (tokens[1] != "INVISIBLE")
 					{
 						AddTexture(tokens[1], blurTextures);	// Add texture to cache
 						p->Texture = tokens[1];
@@ -192,6 +191,8 @@ void Level::LoadNative(const string& LevelName)
 
 		cout << "Read " << Count << " lines from file. " << endl;
 		LevelFile.close();
+
+		LinkPlanes(LevelName);
 	}
 	else
 	{
@@ -219,7 +220,7 @@ void Level::LoadObj(const string& path)
 
 		// Create player for level
 		play = new Player;
-		play->pos_ = {0, 0, 50};	// Height is intentionally set high
+		play->pos_ = {0, 0, 0};
 		play->Angle = 0;
 
 		while (!model.eof())
@@ -301,7 +302,79 @@ void Level::LoadObj(const string& path)
 				}
 			}
 		} // end of while loop
+
+		LinkPlanes(path);
 	}
 
 	model.close();
+}
+
+void Level::LinkPlanes(const string& LevelName)
+{
+	ifstream ReadLinks;
+	ofstream WriteLinks;
+
+	ReadLinks.open(LevelName + ".lnb");
+
+	if (ReadLinks.is_open())
+	{
+		cout << "Found linked planes data file. Loading..." << endl;
+
+		string Line;
+		// Read the entire file until the end
+		while (!ReadLinks.eof())
+		{
+			getline(ReadLinks, Line);
+
+			vector<string> indices = Split(Line, " ");
+
+			for (unsigned int i = 1; i < indices.size(); i++)
+			{
+				planes[atoi(indices[0].c_str())]->Neighbors.push_back(planes[atoi(indices[i].c_str())]);
+			}
+		}
+	}
+	else
+	{
+		WriteLinks.open(LevelName + ".lnb");
+
+		if (WriteLinks.is_open())
+		{
+			cout << "Linked planes data file not found. Generating..." << endl;
+
+			for (unsigned int i = 0; i < planes.size(); i++)
+			{
+				bool first = true;
+
+				// Find touching planes and add them
+				for (unsigned int j = 0; j < planes.size(); j++)
+				{
+					if (i != j)
+					{
+						// Find more than one common vertex
+						if (planes[i]->CommonVertices(planes[j]) > 1)
+						{
+							if (first)
+							{
+								WriteLinks << i;
+								first = false;
+							}
+
+							planes[i]->Neighbors.push_back(planes[j]);
+
+							WriteLinks << " " << j;
+						}
+					}
+				}
+
+				if (!first)
+				{
+					WriteLinks << endl;
+				}
+			}
+		}
+	}
+
+	ReadLinks.close();
+	WriteLinks.close();
 }

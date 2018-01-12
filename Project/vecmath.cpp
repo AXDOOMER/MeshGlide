@@ -162,3 +162,25 @@ float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices) {
 	Float3 ray = {0, 0, -1};
 	return RayIntersect2(ray, origin, n, center);
 }
+
+bool CheckVectorIntersection(Float3 v1start, Float3 v1end, Float3 v2start, Float3 v2end)
+{
+		// Cramer's rule, inspiration taken from here: https://stackoverflow.com/a/1968345
+		float WallDiffX = v1end.x - v1start.x;    // Vector's X from (0,0)
+		float WallDiffY = v1end.y - v1start.y;    // Vector's Y from (0,0)
+		float VectorWallOrthDiffX = v2end.x - v2start.x;
+		float VectorWallOrthDiffY = v2end.y - v2start.y;
+
+		float Denominator = -VectorWallOrthDiffX * WallDiffY + WallDiffX * VectorWallOrthDiffY;
+		float PointWall = (-WallDiffY * (v1start.x - v2start.x) + WallDiffX * (v1start.y - v2start.y)) / Denominator;
+		float PointVectorOrth = (VectorWallOrthDiffX * (v1start.y - v2start.y) - VectorWallOrthDiffY * (v1start.x - v2start.x)) / Denominator;
+
+		// Check if a collision is detected (Not checking if touching an endpoint)
+		if (PointWall >= 0 && PointWall <= 1 && PointVectorOrth >= 0 && PointVectorOrth <= 1)
+		{
+			// Collision detected
+			return true;
+		}
+
+	return false;
+}

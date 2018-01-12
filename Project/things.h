@@ -32,6 +32,38 @@ const float GRAVITY = 0.2f;
 //const float PI = atan(1) * 4;
 const int MAXOWNEDWEAPONS = 10;
 
+struct Wall
+{
+	float LowZ;	// Lowest point of the wall
+	float HighZ;	// Highest point of the wall
+	float Length;	// Length from one vertex to the other
+	Float3 Vertex1;	// Vertex where the wall starts
+	Float3 Vertex2;	// Vertex where the wall ends
+	float Angle;	// Angle formed between the vertices
+};
+
+class Plane
+{
+public:
+	// TODO: Compute the 3D orentation of a poly and keep the unit vector data for collision detection
+	string Texture;
+	bool Impassable = true;
+	bool TwoSided = false;
+	vector<Float3> Vertices;
+	Wall* WallInfo = nullptr;
+	float Xscale = 0;
+	float Yscale = 0;
+	float Xoff = 0;
+	float Yoff = 0;
+	float Light = 1;	// Must be between 0 (dark) and 1 (full bright)
+
+	vector<Plane*> Neighbors;	// List of adjacent planes
+
+	void ComputeWallInfo();
+	unsigned int CommonVertices(Plane* plane);
+	~Plane();
+};
+
 class TicCmd
 {
 public:
@@ -63,6 +95,8 @@ public:
 	int AirTime = 0;
 	bool Jump = false;
 	bool Fly = false;
+
+	Plane* plane;
 
 	// Weapons that are in the player's possession
 	bool OwnedWeapons[MAXOWNEDWEAPONS];
@@ -105,37 +139,6 @@ private:
 	float Direction = 0;
 public:
 	void Move();
-};
-
-struct Wall
-{
-	float LowZ;	// Lowest point of the wall
-	float HighZ;	// Highest point of the wall
-	float Length;	// Length from one vertex to the other
-	Float3 Vertex1;	// Vertex where the wall starts
-	Float3 Vertex2;	// Vertex where the wall ends
-	float Angle;	// Angle formed between the vertices
-};
-
-class Plane	// TODO should probably be moved inside of the Level class?
-{
-public:
-	// TODO: Compute the 3D orentation of a poly and keep the unit vector data for collision detection
-    string Texture;
-	bool Impassable = true;
-	bool TwoSided = false;
-	vector<Float3> Vertices;
-	Wall* WallInfo = nullptr;
-	float Xscale = 0;
-	float Yscale = 0;
-	float Xoff = 0;
-	float Yoff = 0;
-	float Light = 1;	// Must be between 0 (dark) and 1 (full bright)
-
-	vector<Plane*> Edges;
-
-	void ComputeWallInfo();
-	~Plane();
 };
 
 struct SpawnSpot

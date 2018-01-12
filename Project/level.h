@@ -54,6 +54,8 @@ private:
 	vector<Float3> vertices_;
 	vector<Float2> uvs_;
 	vector<Float3> normals_;
+
+	void LinkPlanes(const string& LevelName);
 };
 
 #endif // _LEVEL_H

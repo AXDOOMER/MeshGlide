@@ -1,12 +1,12 @@
 # Use tabs with a width of 4 to view this file. It can also be opened as a CSV file where values are separated with tabs.
 #THING	TYPE	X	Y	Z 	ANGLE
-thing	player	0	-5	2	90
+thing	player	-25	33	2	270
 thing	plant	128	128	0	0
 setting blur	1
 setting	skytex	clouds.jpg
 setting	skyele	10
 setting blur	0
-#POLY	NOTEXTURE	BLC	DBS	ScX	ScY	AlX	AlY	Lit	X	Y	Z	X	Y	Z	X	Y	Z	X	Y	Z
+#POLY	INVISIBLE	BLC	DBS	ScX	ScY	AlX	AlY	Lit	X	Y	Z	X	Y	Z	X	Y	Z	X	Y	Z
 poly	grass.png	1	0	16	16	0	0	1	-35	-35	0	35	-35	0	35	35	0	-35	35	0
 poly	skyblue.jpg	1	1	1	1	0	0	1	-5	10	10	-5	-10	10	-5	-10	-10	-5	10	-10
 poly	rock.jpg	1	1	1	1	0	0	0.2	15	15	10	15	15	0	5	15	0	5	15	10

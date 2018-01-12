@@ -31,6 +31,8 @@ const float PI = atan(1) * 4;
 
 Player::Player()
 {
+	plane = nullptr;
+
 	for (int i = 0; i < MAXOWNEDWEAPONS; i++)
 	{
 		OwnedWeapons[i] = false;
@@ -114,6 +116,19 @@ Plane::~Plane()
 	{
 		delete WallInfo;
 	}
+}
+
+// Used to compare two planes by counting the amount of common vertices
+unsigned int Plane::CommonVertices(Plane* plane)
+{
+	unsigned int count = 0;
+
+	for (unsigned i = 0; i < Vertices.size(); i++)
+		for (unsigned j = 0; j < plane->Vertices.size(); j++)
+			if (Vertices[i] == plane->Vertices[j])
+				count++;
+
+	return count;
 }
 
 void Plane::ComputeWallInfo()

@@ -22,15 +22,22 @@
 #include "things.h"	/* Player */
 #include "vecmath.h"	/* Float3 */
 #include "level.h"	/* Level */
-using namespace std;
 
 // Collision detection with floors
 bool AdjustPlayerToFloor(Player* play, Level* lvl);
+
+void ApplyGravity(Player* play);
 
 // Distance smaller than length (inside or touches)
 bool CompareDistanceToLength(float DiffX, float DiffY, float Length);
 
 // Returns true if the vector hits any walls. The vector has a circular endpoint.
 bool HitsWall(Float3 origin, Float3 target, float RadiusToUse, Level* lvl);
+
+// Moves the player to a new position. Returns false if it can't.
+bool GetPlayerToNewPosition(Float3 origin, Float3 target, float RadiusToUse, Level* lvl);
+
+// Get the plane where the player is standing
+Plane* GetPlaneForPlayer(Player* play, Level* lvl);
 
 #endif	// _PHYSICS_H

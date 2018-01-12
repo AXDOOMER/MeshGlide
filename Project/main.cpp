@@ -38,7 +38,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.26 (dev)";
+	const char* const VERSION = "0.27 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -124,9 +124,12 @@ int main(int argc, const char *argv[])
 
 	if (!CurrentLevel || CurrentLevel->planes.size() == 0)
 	{
-		cout << "ERROR: Cannot load level '" << LevelName << "'" << endl;
+		cerr << "Failed to load level '" << LevelName << "'" << endl;
 		exit(EXIT_FAILURE);
 	}
+
+	// Set the player to floor's height
+	CurrentLevel->play->plane = GetPlaneForPlayer(CurrentLevel->play, CurrentLevel);
 
 	/****************************** SETUP PHASE ******************************/
 
@@ -177,7 +180,7 @@ int main(int argc, const char *argv[])
 			}
 			catch (...)
 			{
-				cerr << "ERROR: Demo file contains invalid data." << endl;
+				cerr << "Demo file contains invalid data." << endl;
 				Quit = true;
 			}
 		}
@@ -273,13 +276,13 @@ int main(int argc, const char *argv[])
 		// Send Commands over Network
 
 		// Update game logic
-		Float3 pt = {CurrentLevel->play->PosX(), CurrentLevel->play->PosY(), CurrentLevel->play->PosZ()};
+		Float3 pt = CurrentLevel->play->pos_;
 
 		TicCmd tc = CurrentLevel->play->Cmd;
 		CurrentLevel->play->ExecuteTicCmd();
 
 		// Collision detection with floors
-		if (HitsWall({CurrentLevel->play->PosX(), CurrentLevel->play->PosY(), CurrentLevel->play->PosZ()}, pt, CurrentLevel->play->Radius, CurrentLevel))
+		if (!GetPlayerToNewPosition(pt, CurrentLevel->play->pos_, CurrentLevel->play->Radius, CurrentLevel))
 		{
 			tc.forward = -tc.forward;
 			tc.lateral = -tc.lateral;
@@ -287,7 +290,7 @@ int main(int argc, const char *argv[])
 			CurrentLevel->play->ExecuteTicCmd();
 		}
 
-		AdjustPlayerToFloor(CurrentLevel->play, CurrentLevel);
+		ApplyGravity(CurrentLevel->play);
 
 		// Draw Screen
 		DrawScreen(window, CurrentLevel->play, CurrentLevel, FrameDelay);
