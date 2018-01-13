@@ -16,8 +16,8 @@
 // physics.h
 // What affects a thing's movement in space
 
-#ifndef _PHYSICS_H
-#define _PHYSICS_H
+#ifndef PHYSICS_H
+#define PHYSICS_H
 
 #include "things.h"	/* Player */
 #include "vecmath.h"	/* Float3 */
@@ -40,4 +40,4 @@ bool MovePlayerToNewPosition(Float3 origin, Float3 target, Player* play);
 // Get the plane where the player is standing
 Plane* GetPlaneForPlayer(Player* play, Level* lvl);
 
-#endif	// _PHYSICS_H
+#endif	// PHYSICS_H

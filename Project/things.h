@@ -16,8 +16,8 @@
 // things.h
 // Data structures (player, walls, etc. ) used in the World
 
-#ifndef _THINGS_H
-#define _THINGS_H
+#ifndef THINGS_H
+#define THINGS_H
 
 #include "texture.h"
 #include "cache.h"
@@ -149,4 +149,4 @@ struct SpawnSpot
 	short Angle;
 };
 
-#endif /* _THINGS_H */
+#endif /* THINGS_H */

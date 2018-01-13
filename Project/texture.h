@@ -16,8 +16,8 @@
 // texture.h
 // Texture loader
 
-#ifndef _TEXTURE_H
-#define _TEXTURE_H
+#ifndef TEXTURE_H
+#define TEXTURE_H
 
 #include <GL/gl.h>
 
@@ -44,4 +44,4 @@ public:
 	void Bind();
 };
 
-#endif
+#endif	// TEXTURE_H

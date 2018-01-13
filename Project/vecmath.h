@@ -16,8 +16,8 @@
 // vecmath.h
 // Custom library for vector math, collision with planes, etc. that uses floats.
 
-#ifndef _VECMATH_H
-#define _VECMATH_H
+#ifndef VECMATH_H
+#define VECMATH_H
 
 #include <vector>
 
@@ -78,4 +78,4 @@ float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices);
 // Returns true if two vectors intersect
 bool CheckVectorIntersection(Float3 v1start, Float3 v1end, Float3 v2start, Float3 v2end);
 
-#endif // _VECMATH_H
+#endif	// VECMATH_H

@@ -16,8 +16,8 @@
 // viewdraw.h
 // OpenGL camera functions for screen drawing
 
-#ifndef _VIEWDRAW_H
-#define _VIEWDRAW_H
+#ifndef VIEWDRAW_H
+#define VIEWDRAW_H
 
 #include <GLFW/glfw3.h>
 
@@ -42,5 +42,5 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 
 void Close_OpenGL(GLFWwindow* window);
 
-#endif /* _VIEWDRAW_H */
+#endif /* VIEWDRAW_H */
 

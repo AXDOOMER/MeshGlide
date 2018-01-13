@@ -16,8 +16,8 @@
 // level.h
 // Level loader. Supports a native format and the OBJ format.
 
-#ifndef _LEVEL_H
-#define _LEVEL_H
+#ifndef LEVEL_H
+#define LEVEL_H
 
 #include "vecmath.h"	/* Float3 */
 #include "things.h"	/* Player, Plane */
@@ -58,4 +58,4 @@ private:
 	void LinkPlanes(const string& LevelName);
 };
 
-#endif // _LEVEL_H
+#endif // LEVEL_H

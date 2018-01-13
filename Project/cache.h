@@ -16,8 +16,8 @@
 // cache.h
 // Generic cache
 
-#ifndef _CACHE_H
-#define _CACHE_H
+#ifndef CACHE_H
+#define CACHE_H
 
 #include <map>
 using namespace std;
@@ -26,48 +26,48 @@ template <class K, class T>
 class Cache
 {
 private:
-	map<K, T*> _store;
-	K _prev;	// Previous used key when doing a Get()
+	map<K, T*> store_;
+	K prev_;	// Previous used key when doing a Get()
 public:
 	Cache()
 	{
-		_prev = "";
+		prev_ = "";
 	}
 
 	void Add(const K& key, T* data)
 	{
-		_store.insert(pair<const K&, T*>(key, data));
+		store_.insert(pair<const K&, T*>(key, data));
 	}
 
 	bool Has(const K& key) const
 	{
-		return _store.find(key) != _store.end();
+		return store_.find(key) != store_.end();
 	}
 
 	T* Get(const K& key)
 	{
-		_prev = key;
+		prev_ = key;
 		// Will throw 'std::out_of_range' if key is not found
-		return _store.at(key);
+		return store_.at(key);
 	}
 
 	unsigned int Size() const
 	{
-		return _store.count();
+		return store_.count();
 	}
 
 	K Previous() const
 	{
-		return _prev;
+		return prev_;
 	}
 
 	// Destructor
 	~Cache()
 	{
-		for (auto& e: _store) {
+		for (auto& e: store_) {
 			delete e.second;
 		}
 	}
 };
 
-#endif	// _CACHE_H
+#endif	// CACHE_H
