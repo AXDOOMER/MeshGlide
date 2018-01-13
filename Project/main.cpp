@@ -38,7 +38,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.28 (dev)";
+	const char* const VERSION = "0.29 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -93,8 +93,8 @@ int main(int argc, const char *argv[])
 		getline(DemoRead, line);
 		cout << "Demo Version: " << line << endl;
 		getline(DemoRead, line);
-		cout << "Level name: " << line << endl;
 		LevelName = line;
+		cout << "Level name: " << line << endl;
 		getline(DemoRead, line);
 		cout << "# of players: " << line << endl;
 	}
@@ -279,6 +279,7 @@ int main(int argc, const char *argv[])
 
 		// Update game logic
 		Float3 pt = CurrentLevel->play->pos_;
+		short Angle = CurrentLevel->play->Angle;
 
 		TicCmd tc = CurrentLevel->play->Cmd;
 		CurrentLevel->play->ExecuteTicCmd();
@@ -286,6 +287,7 @@ int main(int argc, const char *argv[])
 		// Collision detection with floors
 		if (!MovePlayerToNewPosition(pt, CurrentLevel->play->pos_, CurrentLevel->play))
 		{
+			CurrentLevel->play->Angle = Angle;
 			tc.forward = -tc.forward;
 			tc.lateral = -tc.lateral;
 			CurrentLevel->play->Cmd = tc;

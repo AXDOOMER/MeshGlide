@@ -146,7 +146,7 @@ Plane* TraceOnPolygons(Float3 origin, Float3 target, Plane* plane)
 		Plane* p = tested[tested.size() - 1]->Neighbors[i];
 
 		// Skip to the next adjacent plane if this one was already checked
-		if (find(tested.begin(), tested.end(), p) != tested.end())
+		if (find(tested.rbegin(), tested.rend(), p) != tested.rend())
 			continue;
 
 		if (pointInPoly(target.x, target.y, p->Vertices))
@@ -155,7 +155,7 @@ Plane* TraceOnPolygons(Float3 origin, Float3 target, Plane* plane)
 		// Scan each polygon edge to see if the vector is crossing
 		for (unsigned int j = 0; j < p->Vertices.size(); j++)
 		{
-			if (CheckVectorIntersection(origin, target, p->Vertices[j], p->Vertices[ (j+1) % p->Vertices.size() ]))
+			if (CheckVectorIntersection(origin, target, p->Vertices[j], p->Vertices[(j+1) % p->Vertices.size()]))
 			{
 				tested.push_back(p);
 				i = -1;		// Reset outer loop
