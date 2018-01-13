@@ -5,4 +5,4 @@ cd $(dirname "$0")
 cd Project
 
 # Compile the source files and execute
-g++ *.cpp -std=c++14 -Wall -lglfw -lGL -lGLU -lglut -lSDL2 -lSDL2_image -o MeshGlide && ./MeshGlide $@
+g++ *.cpp -std=c++11 -Wall -lglfw -lGL -lGLU -lglut -lSDL2 -lSDL2_image -o MeshGlide && ./MeshGlide $@
