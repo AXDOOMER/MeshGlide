@@ -184,7 +184,7 @@ void Level::LoadNative(const string& LevelName)
 				}
 				else
 				{
-					cout << "INVALID LINE IGNORED AT: " << Count << endl;
+					cout << "Skipped line: " << Count << endl;
 				}
 			}
 		}
@@ -298,7 +298,7 @@ void Level::LoadObj(const string& path)
 				}
 				else
 				{
-					cout << "INVALID OR UNKNOWN LINE IGNORED AT " << Count << endl;
+					cout << "Skipped line: " << Count << endl;
 				}
 			}
 		} // end of while loop

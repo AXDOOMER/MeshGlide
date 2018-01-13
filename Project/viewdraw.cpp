@@ -23,7 +23,6 @@
 
 #include <SDL2/SDL_image.h>
 #include <GLFW/glfw3.h>
-#include <GL/freeglut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
@@ -150,8 +149,6 @@ void RenderText(Level* lvl, string text, float x, float y, float sx, float sy)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
-	glEnable(GL_TEXTURE_2D);
 
 	// Init font texture
 	lvl->AddTexture(fontfile, false);
@@ -298,65 +295,6 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 	}
 
 	glEnable(GL_CULL_FACE);
-
-	// Draw flat polygons from now
-	glDisable(GL_TEXTURE_2D);
-
-	for (int i = -3; i <= 3; i++)
-	{
-		for (int j = -3; j <= 3; j++)
-		{
-			float distance = pow(play->PosX() - j*10, 2) + pow(play->PosY() - i*10, 2);
-			if (distance <= 500)
-			{
-				glColor3f(1.0f, 1.0f, 1.0f);
-				glPushMatrix();
-				glTranslatef(i * 10.0f, 0.0f, j * 10.0f);
-				// Big body snow ball
-				glTranslatef(0.0f, 0.75f, 0.0f);
-				glutSolidSphere(0.75f, 20, 20);
-				// Small head ball
-				glTranslatef(0.0f, 1.0f, 0.0f);
-				glutSolidSphere(0.25f, 20, 20);
-				// Black Eyes
-				glPushMatrix();
-				glColor3f(0.0f, 0.0f, 0.0f);
-				glTranslatef(0.05f, 0.10f, 0.18f);
-				glutSolidSphere(0.05f, 10, 10);
-				glTranslatef(-0.1f, 0.0f, 0.0f);
-				glutSolidSphere(0.05f, 10, 10);
-				glPopMatrix();
-				// Carrot
-				glColor3f(235.0f/256.0f, 95.0f/256.0f, 0.0f);
-				glutSolidCone(0.08f, 0.5f, 10, 2);
-				glPopMatrix();
-			}
-			else	// Far, so lower poly count
-			{
-				glColor3f(1.0f, 1.0f, 1.0f);
-				glPushMatrix();
-				glTranslatef(i * 10.0f, 0.0f, j * 10.0f);
-				// Big body snow ball
-				glTranslatef(0.0f, 0.75f, 0.0f);
-				glutSolidSphere(0.75f, 10, 5);
-				// Small head ball
-				glTranslatef(0.0f, 1.0f, 0.0f);
-				glutSolidSphere(0.25f, 10, 5);
-				// Black Eyes
-				glPushMatrix();
-				glColor3f(0.0f, 0.0f, 0.0f);
-				glTranslatef(0.05f, 0.10f, 0.18f);
-				glutSolidSphere(0.05f, 6, 5);
-				glTranslatef(-0.1f, 0.0f, 0.0f);
-				glutSolidSphere(0.05f, 6, 5);
-				glPopMatrix();
-				// Carrot
-				glColor3f(235.0f/256.0f, 95.0f/256.0f, 0.0f);
-				glutSolidCone(0.08f, 0.5f, 5, 2);
-				glPopMatrix();
-			}
-		}
-	}
 
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

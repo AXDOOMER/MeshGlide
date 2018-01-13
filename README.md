@@ -10,13 +10,13 @@ It's called the MeshGlide engine.
 
 ### Development
 
-Compile on Linux: `g++ *.cpp -std=c++14 -lglfw -lGL -lGLU -lglut -lSDL2 -lSDL2_image -o MeshGlide`
+Compile on Linux: `g++ *.cpp -std=c++11 -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -o MeshGlide`
 
 It's preferable to compile and run the program using the `run.sh` script because it's tested, but this should work too.
 
 #### Installation
 
-Packages that may need to be installed under Debian and Ubuntu are: `libglfw3 libglfw3-dev libsdl2-image-2.0-0 libsdl2-image-dev freeglut3 freeglut3-dev libsdl2-2.0-0 libsdl2-dev libsdl2-image-2.0-0 libsdl2-image-dev`
+Packages that may need to be installed under Debian and Ubuntu are: `libglfw3 libglfw3-dev libsdl2-image-2.0-0 libsdl2-image-dev libsdl2-2.0-0 libsdl2-dev`
 
 ### Random screenshots
 

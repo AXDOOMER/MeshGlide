@@ -24,7 +24,6 @@
 #include "physics.h"
 
 #include <GLFW/glfw3.h>
-#include <GL/freeglut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <SDL2/SDL.h>	/* SDL_Delay */
@@ -103,8 +102,6 @@ int main(int argc, const char *argv[])
 
 	// Load OpenGL
 	GLFWwindow* window = Init_OpenGL();
-	// Initialize GLUT, else we can't draw spheres and cones
-	glutInit(&argc, const_cast<char**>(argv));
 
 	if (!window)
 	{
