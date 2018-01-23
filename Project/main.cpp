@@ -37,7 +37,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.30 (dev)";
+	const char* const VERSION = "0.31 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -130,7 +130,7 @@ int main(int argc, const char *argv[])
 		cin >> LevelName;
 	}
 
-	Level* CurrentLevel = new Level(LevelName);	// Holds the level data
+	Level* CurrentLevel = new Level(LevelName, atof(FindArgumentParameter(argc, argv, "-scale", "1.0").c_str()));	// Holds the level's data
 
 	if (!CurrentLevel || CurrentLevel->planes.size() == 0)
 	{

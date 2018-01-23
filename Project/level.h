@@ -40,14 +40,14 @@ public:
 	void AddTexture(const string& name, bool enableFiltering);	// Add texture to cache if missing
 	void UseTexture(const string& name);	// Bind texture
 
-	Level(const string& level);
+	Level(const string& level, float scaling);
 	~Level();
 
 	vector<string> Split(string s, const string& delimiter);
 	bool EndsWith(const string& str, const string& value);
-	void LoadLevel(const string& LevelName);
+	void LoadLevel(const string& LevelName, float scaling);
 	void LoadNative(const string& LevelName);
-	void LoadObj(const string& path);
+	void LoadObj(const string& path, float scaling);
 
 private:
 	// OBJ and OpenGL stuff

@@ -31,10 +31,10 @@
 #include <chrono>
 using namespace std;
 
-Level::Level(const string& level)
+Level::Level(const string& level, float scaling)
 {
 	auto start = chrono::system_clock::now();
-	LoadLevel(level);
+	LoadLevel(level, scaling);
 	auto end = chrono::system_clock::now();
 	auto diff = chrono::duration_cast<chrono::milliseconds>(end - start).count();
 	cout << "Level loading took " << diff << "ms." << endl;
@@ -92,11 +92,11 @@ bool Level::EndsWith(const string& str, const string& value)
 }
 
 // Detects the format and calls the right loading method
-void Level::LoadLevel(const string& LevelName)
+void Level::LoadLevel(const string& LevelName, float scaling)
 {
 	if (EndsWith(LevelName, ".obj"))
 	{
-		LoadObj(LevelName);
+		LoadObj(LevelName, scaling);
 		AdjustPlayerToFloor(play, this);
 	}
 	else
@@ -201,7 +201,7 @@ void Level::LoadNative(const string& LevelName)
 }
 
 // Loading method for OBJ format
-void Level::LoadObj(const string& path)
+void Level::LoadObj(const string& path, float scaling)
 {
 	cout << "Loading 3D model: " << path << endl;
 
@@ -238,9 +238,9 @@ void Level::LoadObj(const string& path)
 				if (slices[0] == "v" && slices.size() == 4)	// Vertex
 				{
 					Float3 temp_vertex;
-					temp_vertex.x = atof(slices[1].c_str());
-					temp_vertex.y = atof(slices[2].c_str());
-					temp_vertex.z = atof(slices[3].c_str());
+					temp_vertex.x = atof(slices[1].c_str()) * scaling;
+					temp_vertex.y = atof(slices[2].c_str()) * scaling;
+					temp_vertex.z = atof(slices[3].c_str()) * scaling;
 					temp_vertices.push_back(temp_vertex);
 				}
 				else if (slices[0] == "vt" && slices.size() == 3)	// Texture coordinate of a vertex
