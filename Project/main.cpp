@@ -37,7 +37,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.29 (dev)";
+	const char* const VERSION = "0.30 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -45,7 +45,7 @@ int main(int argc, const char *argv[])
 	ofstream DemoWrite;
 	ifstream DemoRead;
 	string FrameDelay = "";
-	string LevelName = "level.txt";
+	string LevelName = "map.obj";
 
 	cout << "                MESHGLIDE ENGINE -- " << VERSION << "\n\n";
 
@@ -140,6 +140,11 @@ int main(int argc, const char *argv[])
 
 	// Set the player to floor's height
 	CurrentLevel->play->plane = GetPlaneForPlayer(CurrentLevel->play, CurrentLevel);
+	if (CurrentLevel->play->plane == nullptr)
+	{
+		cerr << "Player's spawn spot is outside of map." << endl;
+		exit(EXIT_FAILURE);
+	}
 
 	/****************************** SETUP PHASE ******************************/
 

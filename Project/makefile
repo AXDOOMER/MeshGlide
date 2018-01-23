@@ -24,6 +24,7 @@ TARGET: $(OBJ)
 .PHONY: clean
 clean:
 	$(RM) $(OBJ) $(TARGET)
+	$(RM) *.lnb *.mtl
 
 .PHONY: cleandep
 cleandep:
