@@ -45,7 +45,6 @@ struct Wall
 class Plane
 {
 public:
-	// TODO: Compute the 3D orentation of a poly and keep the unit vector data for collision detection
 	string Texture;
 	bool Impassable = true;
 	bool TwoSided = false;

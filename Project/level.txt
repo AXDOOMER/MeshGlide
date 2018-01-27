@@ -12,13 +12,13 @@ poly	skyblue.jpg	1	1	1	1	0	0	1	-5	10	10	-5	-10	10	-5	-10	-10	-5	10	-10
 poly	rock.jpg	1	1	1	1	0	0	0.2	15	15	10	15	15	0	5	15	0	5	15	10
 poly	cliff.png	1	1	1	1	0	0	1	-2	5	1	8	5	1	4	-8	1
 # Build the rock construction at the edge of the map
-poly	cliff.png	1	1	1	1	0	0	1	-19	22	0	-16	33	2	-15	35	0
+poly	cliff.png	0	1	1	1	0	0	1	-19	22	0	-16	33	2	-15	35	0
 poly	cliff.png	1	1	2	2	0	0	1	-19	22	0	-16	33	2	-29	35	2
 poly	cliff.png	1	1	1	1	0	0	1	-19	22	0	-29	21	0	-29	35	2
 poly	cliff.png	1	1	1	1	0	0	1	-29	21	0	-35	29	3	-29	35	2
 poly	cliff.png	1	1	1	1	0	0	1	-29	21	0	-36	21	3	-35	29	3
 poly	cliff.png	1	1	1	1	0	0	1	-29	21	0	-30	15	2	-32	21	2
-poly	cliff.png	1	1	1	1	0	0	1	-29	21	0	-32	21	2	-36	21	3
+poly	cliff.png	0	1	1	1	0	0	1	-29	21	0	-32	21	2	-36	21	3
 poly	cliff.png	1	1	1	1	0	0	1	-29	21	0	-29	14	0	-30	15	2
 poly	cliff.png	1	1	1	1	0	0	1	-30	15	2	-32	21	2	-36	21	3
 poly	cliff.png	1	1	1	1	0	0	1	-30	15	2	-36	21	3	-34	14	3

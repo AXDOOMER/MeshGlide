@@ -117,6 +117,7 @@ float RayIntersect2(Float3 ray, Float3 origin, Float3 normal, Float3 center)
 	return addVectors(origin , scaleVector(x, normalize(ray))).z;
 }
 
+// Returns a normalized normal
 Float3 ComputeNormal(vector<Float3> vertices)
 {
 	// Vector 'u'
@@ -126,18 +127,15 @@ Float3 ComputeNormal(vector<Float3> vertices)
 	Float3 v = {vertices[2].x - vertices[0].x, vertices[2].y - vertices[0].y, vertices[2].z - vertices[0].z};
 
 	// Cross product to get the normal
-	return crossProduct(u, v);
+	return normalize(crossProduct(u, v));
 }
 
 // Takes a X, Y, Z position to test with polygon and the polygon's vertices
-float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices)
+float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices, Float3 normal)
 {
 	// If the polygon is straight on the X and Y axes (no Z variation), return its height right away.
 	if (vertices[0].z ==  vertices[1].z && vertices[1].z == vertices[2].z)
 		return vertices[0].z;
-
-	// Cross product to get the normal
-	Float3 n = ComputeNormal(vertices);
 
 	// Center of polygon
 	Float3 total = {0, 0, 0};
@@ -150,7 +148,7 @@ float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices)
 	Float3 center = {total.x / vertices.size(), total.y / vertices.size(), total.z / vertices.size()};
 
 	// Trace a ray that aims down
-	return RayIntersect2({0, 0, -1}, {x, y, z}, n, center);
+	return RayIntersect2({0, 0, -1}, {x, y, z}, normal, center);
 }
 
 bool CheckVectorIntersection(Float3 v1start, Float3 v1end, Float3 v2start, Float3 v2end)

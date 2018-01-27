@@ -17,7 +17,7 @@
 // Level loader. Supports a native format and the OBJ format.
 
 #include "level.h"
-#include "vecmath.h"	/* Float3 */
+#include "vecmath.h"	/* Float3, ComputeNormal */
 #include "things.h"	/* Player, Plane */
 #include "cache.h"	/* Cache */
 #include "physics.h" /* AdjustPlayerToFloor */
@@ -164,6 +164,7 @@ void Level::LoadNative(const string& LevelName)
 					}
 
 					p->ComputeWallInfo();			// Comment out this line to become a ghost
+					p->normal = ComputeNormal(p->Vertices);
 					planes.push_back(p);
 				}
 				else if (tokens[0] == "setting" && tokens.size() == 3)
@@ -275,8 +276,6 @@ void Level::LoadObj(const string& path, float scaling)
 						p->Texture = texture;
 					}
 
-					p->ComputeWallInfo();	// For walls
-
 					// Format: vertex, uv, normal. They are indices that points to the previous data.
 					for (unsigned int i = 1; i < slices.size(); i++)
 					{
@@ -299,6 +298,8 @@ void Level::LoadObj(const string& path, float scaling)
 						}
 					}
 
+					p->ComputeWallInfo();	// For walls
+					p->normal = ComputeNormal(p->Vertices);
 					planes.push_back(p);
 				}
 				else if (slices[0] == "usemtl" && slices.size() == 2)

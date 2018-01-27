@@ -27,6 +27,8 @@
 #include <algorithm>	/* find */
 using namespace std;
 
+const float WALL_ANGLE = 0.4f;	// '1' points up (floor) and '0' points to the side (wall)
+
 // Collision detection with floors
 bool AdjustPlayerToFloor(Player* play, Level* lvl)
 {
@@ -36,7 +38,7 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 	{
 		if (pointInPoly(play->PosX(), play->PosY(), lvl->planes[i]->Vertices))
 		{
-			float collision_point_z = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), lvl->planes[i]->Vertices);
+			float collision_point_z = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), lvl->planes[i]->Vertices, lvl->planes[i]->normal);
 			if (!isnan(collision_point_z) && collision_point_z > NewHeight)
 			{
 				if (collision_point_z <= play->PosZ() + play->MaxStep)
@@ -69,7 +71,7 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 
 void ApplyGravity(Player* play)
 {
-	float FloorHeight = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), play->plane->Vertices);
+	float FloorHeight = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), play->plane->Vertices, play->plane->normal);
 	if (!isnan(FloorHeight))
 	{
 		if (play->PosZ() <= FloorHeight + GRAVITY)
@@ -114,7 +116,7 @@ Plane* GetPlaneForPlayer(Player* play, Level* lvl)
 	// Find the height of the player on every planes
 	for (unsigned int i = 0; i < planes.size(); i++)
 	{
-		float Height = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), planes[i]->Vertices);
+		float Height = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), planes[i]->Vertices, planes[i]->normal);
 
 		HeightOnPlanes.push_back(make_pair(planes[i], Height));
 
@@ -147,6 +149,10 @@ Plane* TraceOnPolygons(Float3 origin, Float3 target, Plane* plane)
 
 		// Skip to the next adjacent plane if this one was already checked
 		if (find(tested.rbegin(), tested.rend(), p) != tested.rend())
+			continue;
+
+		// Do not walk on walls. The impassable/block flag can be set to 0 to allow stairs.
+		if (p->Impassable && p->normal.z < WALL_ANGLE && p->normal.z > -WALL_ANGLE)
 			continue;
 
 		if (pointInPoly(target.x, target.y, p->Vertices))

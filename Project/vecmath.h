@@ -75,7 +75,7 @@ float RayIntersect2(Float3 ray, Float3 origin, Float3 normal, Float3 center);
 Float3 ComputeNormal(vector<Float3> vertices);
 
 // Get height on a polygon
-float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices);
+float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices, Float3 normal);
 
 // Returns true if two vectors intersect
 bool CheckVectorIntersection(Float3 v1start, Float3 v1end, Float3 v2start, Float3 v2end);
