@@ -193,4 +193,8 @@ void Plane::ComputeWallInfo()
 		// Angle between those two vertices
 		WallInfo->Angle = atan2(WallInfo->Vertex1.y - WallInfo->Vertex2.y, WallInfo->Vertex1.x - WallInfo->Vertex2.x);
 	}
+	else
+	{
+		WallInfo = nullptr;
+	}
 }
