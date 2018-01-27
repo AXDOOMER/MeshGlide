@@ -72,6 +72,8 @@ float RayIntersect2(Float3 ray, Float3 origin, Float3 normal, Float3 center);
 // https://stackoverflow.com/questions/23975555/how-to-do-ray-plane-intersection
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-plane-and-ray-disk-intersection
 
+Float3 ComputeNormal(vector<Float3> vertices);
+
 // Get height on a polygon
 float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices);
 

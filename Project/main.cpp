@@ -156,8 +156,8 @@ int main(int argc, const char *argv[])
 	}
 
 	/****************************** GAME LOOP ******************************/
-    do
-    {
+	do
+	{
 		// Timer
 		auto start = chrono::system_clock::now();
 
@@ -303,7 +303,7 @@ int main(int argc, const char *argv[])
 
 		// Play sound
 
-        // Status of the player for debugging purposes
+		// Status of the player for debugging purposes
 		if (Debug)
 		{
 			cout << "X: " << CurrentLevel->play->PosX() << "\t\tY: " << CurrentLevel->play->PosY()

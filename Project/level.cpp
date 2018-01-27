@@ -213,7 +213,7 @@ void Level::LoadObj(const string& path, float scaling)
 	vector<Float2> temp_uvs;
 	vector<Float3> temp_normals;
 
-	string texture = "grass.png";	// Current texture for plane
+	string texture = "None";	// Current texture for plane
 
 	if (model.is_open())
 	{
@@ -269,8 +269,11 @@ void Level::LoadObj(const string& path, float scaling)
 					p->Light = 1;
 
 					// Use a default texture because materials and UVs are not implemented
-					AddTexture(texture, false);
-					p->Texture = texture;
+					if (texture != "None")
+					{
+						AddTexture(texture, false);
+						p->Texture = texture;
+					}
 
 					p->ComputeWallInfo();	// For walls
 

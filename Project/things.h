@@ -57,6 +57,7 @@ public:
 	float Yoff = 0;
 	float Light = 1;	// Must be between 0 (dark) and 1 (full bright)
 
+	Float3 normal;
 	vector<Plane*> Neighbors;	// List of adjacent planes
 
 	void ComputeWallInfo();

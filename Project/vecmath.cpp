@@ -101,7 +101,8 @@ float RayIntersect(Float3 ray, Float3 origin, Float3 normal, Float3 center)
 
 // Find the intersection of a ray that aims down on a polygon
 // Parameters: ray, origin of ray, polygon's normal, center of polygon
-float RayIntersect2(Float3 ray, Float3 origin, Float3 normal, Float3 center) {
+float RayIntersect2(Float3 ray, Float3 origin, Float3 normal, Float3 center)
+{
 	if (dotProduct(normal, ray) == 0) {	// Use an epsilon here? (< 0.0001f)
 		return numeric_limits<float>::quiet_NaN();	// No intersection, the line is parallel to the plane
 	}
@@ -116,37 +117,27 @@ float RayIntersect2(Float3 ray, Float3 origin, Float3 normal, Float3 center) {
 	return addVectors(origin , scaleVector(x, normalize(ray))).z;
 }
 
-// Takes a X, Y, Z position to test with polygon and the polygon's vertices
-float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices) {
-
-	Float3 origin = {x, y, z};
-
-	// Create variables for readability
-	float x0 = vertices[0].x;
-	float y0 = vertices[0].y;
-	float z0 = vertices[0].z;
-
-	float x1 = vertices[1].x;
-	float y1 = vertices[1].y;
-	float z1 = vertices[1].z;
-
-	float x2 = vertices[2].x;
-	float y2 = vertices[2].y;
-	float z2 = vertices[2].z;
-
+Float3 ComputeNormal(vector<Float3> vertices)
+{
 	// Vector 'u'
-	Float3 u = {x1 - x0, y1 - y0, z1 - z0};
+	Float3 u = {vertices[1].x - vertices[0].x, vertices[1].y - vertices[0].y, vertices[1].z - vertices[0].z};
 
 	// Vector 'v'
-	Float3 v = {x2 - x0, y2 - y0, z2 - z0};
-
-	// If the polygon is straight on the X and Y axes (no Z variation), return its height right away.
-	if (z0 == z1 && z1 == z2)
-		return z0;
+	Float3 v = {vertices[2].x - vertices[0].x, vertices[2].y - vertices[0].y, vertices[2].z - vertices[0].z};
 
 	// Cross product to get the normal
-	// TODO: Normals could be computed at level loading and saved in order to be used to detect collisions with walls
-	Float3 n = crossProduct(u, v);
+	return crossProduct(u, v);
+}
+
+// Takes a X, Y, Z position to test with polygon and the polygon's vertices
+float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices)
+{
+	// If the polygon is straight on the X and Y axes (no Z variation), return its height right away.
+	if (vertices[0].z ==  vertices[1].z && vertices[1].z == vertices[2].z)
+		return vertices[0].z;
+
+	// Cross product to get the normal
+	Float3 n = ComputeNormal(vertices);
 
 	// Center of polygon
 	Float3 total = {0, 0, 0};
@@ -158,9 +149,8 @@ float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices) {
 	}
 	Float3 center = {total.x / vertices.size(), total.y / vertices.size(), total.z / vertices.size()};
 
-	// Trace ray
-	Float3 ray = {0, 0, -1};
-	return RayIntersect2(ray, origin, n, center);
+	// Trace a ray that aims down
+	return RayIntersect2({0, 0, -1}, {x, y, z}, n, center);
 }
 
 bool CheckVectorIntersection(Float3 v1start, Float3 v1end, Float3 v2start, Float3 v2end)
