@@ -138,7 +138,7 @@ Plane* GetPlaneForPlayer(Player* play, Level* lvl)
 }
 
 // Travel through planes which were intersected, check if point inside.
-Plane* TraceOnPolygons(Float3 origin, Float3 target, Plane* plane)
+Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane)
 {
 	vector<Plane*> tested;		// List of polys that are already checked
 	tested.push_back(plane);
@@ -175,7 +175,7 @@ Plane* TraceOnPolygons(Float3 origin, Float3 target, Plane* plane)
 }
 
 // Moves the player to a new position. Returns false if it can't.
-bool MovePlayerToNewPosition(Float3 origin, Float3 target, Player* play)
+bool MovePlayerToNewPosition(const Float3& origin, const Float3& target, Player* play)
 {
 	if (pointInPoly(target.x, target.y, play->plane->Vertices))
 	{
@@ -199,13 +199,13 @@ bool MovePlayerToNewPosition(Float3 origin, Float3 target, Player* play)
 }
 
 // Distance smaller than length (inside or touches)
-bool CompareDistanceToLength(float DiffX, float DiffY, float Length)
+bool CompareDistanceToLength(const float DiffX, const float DiffY, const float Length)
 {
 	return pow(DiffX, 2) + pow(DiffY, 2) <= Length * Length;
 }
 
 // Returns true if the vector hits any walls. The vector has a circular endpoint.
-bool HitsWall(Float3 point, float RadiusToUse, Level* lvl)
+bool HitsWall(const Float3& point, const float RadiusToUse, Level* lvl)
 {
 	for (unsigned int i = 0; i < lvl->planes.size(); i++)
 	{

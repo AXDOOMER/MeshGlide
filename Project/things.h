@@ -108,9 +108,9 @@ public:
 	short Cells = 0;
 
 	Player(); // We need a constructor for the weapons array
-	float PosX();
-	float PosY();
-	float PosZ();
+	float PosX() const;
+	float PosY() const;
+	float PosZ() const;
 
 private:
 	const float MaxWalkSpeed = 0.6f;
@@ -123,7 +123,7 @@ private:
 
 public:
 	void ExecuteTicCmd();
-	float GetRadianAngle(short Angle);
+	float GetRadianAngle(short Angle) const;
 
 	void ForwardMove(int Thrust);
 	void LateralMove(int Thrust);

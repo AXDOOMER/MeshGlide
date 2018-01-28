@@ -29,13 +29,13 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl);
 void ApplyGravity(Player* play);
 
 // Distance smaller than length (inside or touches)
-bool CompareDistanceToLength(float DiffX, float DiffY, float Length);
+bool CompareDistanceToLength(const float DiffX, const float DiffY, const float Length);
 
 // Returns true if the vector hits any walls. The vector has a circular endpoint.
-bool HitsWall(Float3 point, float RadiusToUse, Level* lvl);
+bool HitsWall(const Float3& point, const float RadiusToUse, Level* lvl);
 
 // Moves the player to a new position. Returns false if it can't.
-bool MovePlayerToNewPosition(Float3 origin, Float3 target, Player* play);
+bool MovePlayerToNewPosition(const Float3& origin, const Float3& target, Player* play);
 
 // Get the plane where the player is standing
 Plane* GetPlaneForPlayer(Player* play, Level* lvl);

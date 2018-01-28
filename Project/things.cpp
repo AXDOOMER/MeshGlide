@@ -68,7 +68,7 @@ void Player::ExecuteTicCmd()
 	Cmd.chat = "";
 }
 
-float Player::GetRadianAngle(short Angle)
+float Player::GetRadianAngle(short Angle) const
 {
 	return Angle * PI * 2 / 32768;
 }
@@ -95,17 +95,17 @@ void Player::AngleTurn(short AngleChange)
 	}
 }
 
-float Player::PosX()
+float Player::PosX() const
 {
 	return pos_.x;
 }
 
-float Player::PosY()
+float Player::PosY() const
 {
 	return pos_.y;
 }
 
-float Player::PosZ()
+float Player::PosZ() const
 {
 	return pos_.z;
 }

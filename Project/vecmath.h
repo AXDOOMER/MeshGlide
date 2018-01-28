@@ -35,36 +35,34 @@ struct Float2
 {
 	float x;
 	float y;
-//	float z;
 };
 
 bool operator==(const Float3& lhs, const Float3& rhs);
 
 // Ray-casting algorithm used to find if a 2D coordinate is on a 3D polygon
-bool pointInPoly(float x, float y, vector<Float3> vertices);
+bool pointInPoly(const float x, const float y, const vector<Float3>& vertices);
 // References:
 // http://alienryderflex.com/polygon/
 // https://github.com/substack/point-in-polygon/blob/master/index.js
 // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 
-Float3 crossProduct(Float3 u, Float3 v);
+Float3 crossProduct(const Float3& u, const Float3& v);
 
-Float3 addVectors(Float3 u, Float3 v);
+Float3 addVectors(const Float3& u, const Float3& v);
 
-Float3 subVectors(Float3 u, Float3 v);
+Float3 subVectors(const Float3& u, const Float3& v);
 
-Float3 scaleVector(float l, Float3 v);
+Float3 scaleVector(const float l, const Float3& v);
 
 Float3 normalize(Float3 v);
 
-float dotProduct(Float3 u, Float3 v);
+float dotProduct(const Float3& u, const Float3& v);
 // References:
 // https://rosettacode.org/wiki/Find_the_intersection_of_a_line_with_a_plane#C
 // https://github.com/id-Software/Quake-III-Arena/blob/master/code/game/q_math.c
 
 // Find the intersection of a ray that aims down on a polygon
-float RayIntersect(Float3 ray, Float3 origin, Float3 normal, Float3 center);
-float RayIntersect2(Float3 ray, Float3 origin, Float3 normal, Float3 center);
+float RayIntersect(const Float3& ray, const Float3& origin, const Float3& normal, const Float3& center);
 // References:
 // https://samsymons.com/blog/math-notes-ray-plane-intersection/
 // http://cmichel.io/howto-raytracer-ray-plane-intersection-theory/
@@ -72,12 +70,12 @@ float RayIntersect2(Float3 ray, Float3 origin, Float3 normal, Float3 center);
 // https://stackoverflow.com/questions/23975555/how-to-do-ray-plane-intersection
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-plane-and-ray-disk-intersection
 
-Float3 ComputeNormal(vector<Float3> vertices);
+Float3 ComputeNormal(const vector<Float3>& vertices);
 
 // Get height on a polygon
-float PointHeightOnPoly(float x, float y, float z, vector<Float3> vertices, Float3 normal);
+float PointHeightOnPoly(const float x, const float y, const float z, const vector<Float3>& vertices, const Float3& normal);
 
 // Returns true if two vectors intersect
-bool CheckVectorIntersection(Float3 v1start, Float3 v1end, Float3 v2start, Float3 v2end);
+bool CheckVectorIntersection(const Float3& v1start, const Float3& v1end, const Float3& v2start, const Float3& v2end);
 
 #endif	// VECMATH_H
