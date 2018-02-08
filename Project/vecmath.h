@@ -71,9 +71,10 @@ float RayIntersect(const Float3& ray, const Float3& origin, const Float3& normal
 // https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-plane-and-ray-disk-intersection
 
 Float3 ComputeNormal(const vector<Float3>& vertices);
+Float3 ComputeAverage(const vector<Float3>& vertices);
 
 // Get height on a polygon
-float PointHeightOnPoly(const float x, const float y, const float z, const vector<Float3>& vertices, const Float3& normal);
+float PointHeightOnPoly(const float x, const float y, const float z, const Float3& normal, const Float3& centroid);
 
 // Returns true if two vectors intersect
 bool CheckVectorIntersection(const Float3& v1start, const Float3& v1end, const Float3& v2start, const Float3& v2end);

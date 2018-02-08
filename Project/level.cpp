@@ -180,8 +180,7 @@ void Level::LoadNative(const string& LevelName)
 						p->Texture = tokens[1];
 					}
 
-					p->ComputeWallInfo();			// Comment out this line to become a ghost
-					p->normal = ComputeNormal(p->Vertices);
+					p->Process();
 					planes.push_back(p);
 				}
 				else if (tokens[0] == "setting" && tokens.size() == 3)
@@ -315,8 +314,7 @@ void Level::LoadObj(const string& path)
 						}
 					}
 
-					p->ComputeWallInfo();	// For walls
-					p->normal = ComputeNormal(p->Vertices);
+					p->Process();
 					planes.push_back(p);
 				}
 				else if (slices[0] == "usemtl" && slices.size() == 2)

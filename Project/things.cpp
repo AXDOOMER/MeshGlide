@@ -131,6 +131,14 @@ unsigned int Plane::CommonVertices(Plane* plane)
 	return count;
 }
 
+// Process a plane
+void Plane::Process()
+{
+	ComputeWallInfo();
+	normal = ComputeNormal(Vertices);
+	centroid = ComputeAverage(Vertices);
+}
+
 void Plane::ComputeWallInfo()
 {
 	int count = 0;

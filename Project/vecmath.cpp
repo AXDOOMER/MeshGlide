@@ -28,6 +28,8 @@ bool operator==(const Float3& lhs, const Float3& rhs)
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
 }
 
+// TODO: Test if a point on a fully vertical wall will return true
+// TODO: In the future, use this to test if 3D point is inside 3D polygon; http://www.cs.colostate.edu/~cs410/yr2013fa/more_progress/L15_Raypolygon.pdf
 // Ray-casting algorithm used to find if a 2D coordinate is on a 3D polygon
 bool pointInPoly(const float x, const float y, const vector<Float3>& vertices)
 {
@@ -87,7 +89,7 @@ float dotProduct(const Float3& u, const Float3& v)
 	return u.x * v.x + u.y * v.y + u.z * v.z;
 }
 
-// Find the intersection of a ray that aims down on a polygon
+// TODO: Could be used to see a bullet ray hits which polygons
 // Parameters: ray, origin of ray, polygon's normal, center of polygon
 float RayIntersect(const Float3& ray, const Float3& origin, const Float3& normal, const Float3& center)
 {
@@ -117,13 +119,9 @@ Float3 ComputeNormal(const vector<Float3>& vertices)
 	return normalize(crossProduct(u, v));
 }
 
-// Takes a X, Y, Z position to test with polygon and the polygon's vertices
-float PointHeightOnPoly(const float x, const float y, const float z, const vector<Float3>& vertices, const Float3& normal)
+// Can compute the center of a polygon (its centroid) by doing an average of all of its vertices
+Float3 ComputeAverage(const vector<Float3>& vertices)
 {
-	// If the polygon is straight on the X and Y axes (no Z variation), return its height right away.
-	if (vertices[0].z ==  vertices[1].z && vertices[1].z == vertices[2].z)
-		return vertices[0].z;
-
 	// Center of polygon
 	Float3 total = {0, 0, 0};
 	for (unsigned int i = 0; i < vertices.size(); i++)
@@ -132,10 +130,16 @@ float PointHeightOnPoly(const float x, const float y, const float z, const vecto
 		total.y += vertices[i].y;
 		total.z += vertices[i].z;
 	}
-	Float3 center = {total.x / vertices.size(), total.y / vertices.size(), total.z / vertices.size()};
+	return {total.x / vertices.size(), total.y / vertices.size(), total.z / vertices.size()};
+}
 
-	// Trace a ray that aims down
-	return RayIntersect({0, 0, -1}, {x, y, z}, normal, center);
+// TODO: This function could be removed entirely or moved to "physics.cpp"
+// TODO: return a Float3 or use "RayIntersect" directly
+// Takes a X, Y, Z position to test with the polygon's normal and centroid
+float PointHeightOnPoly(const float x, const float y, const float z, const Float3& normal, const Float3& centroid)
+{
+	// Trace a ray that aims down and return the height of its intersection
+	return RayIntersect({0, 0, -1}, {x, y, z}, normal, centroid);
 }
 
 bool CheckVectorIntersection(const Float3& v1start, const Float3& v1end, const Float3& v2start, const Float3& v2end)

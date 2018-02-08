@@ -37,7 +37,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.33 (dev)";
+	const char* const VERSION = "0.34 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;

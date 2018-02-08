@@ -57,8 +57,10 @@ public:
 	float Light = 1;	// Must be between 0 (dark) and 1 (full bright)
 
 	Float3 normal;
+	Float3 centroid;
 	vector<Plane*> Neighbors;	// List of adjacent planes
 
+	void Process();		// Find centroid, find normal...
 	void ComputeWallInfo();
 	unsigned int CommonVertices(Plane* plane);
 	~Plane();

@@ -38,7 +38,7 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 	{
 		if (pointInPoly(play->PosX(), play->PosY(), lvl->planes[i]->Vertices))
 		{
-			float collision_point_z = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), lvl->planes[i]->Vertices, lvl->planes[i]->normal);
+			float collision_point_z = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), lvl->planes[i]->normal, lvl->planes[i]->centroid);
 			if (!isnan(collision_point_z) && collision_point_z > NewHeight)
 			{
 				if (collision_point_z <= play->PosZ() + play->MaxStep)
@@ -71,7 +71,7 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 
 void ApplyGravity(Player* play)
 {
-	float FloorHeight = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), play->plane->Vertices, play->plane->normal);
+	float FloorHeight = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), play->plane->normal, play->plane->centroid);
 	if (!isnan(FloorHeight))
 	{
 		if (play->PosZ() <= FloorHeight + GRAVITY)
@@ -116,8 +116,7 @@ Plane* GetPlaneForPlayer(Player* play, Level* lvl)
 	// Find the height of the player on every planes
 	for (unsigned int i = 0; i < planes.size(); i++)
 	{
-		float Height = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), planes[i]->Vertices, planes[i]->normal);
-
+		float Height = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), planes[i]->normal, planes[i]->centroid);
 		HeightOnPlanes.push_back(make_pair(planes[i], Height));
 
 		// This results in the player being put on the highest floor
@@ -127,6 +126,7 @@ Plane* GetPlaneForPlayer(Player* play, Level* lvl)
 		}
 	}
 
+	// TODO: Change for the best possible plane where the player could be standing instead of highest
 	// Return the plane where the player is
 	for (unsigned int i = 0; i < HeightOnPlanes.size(); i++)
 	{
@@ -140,8 +140,7 @@ Plane* GetPlaneForPlayer(Player* play, Level* lvl)
 // Travel through planes which were intersected, check if point inside.
 Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane)
 {
-	vector<Plane*> tested;		// List of polys that are already checked
-	tested.push_back(plane);
+	vector<Plane*> tested = {plane};		// List of polys that are already checked
 
 	for (unsigned int i = 0; i < tested[tested.size() - 1]->Neighbors.size(); i++)
 	{
@@ -151,7 +150,7 @@ Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane)
 		if (find(tested.rbegin(), tested.rend(), p) != tested.rend())
 			continue;
 
-		// Do not walk on walls. The impassable/block flag can be set to 0 to allow stairs.
+		// Do not walk on walls. The impassable/blocking flag can be set to 0 to allow stairs.
 		if (p->Impassable && p->normal.z < WALL_ANGLE && p->normal.z > -WALL_ANGLE)
 			continue;
 
@@ -171,9 +170,9 @@ Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane)
 	}
 
 	return nullptr;
-//	return GetPlaneForPlayer(lvl->play, lvl);
 }
 
+// TODO: Player should not be able to step on impassable planes.
 // Moves the player to a new position. Returns false if it can't.
 bool MovePlayerToNewPosition(const Float3& origin, const Float3& target, Player* play)
 {
@@ -186,7 +185,7 @@ bool MovePlayerToNewPosition(const Float3& origin, const Float3& target, Player*
 	{
 		Plane* p = TraceOnPolygons(origin, target, play->plane);
 
-		// GetPlaneForPlayer will return 0 when the player is in the void
+		// Handle this case where the player could be standing in the void
 		if (p == nullptr)
 			return false;	// Player may still get stuck, but we avoid a crash.
 
