@@ -37,7 +37,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.32 (dev)";
+	const char* const VERSION = "0.33 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -270,6 +270,22 @@ int main(int argc, const char *argv[])
 
 			if (CurrentLevel->play->Jump)
 				CurrentLevel->play->pos_.z = CurrentLevel->play->PosZ() + GRAVITY * 1.5f;
+		}
+
+		if (glfwGetKey(window, GLFW_KEY_F5))
+		{
+			Player* SavedPlayer = CurrentLevel->play;
+			CurrentLevel->Reload();
+			delete CurrentLevel->play;
+			CurrentLevel->play = SavedPlayer;
+
+			// Set the player to floor's height
+			CurrentLevel->play->plane = GetPlaneForPlayer(CurrentLevel->play, CurrentLevel);
+			if (CurrentLevel->play->plane == nullptr)
+			{
+				cerr << "Player's spawn spot is outside of map." << endl;
+				exit(EXIT_FAILURE);
+			}
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE))

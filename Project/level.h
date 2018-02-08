@@ -41,6 +41,7 @@ public:
 
 	Level(const string& level, float scaling);
 	~Level();
+	void Reload();	// Reload level geometry
 
 	vector<string> Split(string s, const string& delimiter);
 	bool EndsWith(const string& str, const string& value);

@@ -56,6 +56,23 @@ Level::~Level()
 	}
 }
 
+void Level::Reload()
+{
+	cout << "Reloading level data..." << endl;
+
+	// Delete planes from memory
+	for (unsigned int i = 0; i < planes.size(); i++)
+	{
+		delete planes[i];
+	}
+
+	// Delete planes from level
+	planes.clear();
+	// Load level
+	reloaded_ = true;
+	LoadLevel(levelname_);
+}
+
 void Level::AddTexture(const string& name, bool enableFiltering)
 {
 	if (!cache.Has(name))
@@ -328,7 +345,7 @@ void Level::LinkPlanes(const string& LevelName)
 
 	ReadLinks.open(LevelName + ".lnb");
 
-	if (ReadLinks.is_open())
+	if (ReadLinks.is_open() && !reloaded_)
 	{
 		cout << "Found linked planes data file. Loading..." << endl;
 
