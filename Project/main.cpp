@@ -274,6 +274,8 @@ int main(int argc, const char *argv[])
 
 		if (glfwGetKey(window, GLFW_KEY_F5))
 		{
+			cout << "F5: Reloading level data..." << endl;
+
 			Player* SavedPlayer = CurrentLevel->play;
 			CurrentLevel->Reload();
 			delete CurrentLevel->play;

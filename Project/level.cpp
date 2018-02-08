@@ -58,8 +58,6 @@ Level::~Level()
 
 void Level::Reload()
 {
-	cout << "Reloading level data..." << endl;
-
 	// Delete planes from memory
 	for (unsigned int i = 0; i < planes.size(); i++)
 	{
