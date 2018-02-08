@@ -33,7 +33,6 @@ public:
 	Cache<string, Texture> cache;
 	vector<Plane*> planes;
 	Player* play = nullptr;
-	float scaling = 1.0f;	// Level scaling
 	float SkyHeigth = 5.0f;	// Sky elevation
 	string SkyTexture;
 
@@ -45,9 +44,9 @@ public:
 
 	vector<string> Split(string s, const string& delimiter);
 	bool EndsWith(const string& str, const string& value);
-	void LoadLevel(const string& LevelName, float scaling);
+	void LoadLevel(const string& LevelName);
 	void LoadNative(const string& LevelName);
-	void LoadObj(const string& path, float scaling);
+	void LoadObj(const string& path);
 
 private:
 	// OBJ and OpenGL stuff
@@ -55,6 +54,9 @@ private:
 	vector<Float2> uvs_;
 	vector<Float3> normals_;
 
+	float scaling_ = 1.0f;	// Level scaling that adjusts the size of the level proportionally
+	string levelname_;
+	bool reloaded_ = false;
 	void LinkPlanes(const string& LevelName);
 };
 
