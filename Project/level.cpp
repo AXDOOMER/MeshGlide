@@ -206,7 +206,7 @@ void Level::LoadNative(const string& LevelName)
 			}
 		}
 
-		cout << "Read " << Count << " lines from file. " << endl;
+		cout << "Read " << Count - 1 << " lines from file. " << endl;
 		LevelFile.close();
 
 		LinkPlanes(LevelName);
