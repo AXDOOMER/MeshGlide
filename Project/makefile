@@ -1,4 +1,5 @@
 # Makefile for MeshGlide
+# https://www3.ntu.edu.sg/home/ehchua/programming/cpp/gcc_make.html
 
 SRC = $(wildcard *.cpp)
 OBJ = $(SRC:.cpp=.o)
@@ -17,7 +18,7 @@ TARGET: $(OBJ)
 -include $(DEP)	# Include all dep files in the makefile
 
 # Rule to generate a dep file by using the C preprocessor
-# (see man cpp for details on the -MM and -MT options)
+# (see 'man cpp' for details on the -MM and -MT options)
 %.d: %.c
 	@$(CPP) $(CXXFLAGS) $< -MM -MT $(@:.d=.o) >$@
 

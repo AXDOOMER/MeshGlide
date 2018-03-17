@@ -20,11 +20,12 @@
 #include "vecmath.h"	/* Float3 */
 #include "physics.h"
 
-#include <cmath>		/* round, isnan */
-#include <limits>		/* numeric_limits<float>::lowest() */
+#include <cmath>		/* round, isnan, fmod, nanf */
+#include <limits>		/* numeric_limits */
 #include <vector>
 #include <utility>		/* pair */
 #include <algorithm>	/* find */
+
 using namespace std;
 
 const float WALL_ANGLE = 0.4f;	// '1' points up (floor) and '0' points to the side (wall)
@@ -108,9 +109,7 @@ vector<Plane*> FindPlanesForPlayer(Player* play, Level* lvl)
 Plane* GetPlaneForPlayer(Player* play, Level* lvl)
 {
 	vector<Plane*> planes = FindPlanesForPlayer(play, lvl);
-
 	vector<pair<Plane*, float>> HeightOnPlanes;
-
 	float HighestUnderPlayer = numeric_limits<float>::lowest();
 
 	// Find the height of the player on every planes
@@ -137,8 +136,10 @@ Plane* GetPlaneForPlayer(Player* play, Level* lvl)
 	return nullptr;	// Need to return something
 }
 
-// Travel through planes which were intersected, check if point inside.
-Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane)
+// Travel through planes which were intersected until it finds the one where the point is inside.
+// The last parameter determines if it's going to return the last touched polygon or
+// if it returns 'null' when the target point ends up in the void (is an invalid position).
+Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane, bool last)
 {
 	vector<Plane*> tested = {plane};		// List of polys that are already checked
 
@@ -169,6 +170,10 @@ Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane)
 		}
 	}
 
+	// Return the last touched polygon instead of the "void" if requested.
+	if (last)
+		return tested[tested.size() - 1];
+
 	return nullptr;
 }
 
@@ -183,7 +188,7 @@ bool MovePlayerToNewPosition(const Float3& origin, const Float3& target, Player*
 	}
 	else // Player has moved to another polygon
 	{
-		Plane* p = TraceOnPolygons(origin, target, play->plane);
+		Plane* p = TraceOnPolygons(origin, target, play->plane, false);
 
 		// Handle this case where the player could be standing in the void
 		if (p == nullptr)
@@ -201,6 +206,93 @@ bool MovePlayerToNewPosition(const Float3& origin, const Float3& target, Player*
 bool CompareDistanceToLength(const float DiffX, const float DiffY, const float Length)
 {
 	return pow(DiffX, 2) + pow(DiffY, 2) <= Length * Length;
+}
+
+float AngleOfFarthestIntersectedEdge(const Float3& origin, const Float3& target, Plane* plane)
+{
+	// Used to find out the farthest collision point
+	float distance = 0.0f;
+	unsigned int index = numeric_limits<unsigned int>::max();
+
+	// For each edge that has an intersection, get the distance from the origin to the intersection point
+	for (unsigned int i = 0; i < plane->Vertices.size(); i++)
+	{
+		if (CheckVectorIntersection(origin, target, plane->Vertices[i], plane->Vertices[(i+1) % plane->Vertices.size()]))
+		{
+			Float2 impact_point = CollisionPoint(origin, target, plane->Vertices[i], plane->Vertices[(i+1) % plane->Vertices.size()]);
+			float origin_to_impact = sqrt(pow(origin.x - impact_point.x, 2) + pow(origin.y - impact_point.y, 2));
+			if (origin_to_impact > distance)
+			{
+				distance = origin_to_impact;
+				index = i;
+			}
+		}
+	}
+
+	if (index >= plane->Vertices.size())
+	{
+		// This will happen if this function is used with a vector (origin-->target) that doesn't touch the plane.
+		return numeric_limits<float>::quiet_NaN();
+	}
+
+	// Compute the angle for this edge of the polygon
+	float edgeAngle = atan2(plane->Vertices[index].y - plane->Vertices[(index+1) % plane->Vertices.size()].y,
+							plane->Vertices[index].x - plane->Vertices[(index+1) % plane->Vertices.size()].x);
+
+	return edgeAngle;
+}
+
+Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play)
+{
+	Plane* targetPlane = TraceOnPolygons(origin, target, play->plane, true);
+
+	for (unsigned int i = 0; i < play->plane->Vertices.size(); i++)
+	{
+		// Test if the player tries to get out of the plane where he is. We must make sure because it may not always be true.
+		if (CheckVectorIntersection(origin, target, play->plane->Vertices[i], play->plane->Vertices[(i+1) % play->plane->Vertices.size()]))
+		{
+/*			// Create a perpendicular vector. Move the vector so it starts from (0,0).
+			Float3 perpendicular = {p->Vertices[(j+1) % p->Vertices.size()].x - p->Vertices[j].x, p->Vertices[(j+1) % p->Vertices.size()].y - p->Vertices[j].y, 0};
+			// Do the rotation by rotating the wall vector by 90 degrees: (x,y) -> (-y,x))
+			perpendicular = {-perpendicular.y, perpendicular.x, 0};
+
+			// Normalize
+			perpendicular = normalize(perpendicular);
+			// Scale by the amount that the wall will push the player off
+			perpendicular = scaleVector(GRANULARITY, perpendicular);
+*/
+			// Get the angle that represents the direction of the player's movement
+			float moveAngle = atan2(origin.y - target.y, origin.x - target.x);
+
+			// Get the angle of the blocking wall (blocking edge of the polygon) of the target plane
+			float wallAngle = AngleOfFarthestIntersectedEdge(origin, target, targetPlane);
+
+			// Compute the difference between both angles
+			float newAngle = wallAngle - moveAngle;
+
+			// Make the angle positive. This is to constrain the possible angle values between 0 and PI * 2.
+			if (newAngle < 0)
+				newAngle += M_PI * 2;
+
+			// Check at which direction the player is going against the wall
+			if (newAngle < M_PI / 2 || newAngle > 3 * M_PI / 2)
+				wallAngle += M_PI;
+
+			// Compute the movement speed at that angle
+			float moveSpeed = sqrt(pow(origin.x - target.x, 2) + pow(origin.y - target.y, 2));
+			moveSpeed = moveSpeed * abs(cos(newAngle));
+
+			// Apply that new computer position so that the player appears to be moving along that wall
+			Float3 Return = origin;
+			Return.x += moveSpeed * cos(wallAngle);
+			Return.y += moveSpeed * sin(wallAngle);
+
+			return {Return.x, Return.y};
+		}
+	}
+
+	// Return something that is obviously wrong if the above has failed
+	return {numeric_limits<float>::quiet_NaN(), numeric_limits<float>::quiet_NaN()};
 }
 
 // Returns true if the vector hits any walls. The vector has a circular endpoint.

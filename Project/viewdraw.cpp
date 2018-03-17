@@ -84,7 +84,9 @@ GLFWwindow* Init_OpenGL()
 
 	// Create a windowed mode window and its OpenGL context
 	window = glfwCreateWindow(640, 480, WindowTitle.c_str(), NULL, NULL);
-	//window = glfwCreateWindow(1366, 768, "Full screen window", glfwGetPrimaryMonitor(), NULL);
+	//const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	//window = glfwCreateWindow(mode->width, mode->height, WindowTitle.c_str(), glfwGetPrimaryMonitor(), NULL);
+
 	if (!window)
 	{
 		// If it didn't work

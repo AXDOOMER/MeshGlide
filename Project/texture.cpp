@@ -63,7 +63,7 @@ Texture::Texture(const string& Path, bool enableFiltering)
 	{
 		Mode = GL_RGB;
 
-		// Flip the buffer by 180 degrees.
+		// Flip the image by 180 degrees.
 		Uint8* pixels = (Uint8*)Surface->pixels;
 		unsigned int bytes = Surface->w * Surface->h * 3;
 		for (unsigned int i = 0; i < bytes / 2; i++)

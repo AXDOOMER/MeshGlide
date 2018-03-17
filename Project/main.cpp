@@ -37,7 +37,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.34 (dev)";
+	const char* const VERSION = "0.35 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -304,14 +304,25 @@ int main(int argc, const char *argv[])
 		TicCmd tc = CurrentLevel->play->Cmd;
 		CurrentLevel->play->ExecuteTicCmd();
 
-		// Collision detection with floors
+		// Collision detection with floors and walls
 		if (!MovePlayerToNewPosition(pt, CurrentLevel->play->pos_, CurrentLevel->play))
 		{
+			// Compute the position where the player would be if he slide against the wall
+			Float2 pos = MoveOnCollision(pt, CurrentLevel->play->pos_, CurrentLevel->play);
+
+			// Move the player back to its original position
 			CurrentLevel->play->Angle = Angle;
 			tc.forward = -tc.forward;
 			tc.lateral = -tc.lateral;
 			CurrentLevel->play->Cmd = tc;
 			CurrentLevel->play->ExecuteTicCmd();
+
+			// Try to slide the player against the wall to a valid position
+			if (MovePlayerToNewPosition(pt, {pos.x, pos.y, 0}, CurrentLevel->play))
+			{
+				CurrentLevel->play->pos_.x = pos.x;
+				CurrentLevel->play->pos_.y = pos.y;
+			}
 		}
 
 		ApplyGravity(CurrentLevel->play);

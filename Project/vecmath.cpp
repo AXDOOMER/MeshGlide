@@ -157,3 +157,18 @@ bool CheckVectorIntersection(const Float3& v1start, const Float3& v1end, const F
 	// Check if a collision is detected (Not checking if touching an endpoint)
 	return PointWall >= 0 && PointWall <= 1 && PointVectorOrth >= 0 && PointVectorOrth <= 1;
 }
+
+Float2 CollisionPoint(const Float3& v1start, const Float3& v1end, const Float3& v2start, const Float3& v2end)
+{
+	// Cramer's rule. Reference: https://stackoverflow.com/a/1968345
+	float WallDiffX = v1end.x - v1start.x;    // Vector's X from (0,0)
+	float WallDiffY = v1end.y - v1start.y;    // Vector's Y from (0,0)
+	float VectorWallOrthDiffX = v2end.x - v2start.x;
+	float VectorWallOrthDiffY = v2end.y - v2start.y;
+
+	float Denominator = -VectorWallOrthDiffX * WallDiffY + WallDiffX * VectorWallOrthDiffY;
+	float PointVectorOrth = (VectorWallOrthDiffX * (v1start.y - v2start.y) - VectorWallOrthDiffY * (v1start.x - v2start.x)) / Denominator;
+
+	// Return the point of collision
+	return {v1start.x + (PointVectorOrth * WallDiffX), v1start.y + (PointVectorOrth * WallDiffY)};
+}

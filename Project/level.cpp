@@ -355,6 +355,7 @@ void Level::LinkPlanes(const string& LevelName)
 
 			for (unsigned int i = 1; i < indices.size(); i++)
 			{
+				// TODO: Add range checks in case someone tinkered with the file
 				planes[atoi(indices[0].c_str())]->Neighbors.push_back(planes[atoi(indices[i].c_str())]);
 			}
 		}

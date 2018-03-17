@@ -21,13 +21,9 @@
 #include "cache.h"
 
 #include <cmath>
-#include <limits>		/* numeric_limits<float>::lowest() */
-#include <iostream>
-#include <algorithm>	/* mismatch */
-#include <utility>	/* pair */
-using namespace std;
+#include <limits>		/* numeric_limits */
 
-const float PI = atan(1) * 4;
+using namespace std;
 
 Player::Player()
 {
@@ -48,7 +44,7 @@ void Player::ForwardMove(int Thrust)
 
 void Player::LateralMove(int Thrust)
 {
-	float LateralAngle = GetRadianAngle(Angle) - PI / 2;
+	float LateralAngle = GetRadianAngle(Angle) - M_PI / 2;
 
 	pos_.x += ((float)Thrust / 64) * cos(LateralAngle);
 	pos_.y += ((float)Thrust / 64) * sin(LateralAngle);
@@ -70,7 +66,7 @@ void Player::ExecuteTicCmd()
 
 float Player::GetRadianAngle(short Angle) const
 {
-	return Angle * PI * 2 / 32768;
+	return Angle * M_PI * 2 / 32768;
 }
 
 void Player::AngleTurn(short AngleChange)

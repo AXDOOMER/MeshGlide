@@ -79,4 +79,7 @@ float PointHeightOnPoly(const float x, const float y, const float z, const Float
 // Returns true if two vectors intersect
 bool CheckVectorIntersection(const Float3& v1start, const Float3& v1end, const Float3& v2start, const Float3& v2end);
 
+// Returns the 2D point where two vectors intersect
+Float2 CollisionPoint(const Float3& v1start, const Float3& v1end, const Float3& v2start, const Float3& v2end);
+
 #endif	// VECMATH_H

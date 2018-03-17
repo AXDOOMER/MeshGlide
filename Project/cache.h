@@ -14,7 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // cache.h
-// Generic cache
+// Generic cache that's a facade for a map and takes pointers to a value.
+// It handles the deletition when the cache object is destroyed.
 
 #ifndef CACHE_H
 #define CACHE_H
@@ -64,6 +65,7 @@ public:
 	// Destructor
 	~Cache()
 	{
+		// Iterate and delete elements of the map
 		for (auto& e: store_) {
 			delete e.second;
 		}
