@@ -34,7 +34,7 @@ const string fontfile = "chars.png";
 
 void SetWindowTitle(GLFWwindow* window, string Title);
 
-GLFWwindow* Init_OpenGL();
+GLFWwindow* Init_OpenGL(const bool fullscreen);
 
 void InitProjection(GLFWwindow* window);
 

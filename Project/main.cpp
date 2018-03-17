@@ -101,7 +101,7 @@ int main(int argc, const char *argv[])
 	/****************************** OPENGL HANDLING ******************************/
 
 	// Load OpenGL
-	GLFWwindow* window = Init_OpenGL();
+	GLFWwindow* window = Init_OpenGL(FindArgumentPosition(argc, argv, "-fullscreen") > 0);
 
 	if (!window)
 	{

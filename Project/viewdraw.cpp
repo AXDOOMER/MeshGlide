@@ -71,7 +71,7 @@ void SetWindowTitle(GLFWwindow* window, string Title)
 	glfwSetWindowTitle(window, Title.c_str());
 }
 
-GLFWwindow* Init_OpenGL()
+GLFWwindow* Init_OpenGL(const bool fullscreen)
 {
 	// Create the window
 	GLFWwindow* window;
@@ -82,10 +82,16 @@ GLFWwindow* Init_OpenGL()
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
 
-	// Create a windowed mode window and its OpenGL context
-	window = glfwCreateWindow(640, 480, WindowTitle.c_str(), NULL, NULL);
-	//const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-	//window = glfwCreateWindow(mode->width, mode->height, WindowTitle.c_str(), glfwGetPrimaryMonitor(), NULL);
+	// Create a window and its OpenGL context. The window defaults to windowed mode, but can be made fullscreen.
+	if (!fullscreen)
+	{
+		window = glfwCreateWindow(640, 480, WindowTitle.c_str(), NULL, NULL);
+	}
+	else
+	{
+		const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		window = glfwCreateWindow(mode->width, mode->height, WindowTitle.c_str(), glfwGetPrimaryMonitor(), NULL);
+	}
 
 	if (!window)
 	{
