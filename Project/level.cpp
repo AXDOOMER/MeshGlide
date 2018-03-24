@@ -86,15 +86,14 @@ void Level::UseTexture(const string& name)
 }
 
 // Splits a string
-vector<string> Level::Split(string s, const string& delimiter)
+// Will not work correctly if multiple delimiters touch each other or if there is a delimiter at the end of the string
+vector<string> Level::Split(string s, const char delimiter)
 {
 	size_t pos = 0;
 	vector<string> tokens;
-	string token;
 	while ((pos = s.find(delimiter)) != string::npos) {
-		token = s.substr(0, pos);
-		tokens.push_back(token);	// add to vector
-		s.erase(0, pos + delimiter.length());
+		tokens.emplace_back(s.substr(0, pos));	// Extract a token and add it to the vector
+		s.erase(0, pos + 1);
 	}
 
 	// There may not be any delimiter remaining, but let's not forget the last token.
@@ -139,7 +138,7 @@ void Level::LoadNative(const string& LevelName)
 
 			if (Line.size() > 0 && Line[0] != '#')
 			{
-				//vector<string> tokens = Split(Line, "\t");
+				//vector<string> tokens = Split(Line, '\t');
 				istringstream buf(Line);
 				istream_iterator<string> beg(buf), end;
 				vector<string> tokens(beg, end);
@@ -250,7 +249,7 @@ void Level::LoadObj(const string& path)
 			// Do something with that line
 			if (Line.size() > 0 && Line[0] != '#')
 			{
-				vector<string> slices = Split(Line, " ");
+				vector<string> slices = Split(Line, ' ');
 
 				if (slices[0] == "v" && slices.size() == 4)	// Vertex
 				{
@@ -295,7 +294,7 @@ void Level::LoadObj(const string& path)
 					// Format: vertex, uv, normal. They are indices that points to the previous data.
 					for (unsigned int i = 1; i < slices.size(); i++)
 					{
-						vector<string> indices = Split(slices[i], "/");
+						vector<string> indices = Split(slices[i], '/');
 
 						if (indices.size() >= 1)
 						{
@@ -351,7 +350,7 @@ void Level::LinkPlanes(const string& LevelName)
 		{
 			getline(ReadLinks, Line);
 
-			vector<string> indices = Split(Line, " ");
+			vector<string> indices = Split(Line, ' ');
 
 			for (unsigned int i = 1; i < indices.size(); i++)
 			{
