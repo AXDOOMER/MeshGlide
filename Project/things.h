@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // things.h
-// Data structures (player, walls, etc. ) used in the World
+// Data structures (player, polygons A.K.A. "planes", etc. ) used in the World
 
 #ifndef THINGS_H
 #define THINGS_H
@@ -32,16 +32,6 @@ const float GRAVITY = 0.2f;
 //const float PI = atan(1) * 4;
 const int MAXOWNEDWEAPONS = 10;
 
-struct Wall
-{
-	float LowZ;	// Lowest point of the wall
-	float HighZ;	// Highest point of the wall
-	float Length;	// Length from one vertex to the other
-	Float3 Vertex1;	// Vertex where the wall starts
-	Float3 Vertex2;	// Vertex where the wall ends
-	float Angle;	// Angle formed between the vertices
-};
-
 class Plane
 {
 public:
@@ -49,7 +39,6 @@ public:
 	bool Impassable = true;
 	bool TwoSided = false;
 	vector<Float3> Vertices;
-	Wall* WallInfo = nullptr;
 	float Xscale = 0;
 	float Yscale = 0;
 	float Xoff = 0;
@@ -61,9 +50,7 @@ public:
 	vector<Plane*> Neighbors;	// List of adjacent planes
 
 	void Process();		// Find centroid, find normal...
-	void ComputeWallInfo();
 	unsigned int CommonVertices(Plane* plane);
-	~Plane();
 };
 
 class TicCmd

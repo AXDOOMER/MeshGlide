@@ -251,16 +251,6 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play)
 		// Test if the player tries to get out of the plane where he is. We must make sure because it may not always be true.
 		if (CheckVectorIntersection(origin, target, play->plane->Vertices[i], play->plane->Vertices[(i+1) % play->plane->Vertices.size()]))
 		{
-/*			// Create a perpendicular vector. Move the vector so it starts from (0,0).
-			Float3 perpendicular = {p->Vertices[(j+1) % p->Vertices.size()].x - p->Vertices[j].x, p->Vertices[(j+1) % p->Vertices.size()].y - p->Vertices[j].y, 0};
-			// Do the rotation by rotating the wall vector by 90 degrees: (x,y) -> (-y,x))
-			perpendicular = {-perpendicular.y, perpendicular.x, 0};
-
-			// Normalize
-			perpendicular = normalize(perpendicular);
-			// Scale by the amount that the wall will push the player off
-			perpendicular = scaleVector(GRANULARITY, perpendicular);
-*/
 			// Get the angle that represents the direction of the player's movement
 			float moveAngle = atan2(origin.y - target.y, origin.x - target.x);
 
@@ -293,42 +283,4 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play)
 
 	// Return something that is obviously wrong if the above has failed
 	return {numeric_limits<float>::quiet_NaN(), numeric_limits<float>::quiet_NaN()};
-}
-
-// Returns true if the vector hits any walls. The vector has a circular endpoint.
-bool HitsWall(const Float3& point, const float RadiusToUse, Level* lvl)
-{
-	for (unsigned int i = 0; i < lvl->planes.size(); i++)
-	{
-		// Test vertical planes which are walls
-		if (lvl->planes[i]->WallInfo != nullptr)
-		{
-			// Wall above or bellow player.
-			if (lvl->planes[i]->WallInfo->HighZ <= point.z + lvl->play->MaxStep || lvl->planes[i]->WallInfo->LowZ >= point.z + 3.0f)
-			{
-				// Can't be any collision.
-				continue;
-			}
-
-			// Get the orthogonal vector, so invert the use of 'sin' and 'cos' here.
-			float OrthVectorStartX = point.x + sin(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
-			float OrthVectorStartY = point.y + cos(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
-			float OrthVectorEndX = point.x - sin(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
-			float OrthVectorEndY = point.y - cos(lvl->planes[i]->WallInfo->Angle) * RadiusToUse;
-
-			bool Collision = CheckVectorIntersection(lvl->planes[i]->WallInfo->Vertex1, lvl->planes[i]->WallInfo->Vertex2,
-						{OrthVectorStartX, OrthVectorStartY, 0}, {OrthVectorEndX, OrthVectorEndY, 0});
-
-			if (!Collision)
-			{
-				// TODO: Check for a collision with both endpoints of the wall
-			}
-			else
-			{
-				return true;
-			}
-		}
-	}
-
-	return false;
 }

@@ -106,14 +106,6 @@ float Player::PosZ() const
 	return pos_.z;
 }
 
-Plane::~Plane()
-{
-	if (WallInfo != nullptr)
-	{
-		delete WallInfo;
-	}
-}
-
 // Used to compare two planes by counting the amount of common vertices
 unsigned int Plane::CommonVertices(Plane* plane)
 {
@@ -130,75 +122,6 @@ unsigned int Plane::CommonVertices(Plane* plane)
 // Process a plane
 void Plane::Process()
 {
-	ComputeWallInfo();
 	normal = ComputeNormal(Vertices);
 	centroid = ComputeAverage(Vertices);
-}
-
-void Plane::ComputeWallInfo()
-{
-	int count = 0;
-
-	// Must find at least two points which are above each other to consider this a wall
-	for (unsigned int i = 0; i < Vertices.size(); i++)
-	{
-		for (unsigned int j = 0; j < Vertices.size(); j++)
-		{
-			if (i != j)	// Same, so skip
-			{
-				if (Vertices[i].x == Vertices[j].x &&
-					Vertices[i].y == Vertices[j].y)
-				{
-					// Above each other
-					count++;
-				}
-			}
-		}
-	}
-
-	if (count >= 2)
-	{
-		// Considered a wall
-		WallInfo = new Wall;
-
-		WallInfo->Length = 0;
-		WallInfo->LowZ = numeric_limits<float>::max();
-		WallInfo->HighZ = numeric_limits<float>::lowest();
-
-		for (unsigned int i = 0; i < Vertices.size(); i++)
-		{
-			// Height checks
-			if (Vertices[i].z < WallInfo->LowZ)
-			{
-				WallInfo->LowZ = Vertices[i].z;
-			}
-
-			if (Vertices[i].z > WallInfo->HighZ)
-			{
-				WallInfo->HighZ = Vertices[i].z;
-			}
-
-			// Find vertices which are the farthest apart
-			for (unsigned int j = 0; j < Vertices.size(); j++)
-			{
-				if (i != j)	// Same, so skip
-				{
-					float distance = pow(Vertices[i].x - Vertices[j].x, 2) + pow(Vertices[i].y - Vertices[j].y, 2);
-					if (distance > WallInfo->Length)
-					{
-						WallInfo->Length = distance;
-						WallInfo->Vertex1 = Vertices[i];
-						WallInfo->Vertex2 = Vertices[j];
-					}
-				}
-			}
-		}
-
-		// Angle between those two vertices
-		WallInfo->Angle = atan2(WallInfo->Vertex1.y - WallInfo->Vertex2.y, WallInfo->Vertex1.x - WallInfo->Vertex2.x);
-	}
-	else
-	{
-		WallInfo = nullptr;
-	}
 }

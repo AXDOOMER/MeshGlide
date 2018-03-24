@@ -31,9 +31,6 @@ void ApplyGravity(Player* play);
 // Distance smaller than length (inside or touches)
 bool CompareDistanceToLength(const float DiffX, const float DiffY, const float Length);
 
-// Returns true if the vector hits any walls. The vector has a circular endpoint.
-bool HitsWall(const Float3& point, const float RadiusToUse, Level* lvl);
-
 // Moves the player to a new position. Returns false if it can't.
 bool MovePlayerToNewPosition(const Float3& origin, const Float3& target, Player* play);
 
