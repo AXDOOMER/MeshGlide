@@ -16,7 +16,6 @@
 // random.h
 // Pseudo-random number generator (PRNG)
 
-static unsigned short Index = 0;
 const int NUMBERS = 256;
 
 // Numbers from 0 to 255 in random order
@@ -39,7 +38,12 @@ const unsigned char PRNG[NUMBERS] = {
 	81, 25, 46, 188, 148, 75, 88, 210, 172, 26, 162, 237, 251, 221, 186, 171
 };
 
-int R_Random();
+int Rand();
 
-void R_Reset();
+void ResetRand();
 
+unsigned short GetIndex();
+
+void SetIndex(unsigned short Index);
+
+void Seed();

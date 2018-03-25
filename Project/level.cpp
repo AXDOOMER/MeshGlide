@@ -20,7 +20,8 @@
 #include "vecmath.h"	/* Float3, ComputeNormal */
 #include "things.h"	/* Player, Plane */
 #include "cache.h"	/* Cache */
-#include "physics.h" /* AdjustPlayerToFloor */
+#include "physics.h"	/* AdjustPlayerToFloor */
+#include "random.h"	/* Rand() */
 
 #include <vector>
 #include <string>
@@ -69,6 +70,24 @@ void Level::Reload()
 	// Load level
 	reloaded_ = true;
 	LoadLevel(levelname_);
+}
+
+void Level::SpawnPlayer(Player* play)
+{
+	play->Reset();
+
+	if (spawns.size() != 0)
+	{
+		SpawnSpot spawn = spawns[Rand() % spawns.size()];
+		play->pos_ = spawn.pos_;
+		play->Angle = spawn.Angle;
+	}
+	else
+	{
+		// You would get a floating point exception if there were no check
+		cout << "No spawn spot exists. Cannot spawn player." << endl;
+		throw runtime_error("The world exploded.");	// TODO: Search for a better solution
+	}
 }
 
 void Level::AddTexture(const string& name, bool enableFiltering)
@@ -145,7 +164,16 @@ void Level::LoadNative(const string& LevelName)
 
 				if (tokens[0] == "thing" && tokens.size() == 6)
 				{
-					if (tokens[1] == "player")
+					if (tokens[1] == "spawn")
+					{
+						SpawnSpot spawn;
+						spawn.pos_.x = atof(tokens[2].c_str());
+						spawn.pos_.y = atof(tokens[3].c_str());
+						spawn.pos_.z = atof(tokens[4].c_str());
+						spawn.Angle = (short)atoi(tokens[5].c_str()) * 91.0222222222f;
+						spawns.push_back(spawn);
+					}
+					else if (tokens[1] == "player")
 					{
 						play = new Player;
 						play->pos_.x = atof(tokens[2].c_str());
@@ -200,7 +228,7 @@ void Level::LoadNative(const string& LevelName)
 				}
 				else
 				{
-					cout << "Skipped line: " << Count << endl;
+					cout << "Skipped line " << Count << endl;
 				}
 			}
 		}
@@ -209,6 +237,12 @@ void Level::LoadNative(const string& LevelName)
 		LevelFile.close();
 
 		LinkPlanes(LevelName);
+
+		if (play == nullptr)
+		{
+			play = new Player();
+			SpawnPlayer(play);
+		}
 	}
 	else
 	{
@@ -322,7 +356,7 @@ void Level::LoadObj(const string& path)
 				}
 				else
 				{
-					cout << "Skipped line: " << Count << endl;
+					cout << "Skipped line " << Count << endl;
 				}
 			}
 		} // end of while loop

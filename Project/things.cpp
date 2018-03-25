@@ -35,6 +35,22 @@ Player::Player()
 	}
 }
 
+void Player::Reset()
+{
+	// Reset vertical view angle
+	VerticalAim = 0;
+
+	// Reset momentum
+	MoX = 0;
+	MoY = 0;
+	MoZ = 0;
+
+	// Reset any jumping
+	AirTime = 0;
+	Jump = false;
+	Fly = false;
+}
+
 // TODO: Improve the movement system so the division by 64 can be avoided
 void Player::ForwardMove(int Thrust)
 {
@@ -104,6 +120,36 @@ float Player::PosY() const
 float Player::PosZ() const
 {
 	return pos_.z;
+}
+
+float Player::CamX() const
+{
+	return pos_.x;
+}
+
+float Player::CamY() const
+{
+	return pos_.y;
+}
+
+float Player::CamZ() const
+{
+	return pos_.z + ViewZ;
+}
+
+float Player::AimX() const
+{
+	return pos_.x + cos(GetRadianAngle(Angle));
+}
+
+float Player::AimY() const
+{
+	return pos_.y + sin(GetRadianAngle(Angle));
+}
+
+float Player::AimZ() const
+{
+	return pos_.z + ViewZ + VerticalAim;
 }
 
 // Used to compare two planes by counting the amount of common vertices

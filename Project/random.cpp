@@ -16,16 +16,39 @@
 // random.cpp
 // Pseudo-random number generator (PRNG)
 
+#include <ctime>
 #include "random.h"
 
+// Defined here in order to avoid "warning: 'Index' defined but not used"
+static unsigned short Index_ = 0;
+
 // Return the next "random" number
-int R_Random()
+int Rand()
 {
-	Index = Index % NUMBERS;
-	return PRNG[Index++];
+	Index_ = Index_ % NUMBERS;
+	return PRNG[Index_++];
 }
 
-void R_Reset()
+void ResetRand()
 {
-	Index = 0;
+	Index_ = 0;
+}
+
+unsigned short GetIndex()
+{
+	return Index_;
+}
+
+void SetIndex(unsigned short Index)
+{
+	Index_ = Index;
+}
+
+// The seed will be different each seconds
+void Seed()
+{
+	time_t rawtime;
+	time (&rawtime);
+
+	Index_ = rawtime /*% NUMBERS*/;
 }

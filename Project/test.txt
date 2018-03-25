@@ -1,6 +1,8 @@
 # Use tabs with a width of 4 to view this file. It can also be opened as a CSV file where values are separated with tabs.
 #THING	TYPE	X	Y	Z 	ANGLE
-thing	player	-25	33	2	270
+thing	spawn	-25	33	2	270
+thing	spawn	-27	-22	0	45
+thing	spawn	-5	-18	0	180
 thing	plant	128	128	0	0
 setting blur	1
 setting	skytex	clouds.jpg

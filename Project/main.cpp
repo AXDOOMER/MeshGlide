@@ -22,6 +22,7 @@
 #include "level.h"
 #include "vecmath.h"	/* Float3 */
 #include "physics.h"
+#include "random.h"		/* GetIndex, SetIndex, Seed */
 
 #include <GLFW/glfw3.h>
 #include <GL/gl.h>
@@ -37,7 +38,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.35 (dev)";
+	const char* const VERSION = "0.36 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -91,11 +92,32 @@ int main(int argc, const char *argv[])
 		string line;
 		getline(DemoRead, line);
 		cout << "Demo Version: " << line << endl;
+
+		if (string(VERSION) != line)
+		{
+			cout << "Demo is from a different version. A desync may occur." << endl;
+		}
+
 		getline(DemoRead, line);
 		LevelName = line;
 		cout << "Level name: " << line << endl;
 		getline(DemoRead, line);
+		SetIndex(atoi(line.c_str()));		// Randomization
+		cout << "Seed: " << line << endl;
+		getline(DemoRead, line);
 		cout << "# of players: " << line << endl;
+	}
+	else
+	{
+		if (FindArgumentPosition(argc, argv, "-seed") > 0)
+		{
+			// Accept a parameter that will change the seed
+			SetIndex(atoi(FindArgumentParameter(argc, argv, "-seed").c_str()));
+		}
+		else
+		{
+			Seed();	// This will change the spawn spot on each start
+		}
 	}
 
 	/****************************** OPENGL HANDLING ******************************/
@@ -152,6 +174,7 @@ int main(int argc, const char *argv[])
 	{
 		DemoWrite << VERSION << endl;
 		DemoWrite << LevelName << endl;
+		DemoWrite << GetIndex() << endl;
 		DemoWrite << 1 << endl;	// Number of players
 	}
 
@@ -356,7 +379,7 @@ int main(int argc, const char *argv[])
 		{
 			cerr << (const char*)gluErrorString(ErrorCode) << endl;
 		}
-    }
+	}
 	while (!Quit && !glfwWindowShouldClose(window));
 
 	/****************************** TERMINATION ******************************/

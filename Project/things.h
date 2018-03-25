@@ -64,7 +64,27 @@ public:
 	string chat;
 };
 
-class Player
+class Thing
+{
+public:
+	// Camera position
+	virtual float CamX() const = 0;
+	virtual float CamY() const = 0;
+	virtual float CamZ() const = 0;
+	// Camera orientation
+	virtual float AimX() const = 0;
+	virtual float AimY() const = 0;
+	virtual float AimZ() const = 0;
+
+	// So the compiler doesn't warn on deleting an object of polymorphic class type
+	virtual ~Thing() = default;
+
+//protected:
+	Float3 pos_;	// Position
+	Float3 mom_;	// Momentum
+};
+
+class Player: public Thing
 {
 public:
 	TicCmd Cmd = TicCmd();
@@ -73,7 +93,7 @@ public:
 	short Angle = 8192;	// Yaw
 	float VerticalAim = 0;	// Pitch
 
-	Float3 pos_;		// Position of player's feet
+//	Float3 pos_;		// Position of player's feet
 	const float ViewZ = 2.0f;
 	char MoX = 0;		// Speed vector (momentum)
 	char MoY = 0;
@@ -97,6 +117,7 @@ public:
 	short Cells = 0;
 
 	Player(); // We need a constructor for the weapons array
+	void Reset();
 	float PosX() const;
 	float PosY() const;
 	float PosZ() const;
@@ -117,14 +138,20 @@ public:
 	void ForwardMove(int Thrust);
 	void LateralMove(int Thrust);
 	void AngleTurn(short AngleChange);
+
+	// Camera position
+	float CamX() const;
+	float CamY() const;
+	float CamZ() const;
+	// Camera orientation
+	float AimX() const;
+	float AimY() const;
+	float AimZ() const;
 };
 
-class Critter
+class Critter: public Thing
 {
 private:
-	float PosX = 0;
-	float PosY = 0;
-	float PosZ = 128;
 	float Direction = 0;
 public:
 	void Move();
@@ -132,9 +159,7 @@ public:
 
 struct SpawnSpot
 {
-	int Xpos;
-	int Ypos;
-	int Zpos;
+	Float3 pos_;
 	short Angle;
 };
 

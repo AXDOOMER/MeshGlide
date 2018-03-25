@@ -35,6 +35,7 @@ public:
 	Player* play = nullptr;
 	float SkyHeigth = 5.0f;	// Sky elevation
 	string SkyTexture;
+	vector<SpawnSpot> spawns;
 
 	void AddTexture(const string& name, bool enableFiltering);	// Add texture to cache if missing
 	void UseTexture(const string& name);	// Bind texture
@@ -48,6 +49,8 @@ public:
 	void LoadLevel(const string& LevelName);
 	void LoadNative(const string& LevelName);
 	void LoadObj(const string& path);
+
+	void SpawnPlayer(Player* play);
 
 private:
 	// OBJ and OpenGL stuff

@@ -198,7 +198,7 @@ void RenderText(Level* lvl, string text, float x, float y, float sx, float sy)
 	}
 }
 
-// Render the screen. Convert in-game axes system to OpenGL axes.
+// Render the screen. Convert in-game axes system to OpenGL axes. (X,Y,Z) becomes (Y,Z,X).
 void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay)
 {
 	// Reset colors and depth buffer
@@ -210,9 +210,8 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 	glEnable(GL_TEXTURE_2D);
 
 	gluLookAt(
-		play->PosY(), play->PosZ() + play->ViewZ, play->PosX(),		// Camera's position
-		play->PosY() + sin(play->GetRadianAngle(play->Angle)), play->PosZ() + play->ViewZ + play->VerticalAim,
-						play->PosX() + cos(play->GetRadianAngle(play->Angle)),	// What the camera will look at
+		play->CamY(), play->CamZ(), play->CamX(),	// Camera's position
+		play->AimY(), play->AimZ(), play->AimX(),	// What the camera looks at
 		0.0, 1.0, 0.0);	// This is for the camera's frame rotation
 
 	//glRotatef( xrot, 1.0f, 0.0f, 0.0f); /* Rotate On The X Axis */
