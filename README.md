@@ -6,7 +6,7 @@ The early version of the engine was used as a prototype to test the feasibility 
 
 It's now under development. The goal is to create a new engine that's better than the [KillBox](https://github.com/AXDOOMER/KillBox) engine.
 
-It's called the MeshGlide engine.
+It's called the MeshGlide engine. It's due to the way it's optimized. The player "glides" from polygon to polygon. The data structures are simple and the game runs very fast due to the tiny amount of calculations that have to be made in order to keep track of the player.
 
 ### Development
 
@@ -18,7 +18,16 @@ It's preferable to compile and run the program using the `run.sh` script because
 
 Packages that may need to be installed under Debian and Ubuntu are: `libglfw3 libglfw3-dev libsdl2-image-2.0-0 libsdl2-image-dev libsdl2-2.0-0 libsdl2-dev`
 
-### Random screenshots
+## Credits
+
+The following files were taken from the [Freedoom](https://github.com/freedoom/freedoom) project. See their [license](https://github.com/freedoom/freedoom/blob/master/COPYING.adoc).
+
+* playa1.png
+* shota0.png
+* launa0.png
+* mguna0.png
+
+### Random screenshots from an older version
 
 ![screenshot at 2017-12-18 19-50-42](https://user-images.githubusercontent.com/6194072/34324771-efb26d0a-e84b-11e7-9c4a-a0529cafe437.png)
 ![screenshot at 2017-12-18 19-52-53](https://user-images.githubusercontent.com/6194072/34324772-efc4187a-e84b-11e7-8282-05aad338cde3.png)
