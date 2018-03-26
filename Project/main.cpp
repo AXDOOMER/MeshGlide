@@ -38,7 +38,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.36 (dev)";
+	const char* const VERSION = "0.37 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -55,7 +55,7 @@ int main(int argc, const char *argv[])
 	if (FindArgumentPosition(argc, argv, "-debug") > 0)
 	{
 		Debug = true;
-		cout << "I_sys: Debug mode ON." << endl;
+		cout << "Debug mode ON." << endl;
 	}
 
 	/****************************** DEMO FILES ******************************/

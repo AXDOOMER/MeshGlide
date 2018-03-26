@@ -33,6 +33,8 @@ Player::Player()
 	{
 		OwnedWeapons[i] = false;
 	}
+
+	sprite = new Texture("playa1.png", false);
 }
 
 void Player::Reset()
@@ -107,6 +109,16 @@ void Player::AngleTurn(short AngleChange)
 	}
 }
 
+float Player::Radius() const
+{
+	return Radius_;
+}
+
+float Player::Height() const
+{
+	return Height_;
+}
+
 float Player::PosX() const
 {
 	return pos_.x;
@@ -170,4 +182,41 @@ void Plane::Process()
 {
 	normal = ComputeNormal(Vertices);
 	centroid = ComputeAverage(Vertices);
+}
+
+Weapon::Weapon(float x, float y, float z, string type)
+{
+	pos_.x = x;
+	pos_.y = y;
+	pos_.z = z;
+
+	sprite = new Texture(type + ".png", false);
+
+	Radius_ = sprite->Width() / 64.0f;
+	Height_ = sprite->Height() / 64.0f * 2.0f;
+}
+
+float Weapon::PosX() const
+{
+	return pos_.x;
+}
+
+float Weapon::PosY() const
+{
+	return pos_.y;
+}
+
+float Weapon::PosZ() const
+{
+	return pos_.z;
+}
+
+float Weapon::Radius() const
+{
+	return Radius_;
+}
+
+float Weapon::Height() const
+{
+	return Height_;
 }

@@ -4,6 +4,9 @@ thing	spawn	-25	33	2	270
 thing	spawn	-27	-22	0	45
 thing	spawn	-5	-18	0	180
 thing	plant	128	128	0	0
+thing	weapon	-19	12	0	mguna0
+thing	weapon	-13	-11	4.5	launa0
+thing	weapon	-19	-19	0	shota0
 setting blur	1
 setting	skytex	clouds.jpg
 setting	skyele	10

@@ -27,10 +27,10 @@ using namespace std;
 class Texture
 {
 private:
-	string _Name;
-	GLuint _Id;
-	unsigned short _Width;
-	unsigned short _Height;
+	string Name_;
+	GLuint Id_;
+	unsigned short Width_;
+	unsigned short Height_;
 public:
 	Texture() = delete;
 	Texture(const string& Path, bool enableFiltering);

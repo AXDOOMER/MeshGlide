@@ -50,6 +50,12 @@ Level::~Level()
 		delete play;
 	}
 
+	// Delete weapons from the map
+	for (unsigned int i = 0; i < weapons.size(); i++)
+	{
+		delete weapons[i];
+	}
+
 	// Delete planes
 	for (unsigned int i = 0; i < planes.size(); i++)
 	{
@@ -85,8 +91,7 @@ void Level::SpawnPlayer(Player* play)
 	else
 	{
 		// You would get a floating point exception if there were no check
-		cout << "No spawn spot exists. Cannot spawn player." << endl;
-		throw runtime_error("The world exploded.");	// TODO: Search for a better solution
+		throw runtime_error("No spawn spot exists. Cannot spawn player.");
 	}
 }
 
@@ -175,11 +180,15 @@ void Level::LoadNative(const string& LevelName)
 					}
 					else if (tokens[1] == "player")
 					{
-						play = new Player;
+						play = new Player();
 						play->pos_.x = atof(tokens[2].c_str());
 						play->pos_.y = atof(tokens[3].c_str());
 						play->pos_.z = atof(tokens[4].c_str());
 						play->Angle = (short)atoi(tokens[5].c_str()) * 91.0222222222f;
+					}
+					else if (tokens[1] == "weapon")
+					{
+						weapons.push_back(new Weapon(atof(tokens[2].c_str()), atof(tokens[3].c_str()), atof(tokens[4].c_str()), tokens[5]));
 					}
 				}
 				else if (tokens[0] == "poly" && (tokens.size() == 21 || tokens.size() == 18))
@@ -271,7 +280,7 @@ void Level::LoadObj(const string& path)
 		string Line;
 
 		// Create player for level
-		play = new Player;
+		play = new Player();
 		play->pos_ = {0, 0, 0};
 		play->Angle = 0;
 

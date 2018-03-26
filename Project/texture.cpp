@@ -24,7 +24,7 @@
 
 #include <string>
 #include <iostream>
-#include <stdexcept>
+//#include <stdexcept>
 #include <utility>	/* swap */
 using namespace std;
 
@@ -38,9 +38,9 @@ Texture::Texture(const string& Path, bool enableFiltering)
 		throw runtime_error("Error loading texture: " + Path);
 	}
 
-	_Name = Path;
-	_Width = Surface->w;
-	_Height = Surface->h;
+	Name_ = Path;
+	Width_ = Surface->w;
+	Height_ = Surface->h;
 
 	// Create an OpenGL texture
 	GLuint textureID;
@@ -121,7 +121,7 @@ Texture::Texture(const string& Path, bool enableFiltering)
 	}
 
 	// Set the ID and free the surface
-	_Id = textureID;
+	Id_ = textureID;
 	SDL_FreeSurface(Surface);
 
 	cout << "Texture loaded: '" << Path << "' is " << Surface->w << 'x' << Surface->h << 'x' << bits << endl;
@@ -129,37 +129,37 @@ Texture::Texture(const string& Path, bool enableFiltering)
 
 string Texture::Name() const
 {
-	return _Name;
+	return Name_;
 }
 
 string Texture::Extension() const
 {
-	if (_Name.find_last_of(".") != string::npos)
-		return _Name.substr(_Name.find_last_of(".") + 1);
+	if (Name_.find_last_of(".") != string::npos)
+		return Name_.substr(Name_.find_last_of(".") + 1);
 	return "";
 }
 
 GLuint Texture::Id() const
 {
-	return _Id;
+	return Id_;
 }
 
 unsigned short Texture::Width() const
 {
-	return _Width;
+	return Width_;
 }
 
 unsigned short Texture::Height() const
 {
-	return _Height;
+	return Height_;
 }
 
 void Texture::Bind()
 {
-	glBindTexture(GL_TEXTURE_2D, _Id);
+	glBindTexture(GL_TEXTURE_2D, Id_);
 }
 
 Texture::~Texture() {
-	cout << "Deleting texture " << _Name << " (" << _Id << ")" << endl;
-	glDeleteTextures(1, &_Id);
+	cout << "Deleting texture " << Name_ << " (" << Id_ << ")" << endl;
+	glDeleteTextures(1, &Id_);
 }

@@ -36,6 +36,7 @@ public:
 	float SkyHeigth = 5.0f;	// Sky elevation
 	string SkyTexture;
 	vector<SpawnSpot> spawns;
+	vector<Weapon*> weapons;
 
 	void AddTexture(const string& name, bool enableFiltering);	// Add texture to cache if missing
 	void UseTexture(const string& name);	// Bind texture

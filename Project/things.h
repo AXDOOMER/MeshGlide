@@ -68,20 +68,31 @@ class Thing
 {
 public:
 	// Camera position
-	virtual float CamX() const = 0;
+/*	virtual float CamX() const = 0;
 	virtual float CamY() const = 0;
 	virtual float CamZ() const = 0;
 	// Camera orientation
 	virtual float AimX() const = 0;
 	virtual float AimY() const = 0;
-	virtual float AimZ() const = 0;
+	virtual float AimZ() const = 0;*/
+
+	// Position
+	virtual float PosX() const = 0;
+	virtual float PosY() const = 0;
+	virtual float PosZ() const = 0;
+
+	virtual float Radius() const = 0;
+	virtual float Height() const = 0;
 
 	// So the compiler doesn't warn on deleting an object of polymorphic class type
 	virtual ~Thing() = default;
 
 //protected:
+	Texture* sprite;
 	Float3 pos_;	// Position
 	Float3 mom_;	// Momentum
+	//float Radius;
+	Plane* plane;
 };
 
 class Player: public Thing
@@ -99,13 +110,11 @@ public:
 	char MoY = 0;
 	char MoZ = 0;		// Used by gravity
 	const float MaxStep = 1.5f;
-	const float Radius = 1.0f;
+	const float Radius_ = 1.0f;
 
 	int AirTime = 0;
 	bool Jump = false;
 	bool Fly = false;
-
-	Plane* plane;
 
 	// Weapons that are in the player's possession
 	bool OwnedWeapons[MAXOWNEDWEAPONS];
@@ -126,7 +135,7 @@ private:
 	const float MaxWalkSpeed = 0.6f;
 	const float MaxRunSpeed = 1.1f;
 
-	const float Height = 2.0f;
+	const float Height_ = 2.0f;
 
 	int Kills = 0;		// For deathmatch
 	int Deaths = 0;
@@ -134,6 +143,8 @@ private:
 public:
 	void ExecuteTicCmd();
 	float GetRadianAngle(short Angle) const;
+	float Radius() const;
+	float Height() const;
 
 	void ForwardMove(int Thrust);
 	void LateralMove(int Thrust);
@@ -147,6 +158,22 @@ public:
 	float AimX() const;
 	float AimY() const;
 	float AimZ() const;
+};
+
+class Weapon: public Thing
+{
+public:
+	Weapon(float x, float y, float z, string type);
+
+	float PosX() const;
+	float PosY() const;
+	float PosZ() const;
+	float Radius() const;
+	float Height() const;
+
+	string Type = "";
+	float Radius_;
+	float Height_;
 };
 
 class Critter: public Thing

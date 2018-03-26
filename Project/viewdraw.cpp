@@ -26,11 +26,12 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include <cstdlib>	/* EXIT_FAILURE */
+#include <cstdlib>	// EXIT_FAILURE
 
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <algorithm>	// Sort()
 using namespace std;
 
 void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -214,17 +215,37 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 		play->AimY(), play->AimZ(), play->AimX(),	// What the camera looks at
 		0.0, 1.0, 0.0);	// This is for the camera's frame rotation
 
-	//glRotatef( xrot, 1.0f, 0.0f, 0.0f); /* Rotate On The X Axis */
-	//glRotatef( yrot, 0.0f, 1.0f, 0.0f); /* Rotate On The Y Axis */
-	//glRotatef( zrot, 0.0f, 0.0f, 1.0f); /* Rotate On The Z Axis */
-
-	//glTranslatef(256.0f, 256.0f, 0.0f);
-	//glRotatef(min_angle, 0.0f, 0.0f, 1.0f);
-	//glScalef(x_minScale, y_minScale, 1.0f);
+	// Enable transparency
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Check if level is not a null pointer to avoid errors and draw its content
 	if (lvl != nullptr)
 	{
+		if (!lvl->SkyTexture.empty())
+		{
+			// Draw sky (relative to player)
+			lvl->UseTexture(lvl->SkyTexture);
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glDisable(GL_CULL_FACE);
+			glPushMatrix();
+				glBegin(GL_QUADS);
+					// (Xpos, Zpos, Ypos)
+					// TODO: Use this for sky coords: glTranslatef(play->PosY, play->PosZ, play->PosX);
+					glTexCoord2f(-1, 1);
+					glVertex3f(play->PosY() + lvl->SkyHeigth * 20.0f, play->PosZ() + lvl->SkyHeigth, play->PosX() - lvl->SkyHeigth * 20.0f);
+					glTexCoord2f(1, 1);
+					glVertex3f(play->PosY() + lvl->SkyHeigth * 20.0f, play->PosZ() + lvl->SkyHeigth, play->PosX() + lvl->SkyHeigth * 20.0f);
+					glTexCoord2f(1, -1);
+					glVertex3f(play->PosY() - lvl->SkyHeigth * 20.0f, play->PosZ() + lvl->SkyHeigth, play->PosX() + lvl->SkyHeigth * 20.0f);
+					glTexCoord2f(-1, -1);
+					glVertex3f(play->PosY() - lvl->SkyHeigth * 20.0f, play->PosZ() + lvl->SkyHeigth, play->PosX() - lvl->SkyHeigth * 20.0f);
+				glEnd();
+			glPopMatrix();
+		}
+
+		glClear(GL_DEPTH_BUFFER_BIT);	// Clear depth buffer so the sky will always be drawn over
+
 		// Draw walls
 		for (unsigned int i = 0; i < lvl->planes.size(); i++)
 		{
@@ -277,34 +298,54 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 				glPopMatrix();
 			}
 		}
-	}
 
-	if (!lvl->SkyTexture.empty())
-	{
-		// Draw sky (relative to player)
-		lvl->UseTexture(lvl->SkyTexture);	// "clouds.png"
-		glColor3f(1.0f, 1.0f, 1.0f);
+		// Sprites are always drawn front-facing
 		glDisable(GL_CULL_FACE);
-		glPushMatrix();
-			glBegin(GL_QUADS);
-				// (Xpos, Zpos, Ypos)
-				// TODO: Use this for sky coords: glTranslatef(play->PosY, play->PosZ, play->PosX);
-				glTexCoord2f(-1, 1);
-				glVertex3f(play->PosY() + lvl->SkyHeigth * 20.0f, play->PosZ() + lvl->SkyHeigth, play->PosX() - lvl->SkyHeigth * 20.0f);
-				glTexCoord2f(1, 1);
-				glVertex3f(play->PosY() + lvl->SkyHeigth * 20.0f, play->PosZ() + lvl->SkyHeigth, play->PosX() + lvl->SkyHeigth * 20.0f);
-				glTexCoord2f(1, -1);
-				glVertex3f(play->PosY() - lvl->SkyHeigth * 20.0f, play->PosZ() + lvl->SkyHeigth, play->PosX() + lvl->SkyHeigth * 20.0f);
-				glTexCoord2f(-1, -1);
-				glVertex3f(play->PosY() - lvl->SkyHeigth * 20.0f, play->PosZ() + lvl->SkyHeigth, play->PosX() - lvl->SkyHeigth * 20.0f);
-			glEnd();
-		glPopMatrix();
+
+		// Draw weapons on a map
+		for (unsigned int i = 0; i < lvl->weapons.size(); i++)
+		{
+			lvl->weapons[i]->sprite->Bind();
+
+			glPushMatrix();
+			{
+				//glColor3f(lvl->weapons[i]->plane->Light, lvl->weapons[i]->plane->Light, lvl->weapons[i]->plane->Light);
+				glColor3f(1.0f, 1.0f, 1.0f);
+
+				glBegin(GL_QUADS);
+				{
+					float OrthAngle = play->GetRadianAngle(play->Angle) - M_PI / 2;
+					float CosOrth = cos(OrthAngle);
+					float SinOrth = sin(OrthAngle);
+
+					glTexCoord2f(0, 1);
+					glVertex3f(lvl->weapons[i]->PosY() + SinOrth * lvl->weapons[i]->Radius(),
+						lvl->weapons[i]->PosZ() + lvl->weapons[i]->Height(),
+						lvl->weapons[i]->PosX() + CosOrth * lvl->weapons[i]->Radius());
+
+
+					glTexCoord2f(1, 1);
+					glVertex3f(lvl->weapons[i]->PosY() - SinOrth * lvl->weapons[i]->Radius(),
+						lvl->weapons[i]->PosZ() + lvl->weapons[i]->Height(),
+						lvl->weapons[i]->PosX() - CosOrth * lvl->weapons[i]->Radius());
+
+					glTexCoord2f(1, 0);
+					glVertex3f(lvl->weapons[i]->PosY() - SinOrth * lvl->weapons[i]->Radius(),
+						lvl->weapons[i]->PosZ(),
+						lvl->weapons[i]->PosX() - CosOrth * lvl->weapons[i]->Radius());
+
+					glTexCoord2f(0, 0);
+					glVertex3f(lvl->weapons[i]->PosY() + SinOrth * lvl->weapons[i]->Radius(),
+						lvl->weapons[i]->PosZ(),
+						lvl->weapons[i]->PosX() + CosOrth * lvl->weapons[i]->Radius());
+				}
+				glEnd();
+			}
+			glPopMatrix();
+		}
 	}
 
 	glEnable(GL_CULL_FACE);
-
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Render text as the last thing because else it will break the rendering
 	RenderText(lvl, FrameDelay + " ms", -0.9f, 0.8f, 0.05f, 0.15f);
