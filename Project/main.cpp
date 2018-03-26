@@ -47,6 +47,8 @@ int main(int argc, const char *argv[])
 	ifstream DemoRead;
 	string FrameDelay = "";
 	string LevelName = "map.obj";
+	bool Fast = false;	// To unlock the speed of the game
+	auto GameStartTime = chrono::system_clock::now();
 
 	cout << "                MESHGLIDE ENGINE -- " << VERSION << "\n\n";
 
@@ -56,6 +58,12 @@ int main(int argc, const char *argv[])
 	{
 		Debug = true;
 		cout << "Debug mode ON." << endl;
+	}
+
+	if (FindArgumentPosition(argc, argv, "-time") > 0)
+	{
+		// Makes the game run fast and output the time that it took to play a demo at full speed
+		Fast = true;
 	}
 
 	/****************************** DEMO FILES ******************************/
@@ -73,6 +81,8 @@ int main(int argc, const char *argv[])
 	}
 	else
 	{
+		Fast = false;	// Must be false if not playing a demo. It's reserved for demo playback and benchmarking.
+
 		// Playing a demo has priority over recording a demo
 		DemoName = FindArgumentParameter(argc, argv, "-record");
 		if (!DemoName.empty())
@@ -387,14 +397,17 @@ int main(int argc, const char *argv[])
 
 		TicCount++;
 
-		auto end = chrono::system_clock::now();
-		auto diff = chrono::duration_cast<chrono::milliseconds>(end - start).count();
-		FrameDelay = to_string(diff);
+		if (!Fast)
+		{
+			auto end = chrono::system_clock::now();
+			auto diff = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+			FrameDelay = to_string(diff);
 
-		const int FRAMERATE = 60;
-		const float DELAY = 1000 / FRAMERATE;
-		if (diff < DELAY)
-			SDL_Delay(DELAY - diff);
+			const int FRAMERATE = 60;
+			const float DELAY = 1000 / FRAMERATE;
+			if (diff < DELAY)
+				SDL_Delay(DELAY - diff);
+		}
 
 		// Detect OpenGL errors
 		GLenum ErrorCode;
@@ -421,6 +434,12 @@ int main(int argc, const char *argv[])
 	{
 		DemoRead.close();
 		cout << "Demo playback ended." << endl;
+	}
+
+	if (Fast)
+	{
+		// Print benchmark time
+		cout << "Game terminated after " << chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now() - GameStartTime).count() << "ms." << endl;
 	}
 
 	// Close OpenGL stuff

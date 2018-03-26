@@ -119,7 +119,7 @@ GLFWwindow* Init_OpenGL(const bool fullscreen)
 #endif
 
 	// Vsync?
-	glfwSwapInterval(1);
+	glfwSwapInterval(0);	// If it's not zero, the framerate is at least limited to the screen's refresh rate.
 
 	// Set important stuff
 	glfwSetKeyCallback(window, Key_Callback);
