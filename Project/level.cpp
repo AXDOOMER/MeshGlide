@@ -45,15 +45,10 @@ Level::Level(const string& level, float scaling)
 
 Level::~Level()
 {
-	if (play != nullptr)
+	// Delete things from the map
+	for (unsigned int i = 0; i < things.size(); i++)
 	{
-		delete play;
-	}
-
-	// Delete weapons from the map
-	for (unsigned int i = 0; i < weapons.size(); i++)
-	{
-		delete weapons[i];
+		delete things[i];
 	}
 
 	// Delete planes
@@ -247,11 +242,18 @@ void Level::LoadNative(const string& LevelName)
 
 		LinkPlanes(LevelName);
 
-		if (play == nullptr)
+		// Create an arbitrary number of players for testing purposes
+		for (int i = 0; i < 2; i++)
 		{
-			play = new Player();
-			SpawnPlayer(play);
+			players.emplace_back(new Player());
+			SpawnPlayer(players[i]);
 		}
+		// Set the player to player #1
+		play = players[0];
+
+		// Populate the array of "things"
+		things.insert(things.end(), weapons.begin(), weapons.end());
+		things.insert(things.end(), players.begin(), players.end());
 	}
 	else
 	{

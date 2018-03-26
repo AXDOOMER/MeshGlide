@@ -84,6 +84,8 @@ public:
 	virtual float Radius() const = 0;
 	virtual float Height() const = 0;
 
+//	virtual Texture GetSprite(Float3 CamPos) const = 0;
+
 	// So the compiler doesn't warn on deleting an object of polymorphic class type
 	virtual ~Thing() = default;
 
@@ -105,12 +107,13 @@ public:
 	float VerticalAim = 0;	// Pitch
 
 //	Float3 pos_;		// Position of player's feet
-	const float ViewZ = 2.0f;
+	const float ViewZ = 1.8f;
 	char MoX = 0;		// Speed vector (momentum)
 	char MoY = 0;
 	char MoZ = 0;		// Used by gravity
 	const float MaxStep = 1.5f;
-	const float Radius_ = 1.0f;
+	const float Radius_ = 0.5f;
+	const float Height_ = 2.0f;
 
 	int AirTime = 0;
 	bool Jump = false;
@@ -126,6 +129,7 @@ public:
 	short Cells = 0;
 
 	Player(); // We need a constructor for the weapons array
+	~Player();	// Deletes the sprite
 	void Reset();
 	float PosX() const;
 	float PosY() const;
@@ -134,8 +138,6 @@ public:
 private:
 	const float MaxWalkSpeed = 0.6f;
 	const float MaxRunSpeed = 1.1f;
-
-	const float Height_ = 2.0f;
 
 	int Kills = 0;		// For deathmatch
 	int Deaths = 0;
@@ -164,6 +166,7 @@ class Weapon: public Thing
 {
 public:
 	Weapon(float x, float y, float z, string type);
+	~Weapon();	// Deletes the sprite
 
 	float PosX() const;
 	float PosY() const;
@@ -171,7 +174,7 @@ public:
 	float Radius() const;
 	float Height() const;
 
-	string Type = "";
+	string Type;
 	float Radius_;
 	float Height_;
 };

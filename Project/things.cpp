@@ -37,6 +37,11 @@ Player::Player()
 	sprite = new Texture("playa1.png", false);
 }
 
+Player::~Player()
+{
+	delete sprite;
+}
+
 void Player::Reset()
 {
 	// Reset vertical view angle
@@ -193,7 +198,12 @@ Weapon::Weapon(float x, float y, float z, string type)
 	sprite = new Texture(type + ".png", false);
 
 	Radius_ = sprite->Width() / 64.0f;
-	Height_ = sprite->Height() / 64.0f * 2.0f;
+	Height_ = sprite->Height() * 2.0f / 64.0f;
+}
+
+Weapon::~Weapon()
+{
+	delete sprite;
 }
 
 float Weapon::PosX() const

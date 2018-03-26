@@ -30,13 +30,17 @@ using namespace std;
 class Level
 {
 public:
-	Cache<string, Texture> cache;
-	vector<Plane*> planes;
-	Player* play = nullptr;
 	float SkyHeigth = 5.0f;	// Sky elevation
 	string SkyTexture;
+
+	// Stuff that's part of the map
+	Cache<string, Texture> cache;
+	vector<Plane*> planes;
+	Player* play = nullptr;	// Pointer to the current player
+	vector<Player*> players;	// Pointers to every player
 	vector<SpawnSpot> spawns;
 	vector<Weapon*> weapons;
+	vector<Thing*> things;	// In order to draw everything easily, everything is put in the same array.
 
 	void AddTexture(const string& name, bool enableFiltering);	// Add texture to cache if missing
 	void UseTexture(const string& name);	// Bind texture

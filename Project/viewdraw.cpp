@@ -319,16 +319,16 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 		glDisable(GL_CULL_FACE);
 
 		// Sort any sprites before drawing. The farthest ones will be drawn first.
-		sort(lvl->weapons.begin(), lvl->weapons.end(), ThingDistanceComparator(play));
+		sort(lvl->things.begin(), lvl->things.end(), ThingDistanceComparator(play));
 
-		// Draw weapons on a map
-		for (unsigned int i = 0; i < lvl->weapons.size(); i++)
+		// Draw "things" on the map
+		for (unsigned int i = 0; i < lvl->things.size(); i++)
 		{
-			lvl->weapons[i]->sprite->Bind();
+			lvl->things[i]->sprite->Bind();
 
 			glPushMatrix();
 			{
-				//glColor3f(lvl->weapons[i]->plane->Light, lvl->weapons[i]->plane->Light, lvl->weapons[i]->plane->Light);
+				//glColor3f(lvl->things[i]->plane->Light, lvl->things[i]->plane->Light, lvl->things[i]->plane->Light);
 				glColor3f(1.0f, 1.0f, 1.0f);
 
 				glBegin(GL_QUADS);
@@ -338,25 +338,25 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 					float SinOrth = sin(OrthAngle);
 
 					glTexCoord2f(0, 1);
-					glVertex3f(lvl->weapons[i]->PosY() + SinOrth * lvl->weapons[i]->Radius(),
-						lvl->weapons[i]->PosZ() + lvl->weapons[i]->Height(),
-						lvl->weapons[i]->PosX() + CosOrth * lvl->weapons[i]->Radius());
+					glVertex3f(lvl->things[i]->PosY() + SinOrth * lvl->things[i]->Radius(),
+						lvl->things[i]->PosZ() + lvl->things[i]->Height(),
+						lvl->things[i]->PosX() + CosOrth * lvl->things[i]->Radius());
 
 
 					glTexCoord2f(1, 1);
-					glVertex3f(lvl->weapons[i]->PosY() - SinOrth * lvl->weapons[i]->Radius(),
-						lvl->weapons[i]->PosZ() + lvl->weapons[i]->Height(),
-						lvl->weapons[i]->PosX() - CosOrth * lvl->weapons[i]->Radius());
+					glVertex3f(lvl->things[i]->PosY() - SinOrth * lvl->things[i]->Radius(),
+						lvl->things[i]->PosZ() + lvl->things[i]->Height(),
+						lvl->things[i]->PosX() - CosOrth * lvl->things[i]->Radius());
 
 					glTexCoord2f(1, 0);
-					glVertex3f(lvl->weapons[i]->PosY() - SinOrth * lvl->weapons[i]->Radius(),
-						lvl->weapons[i]->PosZ(),
-						lvl->weapons[i]->PosX() - CosOrth * lvl->weapons[i]->Radius());
+					glVertex3f(lvl->things[i]->PosY() - SinOrth * lvl->things[i]->Radius(),
+						lvl->things[i]->PosZ(),
+						lvl->things[i]->PosX() - CosOrth * lvl->things[i]->Radius());
 
 					glTexCoord2f(0, 0);
-					glVertex3f(lvl->weapons[i]->PosY() + SinOrth * lvl->weapons[i]->Radius(),
-						lvl->weapons[i]->PosZ(),
-						lvl->weapons[i]->PosX() + CosOrth * lvl->weapons[i]->Radius());
+					glVertex3f(lvl->things[i]->PosY() + SinOrth * lvl->things[i]->Radius(),
+						lvl->things[i]->PosZ(),
+						lvl->things[i]->PosX() + CosOrth * lvl->things[i]->Radius());
 				}
 				glEnd();
 			}

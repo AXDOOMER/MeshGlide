@@ -160,12 +160,15 @@ int main(int argc, const char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	// Set the player to floor's height
-	CurrentLevel->play->plane = GetPlaneForPlayer(CurrentLevel->play, CurrentLevel);
-	if (CurrentLevel->play->plane == nullptr)
+	// Set the players to the floor's height and also set the plane where they are
+	for (unsigned int i = 0; i < CurrentLevel->players.size(); i++)
 	{
-		cerr << "Player's spawn spot is outside of map." << endl;
-		exit(EXIT_FAILURE);
+		CurrentLevel->players[i]->plane = GetPlaneForPlayer(CurrentLevel->players[i], CurrentLevel);
+		if (CurrentLevel->players[i]->plane == nullptr)
+		{
+			cerr << "Player's spawn spot is outside of map." << endl;
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	/****************************** SETUP PHASE ******************************/
@@ -213,6 +216,26 @@ int main(int argc, const char *argv[])
 		}
 		else
 		{
+			// Spy cam. Take control of another player.
+			if (glfwGetKey(window, GLFW_KEY_F12))
+			{
+				// Find the index of the current player in the array of players
+				unsigned int i = 0;
+				while (i < CurrentLevel->players.size())
+				{
+					if (CurrentLevel->players[i] == CurrentLevel->play)
+						break;
+					i++;
+				}
+
+				// Get the next player
+				i = (i + 1) % CurrentLevel->players.size();
+				// Change to that player
+				CurrentLevel->play = CurrentLevel->players[i];
+				// Pause for 100ms so the key doesn't repeat
+				SDL_Delay(100);
+			}
+
 			// Get Input from Keyboard
 			int multiplicator = 1;
 			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT))
