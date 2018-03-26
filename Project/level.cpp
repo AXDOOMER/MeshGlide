@@ -285,6 +285,7 @@ void Level::LoadObj(const string& path)
 		play = new Player();
 		play->pos_ = {0, 0, 0};
 		play->Angle = 0;
+		players.push_back(play);
 
 		while (!model.eof())
 		{
