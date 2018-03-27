@@ -180,6 +180,7 @@ void Level::LoadNative(const string& LevelName)
 						play->pos_.y = atof(tokens[3].c_str());
 						play->pos_.z = atof(tokens[4].c_str());
 						play->Angle = (short)atoi(tokens[5].c_str()) * 91.0222222222f;
+						players.push_back(play);
 					}
 					else if (tokens[1] == "weapon")
 					{
@@ -242,14 +243,18 @@ void Level::LoadNative(const string& LevelName)
 
 		LinkPlanes(LevelName);
 
-		// Create an arbitrary number of players for testing purposes
-		for (int i = 0; i < 2; i++)
+		// Check if no player was created
+		if (players.size() == 0)
 		{
-			players.emplace_back(new Player());
-			SpawnPlayer(players[i]);
+			// Create an arbitrary number of players for testing purposes
+			for (int i = 0; i < 2; i++)
+			{
+				players.emplace_back(new Player());
+				SpawnPlayer(players[i]);
+			}
+			// Set the player to player #1
+			play = players[0];
 		}
-		// Set the player to player #1
-		play = players[0];
 
 		// Populate the array of "things"
 		things.insert(things.end(), weapons.begin(), weapons.end());

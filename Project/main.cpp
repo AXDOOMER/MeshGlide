@@ -42,10 +42,10 @@ int main(int argc, const char *argv[])
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
-	static bool Debug = false;
+	bool Debug = false;
 	ofstream DemoWrite;
 	ifstream DemoRead;
-	unsigned int FrameDelay;
+	unsigned int FrameDelay = 0;
 	string LevelName = "map.obj";
 	bool Fast = false;	// To unlock the speed of the game
 	auto GameStartTime = chrono::system_clock::now();
