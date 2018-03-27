@@ -38,7 +38,7 @@ GLFWwindow* Init_OpenGL(const bool fullscreen);
 
 void InitProjection(GLFWwindow* window);
 
-void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay);
+void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int FrameDelay);
 
 void Close_OpenGL(GLFWwindow* window);
 

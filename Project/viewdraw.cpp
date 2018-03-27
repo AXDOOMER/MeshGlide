@@ -31,7 +31,8 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include <algorithm>	// Sort()
+#include <algorithm>	// sort()
+#include <regex>	// regex_replace()
 using namespace std;
 
 void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -216,7 +217,7 @@ struct ThingDistanceComparator {
 };
 
 // Render the screen. Convert in-game axes system to OpenGL axes. (X,Y,Z) becomes (Y,Z,X).
-void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay)
+void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int FrameDelay)
 {
 	// Reset colors and depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -367,7 +368,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, string& FrameDelay
 	glEnable(GL_CULL_FACE);
 
 	// Render text as the last thing because else it will break the rendering
-	RenderText(lvl, FrameDelay + " ms", -0.9f, 0.8f, 0.05f, 0.15f);
+	RenderText(lvl, regex_replace(to_string((float)FrameDelay / 1000) + " ms", regex("0+(?=\\s)\\b"), ""), -0.9f, 0.8f, 0.05f, 0.15f);
 
 	// Resetting display to 3D
 	int width, height;

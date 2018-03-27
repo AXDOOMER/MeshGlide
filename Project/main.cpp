@@ -38,14 +38,14 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.37 (dev)";
+	const char* const VERSION = "0.38 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
 	static bool Debug = false;
 	ofstream DemoWrite;
 	ifstream DemoRead;
-	string FrameDelay = "";
+	unsigned int FrameDelay;
 	string LevelName = "map.obj";
 	bool Fast = false;	// To unlock the speed of the game
 	auto GameStartTime = chrono::system_clock::now();
@@ -62,7 +62,7 @@ int main(int argc, const char *argv[])
 
 	if (FindArgumentPosition(argc, argv, "-time") > 0)
 	{
-		// Makes the game run fast and output the time that it took to play a demo at full speed
+		// Makes the game run as fast as possible and output the time that it took to play the demo at full speed
 		Fast = true;
 	}
 
@@ -242,6 +242,7 @@ int main(int argc, const char *argv[])
 				i = (i + 1) % CurrentLevel->players.size();
 				// Change to that player
 				CurrentLevel->play = CurrentLevel->players[i];
+				cout << "F12: Took control of player #" << i + 1 << endl;
 				// Pause for 100ms so the key doesn't repeat
 				SDL_Delay(100);
 			}
@@ -319,30 +320,35 @@ int main(int argc, const char *argv[])
 			}
 		}
 
-		if (glfwGetKey(window, GLFW_KEY_SPACE) || CurrentLevel->play->Jump)
+		if (glfwGetKey(window, GLFW_KEY_SPACE))
 		{
 			if (!CurrentLevel->play->Fly)
 				CurrentLevel->play->Jump = true;
-
-			if (CurrentLevel->play->Jump)
-				CurrentLevel->play->pos_.z = CurrentLevel->play->PosZ() + GRAVITY * 1.5f;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_F5))
 		{
-			cout << "F5: Reloading level data..." << endl;
-
-			Player* SavedPlayer = CurrentLevel->play;
-			CurrentLevel->Reload();
-			delete CurrentLevel->play;
-			CurrentLevel->play = SavedPlayer;
-
-			// Set the player to floor's height
-			CurrentLevel->play->plane = GetPlaneForPlayer(CurrentLevel->play, CurrentLevel);
-			if (CurrentLevel->play->plane == nullptr)
+			if (CurrentLevel->players.size() <= 1)
 			{
-				cerr << "Player's spawn spot is outside of map." << endl;
-				exit(EXIT_FAILURE);
+				cout << "F5: Reloading level data..." << endl;
+
+				Player* SavedPlayer = CurrentLevel->play;
+				CurrentLevel->Reload();
+				delete CurrentLevel->play;
+				CurrentLevel->play = SavedPlayer;
+
+				// Set the player to floor's height
+				CurrentLevel->play->plane = GetPlaneForPlayer(CurrentLevel->play, CurrentLevel);
+				if (CurrentLevel->play->plane == nullptr)
+				{
+					cerr << "Player's spawn spot is outside of map." << endl;
+					exit(EXIT_FAILURE);
+				}
+			}
+			else
+			{
+				cout << "F5: Reloading level not allowed when there are more than one player in the game." << endl;
+				SDL_Delay(100);
 			}
 		}
 
@@ -354,34 +360,41 @@ int main(int argc, const char *argv[])
 		// Send Commands over Network
 
 		// Update game logic
-		Float3 pt = CurrentLevel->play->pos_;
-		short Angle = CurrentLevel->play->Angle;
-
-		TicCmd tc = CurrentLevel->play->Cmd;
-		CurrentLevel->play->ExecuteTicCmd();
-
-		// Collision detection with floors and walls
-		if (!MovePlayerToNewPosition(pt, CurrentLevel->play->pos_, CurrentLevel->play))
+		for (unsigned int i = 0; i < CurrentLevel->players.size(); i++)
 		{
-			// Compute the position where the player would be if he slide against the wall
-			Float2 pos = MoveOnCollision(pt, CurrentLevel->play->pos_, CurrentLevel->play);
+			Float3 pt = CurrentLevel->players[i]->pos_;
+			short Angle = CurrentLevel->players[i]->Angle;
 
-			// Move the player back to its original position
-			CurrentLevel->play->Angle = Angle;
-			tc.forward = -tc.forward;
-			tc.lateral = -tc.lateral;
-			CurrentLevel->play->Cmd = tc;
-			CurrentLevel->play->ExecuteTicCmd();
+			TicCmd tc = CurrentLevel->players[i]->Cmd;
+			CurrentLevel->players[i]->ExecuteTicCmd();
 
-			// Try to slide the player against the wall to a valid position
-			if (MovePlayerToNewPosition(pt, {pos.x, pos.y, 0}, CurrentLevel->play))
+			// Collision detection with floors and walls
+			if (!MovePlayerToNewPosition(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i]))
 			{
-				CurrentLevel->play->pos_.x = pos.x;
-				CurrentLevel->play->pos_.y = pos.y;
-			}
-		}
+				// Compute the position where the player would be if he slide against the wall
+				Float2 pos = MoveOnCollision(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i]);
 
-		ApplyGravity(CurrentLevel->play);
+				// Move the player back to its original position
+				CurrentLevel->players[i]->Angle = Angle;
+				tc.forward = -tc.forward;
+				tc.lateral = -tc.lateral;
+				CurrentLevel->players[i]->Cmd = tc;
+				CurrentLevel->players[i]->ExecuteTicCmd();
+
+				// Try to slide the player against the wall to a valid position
+				if (MovePlayerToNewPosition(pt, {pos.x, pos.y, 0}, CurrentLevel->players[i]))
+				{
+					CurrentLevel->players[i]->pos_.x = pos.x;
+					CurrentLevel->players[i]->pos_.y = pos.y;
+				}
+			}
+
+			// Update Jumping
+			if (CurrentLevel->players[i]->Jump)
+				CurrentLevel->players[i]->pos_.z = CurrentLevel->players[i]->PosZ() + GRAVITY * 1.5f;
+
+			ApplyGravity(CurrentLevel->players[i]);
+		}
 
 		// Draw Screen
 		DrawScreen(window, CurrentLevel->play, CurrentLevel, FrameDelay);
@@ -400,13 +413,12 @@ int main(int argc, const char *argv[])
 		if (!Fast)
 		{
 			auto end = chrono::system_clock::now();
-			auto diff = chrono::duration_cast<chrono::milliseconds>(end - start).count();
-			FrameDelay = to_string(diff);
+			FrameDelay = chrono::duration_cast<chrono::microseconds>(end - start).count();
 
 			const int FRAMERATE = 60;
 			const float DELAY = 1000 / FRAMERATE;
-			if (diff < DELAY)
-				SDL_Delay(DELAY - diff);
+			if (FrameDelay / 1000 < DELAY)
+				SDL_Delay(DELAY - FrameDelay / 1000);
 		}
 
 		// Detect OpenGL errors
