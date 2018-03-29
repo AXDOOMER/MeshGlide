@@ -200,22 +200,6 @@ void RenderText(Level* lvl, string text, float x, float y, float sx, float sy)
 	}
 }
 
-struct ThingDistanceComparator {
-	ThingDistanceComparator(Player* play)
-	{
-		this->play = play;
-	}
-
-	// The farther things will be first
-	bool operator() (Thing* a, Thing* b)
-	{
-		return pow(play->PosX() - a->PosX(), 2) + pow(play->PosY() - a->PosY(), 2)
-				> pow(play->PosX() - b->PosX(), 2) + pow(play->PosY() - b->PosY(), 2);
-	}
-
-	Player* play;
-};
-
 // Render the screen. Convert in-game axes system to OpenGL axes. (X,Y,Z) becomes (Y,Z,X).
 void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int FrameDelay)
 {
@@ -320,7 +304,10 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int Frame
 		glDisable(GL_CULL_FACE);
 
 		// Sort any sprites before drawing. The farthest ones will be drawn first.
-		sort(lvl->things.begin(), lvl->things.end(), ThingDistanceComparator(play));
+		sort(lvl->things.begin(), lvl->things.end(), [play](const Thing* a, const Thing* b)
+		{
+			return pow(play->PosX() - a->PosX(), 2) + pow(play->PosY() - a->PosY(), 2) > pow(play->PosX() - b->PosX(), 2) + pow(play->PosY() - b->PosY(), 2);
+		});
 
 		// Draw "things" on the map
 		for (unsigned int i = 0; i < lvl->things.size(); i++)
