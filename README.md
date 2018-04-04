@@ -22,10 +22,10 @@ Packages that may need to be installed under Debian and Ubuntu are: `libglfw3 li
 
 The following files were taken from the [Freedoom](https://github.com/freedoom/freedoom) project. See their [license](https://github.com/freedoom/freedoom/blob/master/COPYING.adoc).
 
-* playa1.png
-* shota0.png
-* launa0.png
-* mguna0.png
+* Player sprites: playa1.png, playa2.png, playa3.png, playa4.png, playa5.png, playa6.png, playa7.png, playa8.png
+* Shotgun sprite: shota0.png
+* Rocket launcher sprite: launa0.png
+* Minigun sprite: mguna0.png
 
 ### Random screenshots from an older version
 

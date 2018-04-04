@@ -84,13 +84,13 @@ public:
 	virtual float Radius() const = 0;
 	virtual float Height() const = 0;
 
-//	virtual Texture GetSprite(Float3 CamPos) const = 0;
+	virtual Texture* GetSprite(float Angle) const = 0;
 
 	// So the compiler doesn't warn on deleting an object of polymorphic class type
 	virtual ~Thing() = default;
 
 //protected:
-	Texture* sprite;
+//	Texture* sprite;
 	Float3 pos_;	// Position
 	Float3 mom_;	// Momentum
 	//float Radius;
@@ -135,6 +135,9 @@ public:
 	float PosY() const;
 	float PosZ() const;
 
+	Texture* GetSprite(float Angle) const;
+	Texture** sprite;
+
 private:
 	const float MaxWalkSpeed = 0.6f;
 	const float MaxRunSpeed = 1.1f;
@@ -177,6 +180,9 @@ public:
 	string Type;
 	float Radius_;
 	float Height_;
+
+	Texture* sprite;
+	Texture* GetSprite(float Angle) const;
 };
 
 class Critter: public Thing

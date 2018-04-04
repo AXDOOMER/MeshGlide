@@ -22,6 +22,7 @@
 
 #include <cmath>
 #include <limits>		/* numeric_limits */
+#include <string>		/* to_string() */
 
 using namespace std;
 
@@ -34,12 +35,20 @@ Player::Player()
 		OwnedWeapons[i] = false;
 	}
 
-	sprite = new Texture("playa1.png", false);
+	sprite = new Texture*[8];
+
+	for (int i = 0; i < 8; i++)
+		sprite[i] = new Texture("playa" + to_string(i + 1) + ".png", false);
 }
 
 Player::~Player()
 {
-	delete sprite;
+	// Delete the array's content
+	for (int i = 0; i < 8; i++)
+		delete sprite[i];
+
+	// Delete the array
+	delete[] sprite;
 }
 
 void Player::Reset()
@@ -169,6 +178,27 @@ float Player::AimZ() const
 	return pos_.z + ViewZ + VerticalAim;
 }
 
+Texture* Player::GetSprite(float Angle) const
+{
+	// Compute the difference between the angle of the point of view and the angle of the player to be rendered
+	float Theta = Angle - GetRadianAngle(this->Angle);
+
+	// Adjust the angle so that players will be shown at the correct sprite rotation
+	Theta += M_PI;
+
+	// No negative angles -- Make the angle positive if it's negative so the following computations will work fine
+	if (Theta < 0)
+		Theta += M_PI * 2;
+
+	// Align the middle of a sprite rotation on the middle of an octile
+	Theta += M_PI / 8;
+
+	// Cross-multiply so the correct sprite rotation can be retrieved from the array using the quotient of the angle
+	int Quotient = (Theta * 8) / (M_PI * 2);
+
+	return sprite[Quotient % 8];
+}
+
 // Used to compare two planes by counting the amount of common vertices
 unsigned int Plane::CommonVertices(Plane* plane)
 {
@@ -229,4 +259,9 @@ float Weapon::Radius() const
 float Weapon::Height() const
 {
 	return Height_;
+}
+
+Texture* Weapon::GetSprite(float /*Angle*/) const
+{
+	return sprite;
 }
