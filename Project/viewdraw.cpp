@@ -312,7 +312,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int Frame
 		// Draw "things" on the map
 		for (unsigned int i = 0; i < lvl->things.size(); i++)
 		{
-			lvl->things[i]->GetSprite(lvl->play->GetRadianAngle(lvl->play->Angle))->Bind();
+			lvl->things[i]->GetSprite(lvl->play->pos_)->Bind();
 
 			glPushMatrix();
 			{

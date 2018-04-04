@@ -178,22 +178,22 @@ float Player::AimZ() const
 	return pos_.z + ViewZ + VerticalAim;
 }
 
-Texture* Player::GetSprite(float Angle) const
+Texture* Player::GetSprite(Float3 CamPos) const
 {
-	// Compute the difference between the angle of the point of view and the angle of the player to be rendered
-	float Theta = Angle - GetRadianAngle(this->Angle);
+	// Get the angle between the player thing and the camera
+	float Theta = atan2(PosY() - CamPos.y, PosX() - CamPos.x);
 
-	// Adjust the angle so that players will be shown at the correct sprite rotation
-	Theta += M_PI;
+	// Adjust the angle so that the correct sprite rotation is shown from the camera's point of view
+	Theta = Theta - GetRadianAngle(Angle) + M_PI;
 
-	// No negative angles -- Make the angle positive if it's negative so the following computations will work fine
+	// Make the angle positive if it's negative so the following code will work fine
 	if (Theta < 0)
 		Theta += M_PI * 2;
 
 	// Align the middle of a sprite rotation on the middle of an octile
 	Theta += M_PI / 8;
 
-	// Cross-multiply so the correct sprite rotation can be retrieved from the array using the quotient of the angle
+	// Cross-multiply and the correct sprite rotation can be retrieved from the array using the quotient
 	int Quotient = (Theta * 8) / (M_PI * 2);
 
 	return sprite[Quotient % 8];
@@ -261,7 +261,7 @@ float Weapon::Height() const
 	return Height_;
 }
 
-Texture* Weapon::GetSprite(float /*Angle*/) const
+Texture* Weapon::GetSprite(Float3 /*CamPos*/) const
 {
 	return sprite;
 }
