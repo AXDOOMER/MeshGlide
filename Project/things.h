@@ -57,8 +57,8 @@ class TicCmd
 {
 public:
 	unsigned char id;
-	char forward;
-	char lateral;
+	signed char forward;
+	signed char lateral;
 	short rotation;
 	bool fire;
 	string chat;
