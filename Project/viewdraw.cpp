@@ -183,16 +183,16 @@ void RenderText(Level* lvl, string text, float x, float y, float sx, float sy)
 
 			glPushMatrix();
 				glBegin(GL_QUADS);
-					glTexCoord2d(1.0f - shift, 0.0f);
+					glTexCoord2d(0.0f + shift, 1.0f);
 					glVertex2d(x + pos, y - sy);
 
-					glTexCoord2d(0.99f - shift, 0.0f);
+					glTexCoord2d(0.01f + shift, 1.0f);
 					glVertex2d(x + sx + pos, y - sy);
 
-					glTexCoord2d(0.99f - shift, 1.0f);
+					glTexCoord2d(0.01f + shift, 0.0f);
 					glVertex2d(x + sx + pos, y);
 
-					glTexCoord2d(1.0f - shift, 1.0f);
+					glTexCoord2d(0.0f + shift, 0.0f);
 					glVertex2d(x + pos, y);
 				glEnd();
 			glPopMatrix();
@@ -218,6 +218,9 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int Frame
 
 	// Enable transparency
 	glEnable(GL_BLEND);
+	glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+	glAlphaFunc(GL_GREATER, 0.1f);
+	glEnable(GL_ALPHA_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Check if level is not a null pointer to avoid errors and draw its content
@@ -245,7 +248,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int Frame
 			glPopMatrix();
 		}
 
-		glClear(GL_DEPTH_BUFFER_BIT);	// Clear depth buffer so the sky will always be drawn over
+		glClear(GL_DEPTH_BUFFER_BIT);	// Clear depth buffer so the sky will always be drawn behind everything
 
 		// Draw walls
 		for (unsigned int i = 0; i < lvl->planes.size(); i++)
@@ -325,23 +328,23 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int Frame
 					float CosOrth = cos(OrthAngle);
 					float SinOrth = sin(OrthAngle);
 
-					glTexCoord2f(0, 1);
+					glTexCoord2f(1, 0);
 					glVertex3f(lvl->things[i]->PosY() + SinOrth * lvl->things[i]->Radius(),
 						lvl->things[i]->PosZ() + lvl->things[i]->Height(),
 						lvl->things[i]->PosX() + CosOrth * lvl->things[i]->Radius());
 
 
-					glTexCoord2f(1, 1);
+					glTexCoord2f(0, 0);
 					glVertex3f(lvl->things[i]->PosY() - SinOrth * lvl->things[i]->Radius(),
 						lvl->things[i]->PosZ() + lvl->things[i]->Height(),
 						lvl->things[i]->PosX() - CosOrth * lvl->things[i]->Radius());
 
-					glTexCoord2f(1, 0);
+					glTexCoord2f(0, 1);
 					glVertex3f(lvl->things[i]->PosY() - SinOrth * lvl->things[i]->Radius(),
 						lvl->things[i]->PosZ(),
 						lvl->things[i]->PosX() - CosOrth * lvl->things[i]->Radius());
 
-					glTexCoord2f(0, 0);
+					glTexCoord2f(1, 1);
 					glVertex3f(lvl->things[i]->PosY() + SinOrth * lvl->things[i]->Radius(),
 						lvl->things[i]->PosZ(),
 						lvl->things[i]->PosX() + CosOrth * lvl->things[i]->Radius());

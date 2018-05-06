@@ -62,31 +62,10 @@ Texture::Texture(const string& Path, bool enableFiltering)
 	if (Surface->format->BitsPerPixel == 24)
 	{
 		Mode = GL_RGB;
-
-		// Flip the image by 180 degrees.
-		Uint8* pixels = (Uint8*)Surface->pixels;
-		unsigned int bytes = Surface->w * Surface->h * 3;
-		for (unsigned int i = 0; i < bytes / 2; i++)
-		{
-			swap(pixels[i], pixels[bytes - i - 1]);
-		}
-		// Because of the flip, colors are now in BGR format. Swap blue and red bytes to become RGB.
-		for (unsigned int i = 0; i < bytes; i += 3)
-		{
-			swap(pixels[i], pixels[i + 2]);
-		}
 	}
 	else if (Surface->format->BitsPerPixel == 32)
 	{
 		Mode = GL_RGBA;
-
-		// Flip the buffer by 180 degrees.
-		Uint32* pixels = (Uint32*)Surface->pixels;
-		unsigned int bytes = Surface->w * Surface->h;
-		for (unsigned int i = 0; i < bytes / 2; i++)
-		{
-			swap(pixels[i], pixels[bytes - i - 1]);
-		}
 	}
 	else
 	{
