@@ -119,13 +119,12 @@ Plane* GetPlaneForPlayer(Player* play, Level* lvl)
 		HeightOnPlanes.push_back(make_pair(planes[i], Height));
 
 		// This results in the player being put on the highest floor
-		if (Height > HighestUnderPlayer /*&& Height <= play->PosZ()*/)
+		if (Height > HighestUnderPlayer && Height <= play->PosZ())
 		{
 			HighestUnderPlayer = Height;
 		}
 	}
 
-	// TODO: Change for the best possible plane where the player could be standing instead of highest
 	// Return the plane where the player is
 	for (unsigned int i = 0; i < HeightOnPlanes.size(); i++)
 	{

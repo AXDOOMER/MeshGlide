@@ -371,6 +371,13 @@ void Level::LoadObj(const string& path)
 				{
 					texture = slices[1];
 				}
+				else if (slices[0] == "p")
+				{
+					play->pos_.x = atof(slices[1].c_str()) * scaling_;
+					play->pos_.y = atof(slices[2].c_str()) * scaling_;
+					play->pos_.z = atof(slices[3].c_str()) * scaling_;
+					play->Angle = (short)atoi(slices[4].c_str()) * 91.0222222222f;
+				}
 				else
 				{
 					cout << "Skipped line " << Count << endl;
