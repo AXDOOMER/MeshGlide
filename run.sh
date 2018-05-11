@@ -6,3 +6,6 @@ cd Project
 
 # Compile the source files and execute
 g++ *.cpp -std=c++11 -Wall -Wextra -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -o MeshGlide && ./MeshGlide $@
+
+# Print stats
+echo "Executable size: $(stat --printf="%s" MeshGlide)"
