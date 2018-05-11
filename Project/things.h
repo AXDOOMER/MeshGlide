@@ -105,6 +105,7 @@ public:
 	// Object-oriented programming is a pain. Made it public so it's easily accessible.
 	short Angle = 8192;	// Yaw
 	float VerticalAim = 0;	// Pitch
+	float Roll = 0;	// Roll
 
 //	Float3 pos_;		// Position of player's feet
 	const float ViewZ = 1.8f;

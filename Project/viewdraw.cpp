@@ -211,10 +211,18 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int Frame
 	// Enable textures
 	glEnable(GL_TEXTURE_2D);
 
-	gluLookAt(
-		play->CamY(), play->CamZ(), play->CamX(),	// Camera's position
-		play->AimY(), play->AimZ(), play->AimX(),	// What the camera looks at
-		0.0, 1.0, 0.0);	// This is for the camera's frame rotation
+	float HorizontalRotation = play->GetRadianAngle(play->Angle);
+	// Rotate the head in order to look left and right
+	glRotatef(HorizontalRotation * 57.295779513f + 180.0f, 0, -1, 0);
+
+	// Look up and down
+	glRotatef(play->VerticalAim * 90.0f, sin(HorizontalRotation + M_PI_2), 0, cos(HorizontalRotation + M_PI_2));
+
+	// Roll the head on the left or on the right side
+	glRotatef(play->Roll * 114.591559026f, sin(HorizontalRotation), 0, cos(HorizontalRotation));
+
+	// Set the camera to the player's position
+	glTranslatef(-play->CamY(), -play->CamZ(), -play->CamX());
 
 	// Enable transparency
 	glEnable(GL_BLEND);

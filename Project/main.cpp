@@ -38,7 +38,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.38 (dev)";
+	const char* const VERSION = "0.39 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -290,6 +290,7 @@ int main(int argc, const char *argv[])
 				}
 			}
 
+			// Allows to look up and down. Should be removed in the future.
 			if (glfwGetKey(window, GLFW_KEY_END))
 			{
 				CurrentLevel->play->VerticalAim = 0;
@@ -308,6 +309,29 @@ int main(int argc, const char *argv[])
 					if (CurrentLevel->play->VerticalAim > -1.0f)
 					{
 						CurrentLevel->play->VerticalAim -= 0.05f;
+					}
+				}
+			}
+
+			// Allows to roll the head on the left and on the right. Should be removed in the future.
+			if (glfwGetKey(window, GLFW_KEY_O))
+			{
+				CurrentLevel->play->Roll = 0;
+			}
+			else if (!(glfwGetKey(window, GLFW_KEY_I) && glfwGetKey(window, GLFW_KEY_P)))
+			{
+				if (glfwGetKey(window, GLFW_KEY_I))
+				{
+					if (CurrentLevel->play->Roll < 0.5f)
+					{
+						CurrentLevel->play->Roll += 0.03f;
+					}
+				}
+				if (glfwGetKey(window, GLFW_KEY_P))
+				{
+					if (CurrentLevel->play->Roll > -0.5f)
+					{
+						CurrentLevel->play->Roll -= 0.03f;
 					}
 				}
 			}
