@@ -39,4 +39,7 @@ Plane* GetPlaneForPlayer(Player* play, Level* lvl);
 
 Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play);
 
+// Hitscan
+void Hitscan(Level* lvl, Player* play);
+
 #endif	// PHYSICS_H

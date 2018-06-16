@@ -35,10 +35,74 @@
 #include <regex>	// regex_replace()
 using namespace std;
 
+GameWindow view;
+
 void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
+
+	// Disable or enable mouse using a key
+	if (!view.fullScreen)
+	{
+		if (key == GLFW_KEY_F1 && action == GLFW_PRESS)
+		{
+			view.mouseLook = !view.mouseLook;
+
+			if (view.mouseLook)
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);	// Hide cursor
+			else
+				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
+	}
+
+	// Fullscreen and windowed mode
+	if (key == GLFW_KEY_F4 && action == GLFW_PRESS)
+	{
+		if (view.fullScreen)
+		{
+			const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+			// Compute window position from fullscreen resolution
+			const int xpos = mode->width / 2 - view.width / 2;
+			const int ypos = mode->height / 2 - view.height / 2;
+			glfwSetWindowMonitor(window, NULL, xpos, ypos, view.width, view.height, 0);
+			view.fullScreen = false;
+		}
+		else
+		{
+			const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+			glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, mode->refreshRate);
+			view.fullScreen = true;
+
+			// Always enable mouse look in fullscreen mode
+			view.mouseLook = true;
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);	// Hide cursor
+		}
+	}
+}
+
+// This function updates the count of how long keys have been pressed.
+void RegisterKeyPresses(GLFWwindow* window)
+{
+	// Cycle from the first key to the last key
+	for (int i = GLFW_KEY_SPACE; i <= GLFW_KEY_LAST; i++)
+	{
+		if (glfwGetKey(window, i))
+			view.KeyPresses[i]++;
+		else
+			view.KeyPresses[i] = 0;
+	}
+}
+
+// Returns a count of the time that a key has been pressed. Returns -1 if the key is invalid.
+int GetKeyPressCount(int key)
+{
+	if (key >= GLFW_KEY_SPACE && key <= GLFW_KEY_LAST)
+	{
+		return view.KeyPresses[key];
+	}
+
+	return -1;
 }
 
 void WindowResize_Callback(GLFWwindow* window, int width, int height)
@@ -61,6 +125,13 @@ void WindowResize_Callback(GLFWwindow* window, int width, int height)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+	// Update view
+	if (!view.fullScreen)
+	{
+		view.width = width;
+		view.height = height;
+	}
 }
 
 void Error_Callback(int error, const char* description)
@@ -200,6 +271,41 @@ void RenderText(Level* lvl, string text, float x, float y, float sx, float sy)
 	}
 }
 
+void DrawCursor(Level* lvl)
+{
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	gluOrtho2D(-1, 1, -1, 1);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	// Init font texture
+	lvl->AddTexture("crosshair.png", false);
+
+	// Bind the texture that has the fonts
+	lvl->UseTexture("crosshair.png");
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);	// Reset the texture colorization to be neutral
+
+	glPushMatrix();
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0, 0.0);
+			glVertex2f(-0.1f, -0.1f);
+
+			glTexCoord2f(1.0, 0.0);
+			glVertex2f(0.1f, -0.1f);
+
+			glTexCoord2f(1.0, 1.0);
+			glVertex2f(0.1f, 0.1f);
+
+			glTexCoord2f(0.0, 1.0);
+			glVertex2f(-0.1f, 0.1f);
+		glEnd();
+	glPopMatrix();
+}
+
 // Render the screen. Convert in-game axes system to OpenGL axes. (X,Y,Z) becomes (Y,Z,X).
 void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int FrameDelay)
 {
@@ -212,14 +318,11 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int Frame
 	glEnable(GL_TEXTURE_2D);
 
 	float HorizontalRotation = play->GetRadianAngle(play->Angle);
-	// Rotate the head in order to look left and right
-	glRotatef(HorizontalRotation * 57.295779513f + 180.0f, 0, -1, 0);
+	// Rotate the player in order to look left and right
+	glRotatef(HorizontalRotation * (180.0f / M_PI) + 180.0f, 0, -1, 0);
 
 	// Look up and down
-	glRotatef(play->VerticalAim * 90.0f, sin(HorizontalRotation + M_PI_2), 0, cos(HorizontalRotation + M_PI_2));
-
-	// Roll the head on the left or on the right side
-	glRotatef(play->Roll * 114.591559026f, sin(HorizontalRotation), 0, cos(HorizontalRotation));
+	glRotatef(play->VerticalAim * (180.0f / M_PI), sin(HorizontalRotation + M_PI_2), 0, cos(HorizontalRotation + M_PI_2));
 
 	// Set the camera to the player's position
 	glTranslatef(-play->CamY(), -play->CamZ(), -play->CamX());
@@ -314,12 +417,6 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int Frame
 		// Sprites are always drawn front-facing
 		glDisable(GL_CULL_FACE);
 
-		// Sort any sprites before drawing. The farthest ones will be drawn first.
-		sort(lvl->things.begin(), lvl->things.end(), [play](const Thing* a, const Thing* b)
-		{
-			return pow(play->PosX() - a->PosX(), 2) + pow(play->PosY() - a->PosY(), 2) > pow(play->PosX() - b->PosX(), 2) + pow(play->PosY() - b->PosY(), 2);
-		});
-
 		// Draw "things" on the map
 		for (unsigned int i = 0; i < lvl->things.size(); i++)
 		{
@@ -367,6 +464,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int Frame
 
 	// Render text as the last thing because else it will break the rendering
 	RenderText(lvl, regex_replace(to_string((float)FrameDelay / 1000) + " ms", regex("0+(?=\\s)\\b"), ""), -0.9f, 0.8f, 0.05f, 0.15f);
+	DrawCursor(lvl);
 
 	// Resetting display to 3D
 	int width, height;

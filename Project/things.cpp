@@ -87,12 +87,18 @@ void Player::ExecuteTicCmd()
 	ForwardMove(Cmd.forward);
 	LateralMove(Cmd.lateral);
 	AngleTurn(Cmd.rotation);
+	AngleLook(Cmd.vertical);
+	if (Cmd.fire)
+	{
+		ShouldFire = true;
+	}
 
 	// Empty the tic command
 	Cmd.forward = 0;
 	Cmd.lateral = 0;
 	Cmd.rotation = 0;
-	Cmd.fire = 0;
+	Cmd.vertical = 0;
+	Cmd.fire = false;
 	Cmd.chat = "";
 }
 
@@ -121,6 +127,26 @@ void Player::AngleTurn(short AngleChange)
 			Angle = Angle + 32768;
 		}
 	}
+}
+
+void Player::AngleLook(short AngleChange)
+{
+	VerticalAim += GetRadianAngle(AngleChange);
+
+	if (VerticalAim > M_PI_2)
+	{
+		VerticalAim = M_PI_2;
+	}
+	else if (VerticalAim < -M_PI_2)
+	{
+		VerticalAim = -M_PI_2;
+	}
+}
+
+short Player::AmountToCenterLook()
+{
+	// Amount to center look
+	return (short)-(VerticalAim / M_PI * 32768 / 2);
 }
 
 float Player::Radius() const
@@ -165,17 +191,17 @@ float Player::CamZ() const
 
 float Player::AimX() const
 {
-	return pos_.x + cos(GetRadianAngle(Angle));
+	return cos(GetRadianAngle(Angle)) * cos(VerticalAim);
 }
 
 float Player::AimY() const
 {
-	return pos_.y + sin(GetRadianAngle(Angle));
+	return sin(GetRadianAngle(Angle)) * cos(VerticalAim);
 }
 
 float Player::AimZ() const
 {
-	return pos_.z + ViewZ + VerticalAim;
+	return sin(VerticalAim);
 }
 
 Texture* Player::GetSprite(Float3 CamPos) const
@@ -262,6 +288,53 @@ float Weapon::Height() const
 }
 
 Texture* Weapon::GetSprite(Float3 /*CamPos*/) const
+{
+	return sprite;
+}
+
+Puff::Puff(float x, float y, float z)
+{
+	pos_.x = x;
+	pos_.y = y;
+	pos_.z = z;
+
+	sprite = new Texture(name_, false);
+
+	Radius_ = sprite->Width() / 64.0f;
+	Height_ = sprite->Height() * 2.0f / 64.0f;
+}
+
+Puff::~Puff()
+{
+	delete sprite;
+}
+
+float Puff::PosX() const
+{
+	return pos_.x;
+}
+
+float Puff::PosY() const
+{
+	return pos_.y;
+}
+
+float Puff::PosZ() const
+{
+	return pos_.z - 0.10f;
+}
+
+float Puff::Radius() const
+{
+	return Radius_;
+}
+
+float Puff::Height() const
+{
+	return Height_;
+}
+
+Texture* Puff::GetSprite(Float3 /*CamPos*/) const
 {
 	return sprite;
 }

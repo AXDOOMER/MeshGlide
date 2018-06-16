@@ -24,7 +24,7 @@
 #include <limits>		/* numeric_limits */
 #include <vector>
 #include <utility>		/* pair */
-#include <algorithm>	/* find */
+#include <algorithm>	/* find, sort */
 
 using namespace std;
 
@@ -282,4 +282,52 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play)
 
 	// Return something that is obviously wrong if the above has failed
 	return {numeric_limits<float>::quiet_NaN(), numeric_limits<float>::quiet_NaN()};
+}
+
+void Hitscan(Level* lvl, Player* play)
+{
+	vector<Float3> points;
+
+	for (unsigned int i = 0; i < lvl->planes.size(); i++)
+	{
+		// Player's orientation angles
+		float playV = play->VerticalAim;
+		float playH = play->GetRadianAngle(play->Angle);
+
+		// Get the point where the player is looking at and throw a ray
+		//http://www.opengl-tutorial.org/beginners-tutorials/tutorial-6-keyboard-and-mouse/
+		Float3 aim = {cos(playH) * cos(playV), sin(playH) * cos(playV), sin(playV)};
+		Float3 f = RayIntersect(aim, {play->PosX(), play->PosY(), play->PosZ() + play->ViewZ}, lvl->planes[i]->normal, lvl->planes[i]->centroid);
+
+		if (f.z != numeric_limits<float>::quiet_NaN())
+		{
+			vector<Float3> verts = lvl->planes[i]->Vertices;
+			// NOTE: creating a new vector for each coordinates is slower than having a 'pointInPoly' function for each set of two coordinates
+			vector<float> vx = createVectorOfX(verts);
+			vector<float> vy = createVectorOfY(verts);
+			vector<float> vz = createVectorOfZ(verts);
+
+			bool XY = pointInPoly(f.x, f.y, vx, vy);
+			bool YZ = pointInPoly(f.y, f.z, vy, vz);
+			bool ZX = pointInPoly(f.z, f.x, vz, vx);
+
+			if ((XY && YZ) || (YZ && ZX) || (ZX && XY) || (XY && allEqual(vz)) || (YZ && allEqual(vx)) || (ZX && allEqual(vy)))
+			{
+				float front = atan2(play->PosY() - f.y, play->PosX() - f.x) - playH;
+
+				if (front > M_PI_4 || front < -M_PI_4)
+					points.push_back(f);
+			}
+		}
+	}
+
+	sort(points.begin(), points.end(), [play](const Float3 a, const Float3 b)
+	{
+		return pow(play->PosX() - a.x, 2) + pow(play->PosY() - a.y, 2) < pow(play->PosX() - b.x, 2) + pow(play->PosY() - b.y, 2);
+	});
+
+	if (points.size() > 0)
+	{
+		lvl->things.push_back(new Puff(points[0].x, points[0].y, points[0].z));
+	}
 }

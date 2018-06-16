@@ -60,6 +60,7 @@ public:
 	signed char forward;
 	signed char lateral;
 	short rotation;
+	short vertical;
 	bool fire;
 	string chat;
 };
@@ -87,6 +88,7 @@ public:
 	virtual Texture* GetSprite(Float3 CamPos) const = 0;
 
 	// So the compiler doesn't warn on deleting an object of polymorphic class type
+	// https://stackoverflow.com/questions/353817/should-every-class-have-a-virtual-destructor
 	virtual ~Thing() = default;
 
 //protected:
@@ -104,8 +106,7 @@ public:
 
 	// Object-oriented programming is a pain. Made it public so it's easily accessible.
 	short Angle = 8192;	// Yaw
-	float VerticalAim = 0;	// Pitch
-	float Roll = 0;	// Roll
+	float VerticalAim;	// Pitch
 
 //	Float3 pos_;		// Position of player's feet
 	const float ViewZ = 1.8f;
@@ -119,6 +120,7 @@ public:
 	int AirTime = 0;
 	bool Jump = false;
 	bool Fly = false;
+	bool ShouldFire = false;
 
 	// Weapons that are in the player's possession
 	bool OwnedWeapons[MAXOWNEDWEAPONS];
@@ -155,6 +157,8 @@ public:
 	void ForwardMove(int Thrust);
 	void LateralMove(int Thrust);
 	void AngleTurn(short AngleChange);
+	void AngleLook(short AngleChange);
+	short AmountToCenterLook();	// Angle
 
 	// Camera position
 	float CamX() const;
@@ -164,6 +168,8 @@ public:
 	float AimX() const;
 	float AimY() const;
 	float AimZ() const;
+
+	// TODO: Add Pos() and Aim(). Aim is a normalized vector.
 };
 
 class Weapon: public Thing
@@ -181,6 +187,27 @@ public:
 	string Type;
 	float Radius_;
 	float Height_;
+
+	Texture* sprite;
+	Texture* GetSprite(Float3 CamPos) const;
+};
+
+class Puff: public Thing
+{
+public:
+	Puff(float x, float y, float z);
+	~Puff();	// Deletes the sprite
+
+	float PosX() const;
+	float PosY() const;
+	float PosZ() const;
+	float Radius() const;
+	float Height() const;
+
+	string Type;
+	float Radius_;
+	float Height_;
+	const string name_ = "puffb0.png";
 
 	Texture* sprite;
 	Texture* GetSprite(Float3 CamPos) const;

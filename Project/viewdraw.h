@@ -27,10 +27,35 @@ using namespace std;
 #include "things.h"
 #include "level.h"
 
+/****************************** Constants ******************************/
+
 const string WindowTitle = "MeshGlide engine";
 const string WindowIcon = "planet.png";
 const string chars = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 const string fontfile = "chars.png";
+
+/****************************** Window ******************************/
+
+struct GameWindow
+{
+	int width = 640;
+	int height = 480;
+	int posx = 0;
+	int posy = 0;
+	bool mouseLook = false;
+	bool fullScreen = false;
+
+	// Array for keypresses. The first 31 items are never changed because they have no corresponding key. This wastes a bit of memory.
+	// Use the key handling functions to manipulate.
+	int KeyPresses[GLFW_KEY_LAST + 1] = { };
+};
+
+/****************************** Key handling ******************************/
+
+void RegisterKeyPresses(GLFWwindow* window);
+int GetKeyPressCount(int key);
+
+/****************************** Other functions ******************************/
 
 void SetWindowTitle(GLFWwindow* window, string Title);
 

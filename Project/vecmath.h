@@ -39,12 +39,20 @@ struct Float2
 
 bool operator==(const Float3& lhs, const Float3& rhs);
 
+// Takes a vector of points and creates a vector that contains specific coordinates of all of those points
+vector<float> createVectorOfX(const vector<Float3>& points);
+vector<float> createVectorOfY(const vector<Float3>& points);
+vector<float> createVectorOfZ(const vector<Float3>& points);
+
+// Test if all float values in a vector are equal
+bool allEqual(const vector<float>& vertices);
+
 // Ray-casting algorithm used to find if a 2D coordinate is on a 3D polygon
+// Takes 'x' and 'y' (a 2D point) and the 'vertices' used to build the edges
 bool pointInPoly(const float x, const float y, const vector<Float3>& vertices);
-// References:
-// http://alienryderflex.com/polygon/
-// https://github.com/substack/point-in-polygon/blob/master/index.js
-// http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+// Takes two vector into which the coordinates are split
+// This function expects 'vx' and 'vy' to have the same size.
+bool pointInPoly(const float x, const float y, const vector<float>& vx, const vector<float>& vy);
 
 Float3 crossProduct(const Float3& u, const Float3& v);
 
@@ -62,7 +70,7 @@ float dotProduct(const Float3& u, const Float3& v);
 // https://github.com/id-Software/Quake-III-Arena/blob/master/code/game/q_math.c
 
 // Find the intersection of a ray that aims down on a polygon
-float RayIntersect(const Float3& ray, const Float3& origin, const Float3& normal, const Float3& center);
+Float3 RayIntersect(const Float3& ray, const Float3& origin, const Float3& normal, const Float3& center, const float epsilon = 0);
 // References:
 // https://samsymons.com/blog/math-notes-ray-plane-intersection/
 // http://cmichel.io/howto-raytracer-ray-plane-intersection-theory/

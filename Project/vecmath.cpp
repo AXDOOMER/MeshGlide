@@ -28,13 +28,39 @@ bool operator==(const Float3& lhs, const Float3& rhs)
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
 }
 
+vector<float> createVectorOfX(const vector<Float3>& points)
+{
+	vector<float> x;
+	for (unsigned int i = 0; i < points.size(); i++)
+		x.push_back(points[i].x);
+	return x;
+}
+
+vector<float> createVectorOfY(const vector<Float3>& points)
+{
+	vector<float> y;
+	for (unsigned int i = 0; i < points.size(); i++)
+		y.push_back(points[i].y);
+	return y;
+}
+
+vector<float> createVectorOfZ(const vector<Float3>& points)
+{
+	vector<float> z;
+	for (unsigned int i = 0; i < points.size(); i++)
+		z.push_back(points[i].z);
+	return z;
+}
+
 // TODO: Test if a point on a fully vertical wall will return true
 // TODO: In the future, use this to test if 3D point is inside 3D polygon; http://www.cs.colostate.edu/~cs410/yr2013fa/more_progress/L15_Raypolygon.pdf
 // Ray-casting algorithm used to find if a 2D coordinate is on a 3D polygon
 bool pointInPoly(const float x, const float y, const vector<Float3>& vertices)
 {
 	bool inside = false;
-	for(unsigned int i = 0, j = vertices.size() - 1; i < vertices.size(); j = i++) {
+	// Iterate over every edge. Trace an infinite ray starting from the point.
+	// If the number of intersections if even, it's outside. If it's odd, the point is inside.
+	for (unsigned int i = 0, j = vertices.size() - 1; i < vertices.size(); j = i++) {
 		// Create new variables for readability
 		float xi = vertices[i].x;
 		float yi = vertices[i].y;
@@ -47,6 +73,33 @@ bool pointInPoly(const float x, const float y, const vector<Float3>& vertices)
 	}
 
 	return inside;
+}
+
+bool pointInPoly(const float x, const float y, const vector<float>& vx, const vector<float>& vy)
+{
+	bool inside = false;
+	for (unsigned int i = 0, j = vx.size() - 1; i < vx.size(); j = i++) {
+		// Create new variables for readability
+		float xi = vx[i];
+		float yi = vy[i];
+		float xj = vx[j];
+		float yj = vy[j];
+
+		bool intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+		if (intersect)
+			inside = !inside;
+	}
+
+	return inside;
+}
+
+bool allEqual(const vector<float>& vertices)
+{
+	for (unsigned int i = 0, j = vertices.size() - 1; i < vertices.size(); j = i++)
+		if (!(vertices[i] == vertices[j]))
+			return false;
+
+	return true;
 }
 
 Float3 crossProduct(const Float3& u, const Float3& v)
@@ -89,21 +142,22 @@ float dotProduct(const Float3& u, const Float3& v)
 	return u.x * v.x + u.y * v.y + u.z * v.z;
 }
 
-// TODO: Could be used to see a bullet ray hits which polygons
-// Parameters: ray, origin of ray, polygon's normal, center of polygon
-float RayIntersect(const Float3& ray, const Float3& origin, const Float3& normal, const Float3& center)
+// Parameters: ray, origin of ray, polygon's normal, center of polygon. The epsilon is optional. 'normal' and 'ray' must be normalized.
+Float3 RayIntersect(const Float3& ray, const Float3& origin, const Float3& normal, const Float3& center, const float epsilon)
 {
-	if (dotProduct(normal, ray) == 0) // Use an epsilon here? (< 0.0001f)
-		return numeric_limits<float>::quiet_NaN();	// No intersection, the line is parallel to the plane
+	// TODO: Use fabs(). If the dot product is negatif, it is possible to miss an intersection on the front face? https://stackoverflow.com/a/23976134
+	// TODO: If the result is 0, does it means that the ray and normal are both perpendicular?
+	if (dotProduct(normal, ray) == epsilon) // Use an epsilon here? (< 0.0001f)		// No intersection, the line is parallel to the plane
+		return {numeric_limits<float>::quiet_NaN(), numeric_limits<float>::quiet_NaN(), numeric_limits<float>::quiet_NaN()};
 
-	// Get denominator value
+	// Get the denominator value (which is a scalar)
 	float d = dotProduct(normal, center);
 
-	// Compute the X value for the directed line ray intersecting the plane
+	// Compute the distance for the directed line ray intersecting the plane
 	float x = (d - dotProduct(normal, origin)) / dotProduct(normal, ray);
 
-	// Return the height of the contact point
-	return addVectors(origin , scaleVector(x, ray)).z;
+	// Return the contact point
+	return addVectors(origin, scaleVector(x, ray));
 }
 
 // Returns a normalized normal
@@ -139,9 +193,14 @@ Float3 ComputeAverage(const vector<Float3>& vertices)
 float PointHeightOnPoly(const float x, const float y, const float z, const Float3& normal, const Float3& centroid)
 {
 	// Trace a ray that aims down and return the height of its intersection
-	return RayIntersect({0, 0, -1}, {x, y, z}, normal, centroid);
+	return RayIntersect({0, 0, -1}, {x, y, z}, normal, centroid).z;
 }
-
+/*
+Float3 LinePlaneIntersection(const Float3& ray, const Float3& origin, const Float3& normal, const Float3& centroid)
+{
+	return RayIntersect(ray, origin, normal, centroid);
+}
+*/
 bool CheckVectorIntersection(const Float3& v1start, const Float3& v1end, const Float3& v2start, const Float3& v2end)
 {
 	// Cramer's rule. Reference: https://stackoverflow.com/a/1968345

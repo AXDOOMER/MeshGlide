@@ -34,11 +34,12 @@
 #include <cstdlib>		/* EXIT_FAILURE, EXIT_SUCCESS */
 #include <fstream>
 #include <chrono>
+
 using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.39 (dev)";
+	const char* const VERSION = "0.40 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -49,6 +50,7 @@ int main(int argc, const char *argv[])
 	string LevelName = "map.obj";
 	bool Fast = false;	// To unlock the speed of the game
 	auto GameStartTime = chrono::system_clock::now();
+	extern GameWindow view;
 
 	cout << "                MESHGLIDE ENGINE -- " << VERSION << "\n\n";
 
@@ -130,6 +132,8 @@ int main(int argc, const char *argv[])
 		}
 	}
 
+	unsigned short initialIndex = GetIndex();
+
 	/****************************** OPENGL HANDLING ******************************/
 
 	// Load OpenGL
@@ -187,7 +191,7 @@ int main(int argc, const char *argv[])
 	{
 		DemoWrite << VERSION << endl;
 		DemoWrite << LevelName << endl;
-		DemoWrite << GetIndex() << endl;
+		DemoWrite << initialIndex << endl;
 		DemoWrite << 1 << endl;	// Number of players
 	}
 
@@ -198,6 +202,7 @@ int main(int argc, const char *argv[])
 		auto start = chrono::system_clock::now();
 
 		glfwPollEvents();
+		RegisterKeyPresses(window);
 
 		if (DemoRead.is_open())
 		{
@@ -217,6 +222,14 @@ int main(int argc, const char *argv[])
 					Quit = true;
 				if (!line.empty())
 					CurrentLevel->play->Cmd.rotation = stoi(line);
+				if (!getline(DemoRead, line))
+					Quit = true;
+				if (!line.empty())
+					CurrentLevel->play->Cmd.vertical = stoi(line);
+				if (!getline(DemoRead, line))
+					Quit = true;
+				if (!line.empty())
+					CurrentLevel->play->Cmd.fire = static_cast<bool>(stoi(line));
 			}
 			catch (...)
 			{
@@ -227,7 +240,7 @@ int main(int argc, const char *argv[])
 		else
 		{
 			// Spy cam. Take control of another player.
-			if (glfwGetKey(window, GLFW_KEY_F12))
+			if (GetKeyPressCount(GLFW_KEY_F12) == 1)
 			{
 				// Find the index of the current player in the array of players
 				unsigned int i = 0;
@@ -290,50 +303,45 @@ int main(int argc, const char *argv[])
 				}
 			}
 
-			// Allows to look up and down. Should be removed in the future.
 			if (glfwGetKey(window, GLFW_KEY_END))
 			{
-				CurrentLevel->play->VerticalAim = 0;
+				CurrentLevel->play->Cmd.vertical = CurrentLevel->play->AmountToCenterLook();
 			}
 			else if (!(glfwGetKey(window, GLFW_KEY_PAGE_UP) && glfwGetKey(window, GLFW_KEY_PAGE_DOWN)))
 			{
 				if (glfwGetKey(window, GLFW_KEY_PAGE_UP))
 				{
-					if (CurrentLevel->play->VerticalAim < 1.0f)
-					{
-						CurrentLevel->play->VerticalAim += 0.05f;
-					}
+					CurrentLevel->play->Cmd.vertical = 200 * multiplicator;
 				}
 				if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN))
 				{
-					if (CurrentLevel->play->VerticalAim > -1.0f)
+					CurrentLevel->play->Cmd.vertical = -200 * multiplicator;
+				}
+			}
+
+			// Handles mouselook
+			if (view.mouseLook)
+			{
+				double xpos, ypos;
+				glfwGetCursorPos(window, &xpos, &ypos);
+				glfwSetCursorPos(window, 0, 0);	// TODO: Fix look moving when changing screen mode
+
+				if (TicCount > 0 && GetKeyPressCount(GLFW_KEY_F1) != 1 && GetKeyPressCount(GLFW_KEY_F4) == 0)
+				{
+					if (xpos != 0)
 					{
-						CurrentLevel->play->VerticalAim -= 0.05f;
+						CurrentLevel->play->Cmd.rotation = -20.0f * xpos;
+					}
+					if (ypos != 0)
+					{
+						CurrentLevel->play->Cmd.vertical = -20.0f * ypos;
 					}
 				}
 			}
 
-			// Allows to roll the head on the left and on the right. Should be removed in the future.
-			if (glfwGetKey(window, GLFW_KEY_O))
+			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
 			{
-				CurrentLevel->play->Roll = 0;
-			}
-			else if (!(glfwGetKey(window, GLFW_KEY_I) && glfwGetKey(window, GLFW_KEY_P)))
-			{
-				if (glfwGetKey(window, GLFW_KEY_I))
-				{
-					if (CurrentLevel->play->Roll < 0.5f)
-					{
-						CurrentLevel->play->Roll += 0.03f;
-					}
-				}
-				if (glfwGetKey(window, GLFW_KEY_P))
-				{
-					if (CurrentLevel->play->Roll > -0.5f)
-					{
-						CurrentLevel->play->Roll -= 0.03f;
-					}
-				}
+				CurrentLevel->play->Cmd.fire = true;
 			}
 
 			if (DemoWrite.is_open())
@@ -341,16 +349,13 @@ int main(int argc, const char *argv[])
 				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.forward) << endl;
 				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.lateral) << endl;
 				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.rotation) << endl;
+				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.vertical) << endl;
+				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.fire) << endl;
 			}
 		}
 
-		if (glfwGetKey(window, GLFW_KEY_SPACE))
-		{
-			if (!CurrentLevel->play->Fly)
-				CurrentLevel->play->Jump = true;
-		}
-
-		if (glfwGetKey(window, GLFW_KEY_F5))
+		// TODO: FIX ME. BROKEN.
+		/*if (glfwGetKey(window, GLFW_KEY_F5))
 		{
 			if (CurrentLevel->players.size() <= 1)
 			{
@@ -374,7 +379,7 @@ int main(int argc, const char *argv[])
 				cout << "F5: Reloading level not allowed when there are more than one player in the game." << endl;
 				SDL_Delay(100);
 			}
-		}
+		}*/
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE))
 		{
@@ -386,11 +391,16 @@ int main(int argc, const char *argv[])
 		// Update game logic
 		for (unsigned int i = 0; i < CurrentLevel->players.size(); i++)
 		{
+			// Save player's position and the execute the tic command
 			Float3 pt = CurrentLevel->players[i]->pos_;
-			short Angle = CurrentLevel->players[i]->Angle;
-
-			TicCmd tc = CurrentLevel->players[i]->Cmd;
 			CurrentLevel->players[i]->ExecuteTicCmd();
+
+			// Handle fire here to avoid circular inclusion/dependecy with 'Level' in the Player class
+			if (CurrentLevel->players[i]->ShouldFire)
+			{
+				Hitscan(CurrentLevel, CurrentLevel->players[i]);
+				CurrentLevel->players[i]->ShouldFire = false;
+			}
 
 			// Collision detection with floors and walls
 			if (!MovePlayerToNewPosition(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i]))
@@ -399,11 +409,7 @@ int main(int argc, const char *argv[])
 				Float2 pos = MoveOnCollision(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i]);
 
 				// Move the player back to its original position
-				CurrentLevel->players[i]->Angle = Angle;
-				tc.forward = -tc.forward;
-				tc.lateral = -tc.lateral;
-				CurrentLevel->players[i]->Cmd = tc;
-				CurrentLevel->players[i]->ExecuteTicCmd();
+				CurrentLevel->players[i]->pos_ = pt;
 
 				// Try to slide the player against the wall to a valid position
 				if (MovePlayerToNewPosition(pt, {pos.x, pos.y, 0}, CurrentLevel->players[i]))
