@@ -12,6 +12,8 @@ TARGET = MeshGlide
 
 all: TARGET
 
+MeshGlide: TARGET
+
 TARGET: $(OBJ)
 	$(CXX) -o $(TARGET) $^ $(LDFLAGS)
 
