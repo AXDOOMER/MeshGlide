@@ -62,6 +62,7 @@ void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 
 	// Fullscreen and windowed mode
+#if GLFW_VERSION_MINOR >= 2
 	if (key == GLFW_KEY_F4 && action == GLFW_PRESS)
 	{
 		if (view.fullScreen)
@@ -88,6 +89,7 @@ void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			view.justChanged = 0;
 		}
 	}
+#endif
 }
 
 // This function updates the count of how long keys have been pressed.
