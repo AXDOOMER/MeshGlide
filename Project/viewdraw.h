@@ -40,10 +40,11 @@ struct GameWindow
 {
 	int width = 640;
 	int height = 480;
-	int posx = 0;
-	int posy = 0;
+	int xpos = 0;
+	int ypos = 0;
 	bool mouseLook = false;
 	bool fullScreen = false;
+	int justChanged = 0;
 
 	// Array for keypresses. The first 31 items are never changed because they have no corresponding key. This wastes a bit of memory.
 	// Use the key handling functions to manipulate.
@@ -54,6 +55,7 @@ struct GameWindow
 
 void RegisterKeyPresses(GLFWwindow* window);
 int GetKeyPressCount(int key);
+bool KeyPressed(int key);
 
 /****************************** Other functions ******************************/
 

@@ -44,15 +44,17 @@ vector<float> createVectorOfX(const vector<Float3>& points);
 vector<float> createVectorOfY(const vector<Float3>& points);
 vector<float> createVectorOfZ(const vector<Float3>& points);
 
-// Test if all float values in a vector are equal
-bool allEqual(const vector<float>& vertices);
+// Test the coordinates on an axis are all equal
+bool allEqualX(const vector<Float3>& vertices);
+bool allEqualY(const vector<Float3>& vertices);
+bool allEqualZ(const vector<Float3>& vertices);
 
 // Ray-casting algorithm used to find if a 2D coordinate is on a 3D polygon
 // Takes 'x' and 'y' (a 2D point) and the 'vertices' used to build the edges
-bool pointInPoly(const float x, const float y, const vector<Float3>& vertices);
-// Takes two vector into which the coordinates are split
-// This function expects 'vx' and 'vy' to have the same size.
-bool pointInPoly(const float x, const float y, const vector<float>& vx, const vector<float>& vy);
+bool pointInPolyXY(const float x, const float y, const vector<Float3>& vertices);
+// Same, but for yOz and zOx
+bool pointInPolyYZ(const float y, const float z, const vector<Float3>& vertices);
+bool pointInPolyZX(const float z, const float x, const vector<Float3>& vertices);
 
 Float3 crossProduct(const Float3& u, const Float3& v);
 

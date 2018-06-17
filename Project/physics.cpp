@@ -37,7 +37,7 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 	bool ChangeHeight = false;
 	for (unsigned int i = 0; i < lvl->planes.size(); i++)
 	{
-		if (pointInPoly(play->PosX(), play->PosY(), lvl->planes[i]->Vertices))
+		if (pointInPolyXY(play->PosX(), play->PosY(), lvl->planes[i]->Vertices))
 		{
 			float collision_point_z = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), lvl->planes[i]->normal, lvl->planes[i]->centroid);
 			if (!isnan(collision_point_z) && collision_point_z > NewHeight)
@@ -97,7 +97,7 @@ vector<Plane*> FindPlanesForPlayer(Player* play, Level* lvl)
 
 	for (unsigned int i = 0; i < lvl->planes.size(); i++)
 	{
-		if (pointInPoly(play->PosX(), play->PosY(), lvl->planes[i]->Vertices))
+		if (pointInPolyXY(play->PosX(), play->PosY(), lvl->planes[i]->Vertices))
 		{
 			planes.push_back(lvl->planes[i]);
 		}
@@ -154,7 +154,7 @@ Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane,
 		if (p->Impassable && p->normal.z < WALL_ANGLE && p->normal.z > -WALL_ANGLE)
 			continue;
 
-		if (pointInPoly(target.x, target.y, p->Vertices))
+		if (pointInPolyXY(target.x, target.y, p->Vertices))
 			return p;
 
 		// Scan each polygon edge to see if the vector is crossing
@@ -180,7 +180,7 @@ Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane,
 // Moves the player to a new position. Returns false if it can't.
 bool MovePlayerToNewPosition(const Float3& origin, const Float3& target, Player* play)
 {
-	if (pointInPoly(target.x, target.y, play->plane->Vertices))
+	if (pointInPolyXY(target.x, target.y, play->plane->Vertices))
 	{
 		// Player is in the same polygon
 		return true;
@@ -290,30 +290,22 @@ void Hitscan(Level* lvl, Player* play)
 
 	for (unsigned int i = 0; i < lvl->planes.size(); i++)
 	{
-		// Player's orientation angles
-		float playV = play->VerticalAim;
-		float playH = play->GetRadianAngle(play->Angle);
-
 		// Get the point where the player is looking at and throw a ray
 		//http://www.opengl-tutorial.org/beginners-tutorials/tutorial-6-keyboard-and-mouse/
-		Float3 aim = {cos(playH) * cos(playV), sin(playH) * cos(playV), sin(playV)};
+		Float3 aim = {play->AimX(), play->AimY(), play->AimZ()};
 		Float3 f = RayIntersect(aim, {play->PosX(), play->PosY(), play->PosZ() + play->ViewZ}, lvl->planes[i]->normal, lvl->planes[i]->centroid);
 
 		if (f.z != numeric_limits<float>::quiet_NaN())
 		{
 			vector<Float3> verts = lvl->planes[i]->Vertices;
-			// NOTE: creating a new vector for each coordinates is slower than having a 'pointInPoly' function for each set of two coordinates
-			vector<float> vx = createVectorOfX(verts);
-			vector<float> vy = createVectorOfY(verts);
-			vector<float> vz = createVectorOfZ(verts);
 
-			bool XY = pointInPoly(f.x, f.y, vx, vy);
-			bool YZ = pointInPoly(f.y, f.z, vy, vz);
-			bool ZX = pointInPoly(f.z, f.x, vz, vx);
+			bool XY = pointInPolyXY(f.x, f.y, verts);
+			bool YZ = pointInPolyYZ(f.y, f.z, verts);
+			bool ZX = pointInPolyZX(f.z, f.x, verts);
 
-			if ((XY && YZ) || (YZ && ZX) || (ZX && XY) || (XY && allEqual(vz)) || (YZ && allEqual(vx)) || (ZX && allEqual(vy)))
+			if ((XY && YZ) || (YZ && ZX) || (ZX && XY) || (XY && allEqualZ(verts)) || (YZ && allEqualX(verts)) || (ZX && allEqualY(verts)))
 			{
-				float front = atan2(play->PosY() - f.y, play->PosX() - f.x) - playH;
+				float front = atan2(play->PosY() - f.y, play->PosX() - f.x) - play->GetRadianAngle(play->Angle);
 
 				if (front > M_PI_4 || front < -M_PI_4)
 					points.push_back(f);

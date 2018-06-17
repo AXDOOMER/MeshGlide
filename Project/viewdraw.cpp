@@ -28,7 +28,7 @@
 
 #include <cstdlib>	// EXIT_FAILURE
 
-#include <iostream>
+#include <iostream>	// cerr, endl
 #include <string>
 #include <cmath>
 #include <algorithm>	// sort()
@@ -50,9 +50,14 @@ void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			view.mouseLook = !view.mouseLook;
 
 			if (view.mouseLook)
+			{
 				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);	// Hide cursor
+			}
 			else
+			{
 				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+				glfwSetCursorPos(window, view.width / 2, view.height / 2);
+			}
 		}
 	}
 
@@ -67,6 +72,8 @@ void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			const int ypos = mode->height / 2 - view.height / 2;
 			glfwSetWindowMonitor(window, NULL, xpos, ypos, view.width, view.height, 0);
 			view.fullScreen = false;
+
+			view.justChanged = 0;
 		}
 		else
 		{
@@ -77,6 +84,8 @@ void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			// Always enable mouse look in fullscreen mode
 			view.mouseLook = true;
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);	// Hide cursor
+
+			view.justChanged = 0;
 		}
 	}
 }
@@ -98,11 +107,18 @@ void RegisterKeyPresses(GLFWwindow* window)
 int GetKeyPressCount(int key)
 {
 	if (key >= GLFW_KEY_SPACE && key <= GLFW_KEY_LAST)
-	{
 		return view.KeyPresses[key];
-	}
 
 	return -1;
+}
+
+// Returns true if the specified key is pressed
+bool KeyPressed(int key)
+{
+	if (key >= GLFW_KEY_SPACE && key <= GLFW_KEY_LAST)
+		return view.KeyPresses[key] > 0;
+
+	return 0;
 }
 
 void WindowResize_Callback(GLFWwindow* window, int width, int height)
@@ -158,12 +174,15 @@ GLFWwindow* Init_OpenGL(const bool fullscreen)
 	// Create a window and its OpenGL context. The window defaults to windowed mode, but can be made fullscreen.
 	if (!fullscreen)
 	{
-		window = glfwCreateWindow(640, 480, WindowTitle.c_str(), NULL, NULL);
+		window = glfwCreateWindow(view.width, view.height, WindowTitle.c_str(), NULL, NULL);
 	}
 	else
 	{
 		const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		window = glfwCreateWindow(mode->width, mode->height, WindowTitle.c_str(), glfwGetPrimaryMonitor(), NULL);
+
+		view.fullScreen = view.mouseLook = true;
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 
 	if (!window)

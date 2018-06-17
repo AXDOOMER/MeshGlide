@@ -39,7 +39,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.40 (dev)";
+	const char* const VERSION = "0.41 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -192,7 +192,7 @@ int main(int argc, const char *argv[])
 		DemoWrite << VERSION << endl;
 		DemoWrite << LevelName << endl;
 		DemoWrite << initialIndex << endl;
-		DemoWrite << 1 << endl;	// Number of players
+		DemoWrite << CurrentLevel->players.size() << endl;	// Number of players TODO: Right now it's hardcoded to 2
 	}
 
 	/****************************** GAME LOOP ******************************/
@@ -210,26 +210,29 @@ int main(int argc, const char *argv[])
 			{
 				string line;
 				// Demo Play is True
-				if (!getline(DemoRead, line))
-					Quit = true;
-				if (!line.empty())
-					CurrentLevel->play->Cmd.forward = stoi(line);
-				if (!getline(DemoRead, line))
-					Quit = true;
-				if (!line.empty())
-					CurrentLevel->play->Cmd.lateral = stoi(line);
-				if (!getline(DemoRead, line))
-					Quit = true;
-				if (!line.empty())
-					CurrentLevel->play->Cmd.rotation = stoi(line);
-				if (!getline(DemoRead, line))
-					Quit = true;
-				if (!line.empty())
-					CurrentLevel->play->Cmd.vertical = stoi(line);
-				if (!getline(DemoRead, line))
-					Quit = true;
-				if (!line.empty())
-					CurrentLevel->play->Cmd.fire = static_cast<bool>(stoi(line));
+				for (unsigned int i = 0; i < CurrentLevel->players.size(); i++)
+				{
+					if (!getline(DemoRead, line))
+						Quit = true;
+					if (!line.empty())
+						CurrentLevel->players[i]->Cmd.forward = stoi(line);
+					if (!getline(DemoRead, line))
+						Quit = true;
+					if (!line.empty())
+						CurrentLevel->players[i]->Cmd.lateral = stoi(line);
+					if (!getline(DemoRead, line))
+						Quit = true;
+					if (!line.empty())
+						CurrentLevel->players[i]->Cmd.rotation = stoi(line);
+					if (!getline(DemoRead, line))
+						Quit = true;
+					if (!line.empty())
+						CurrentLevel->players[i]->Cmd.vertical = stoi(line);
+					if (!getline(DemoRead, line))
+						Quit = true;
+					if (!line.empty())
+						CurrentLevel->players[i]->Cmd.fire = static_cast<bool>(stoi(line));
+				}
 			}
 			catch (...)
 			{
@@ -239,81 +242,60 @@ int main(int argc, const char *argv[])
 		}
 		else
 		{
-			// Spy cam. Take control of another player.
-			if (GetKeyPressCount(GLFW_KEY_F12) == 1)
-			{
-				// Find the index of the current player in the array of players
-				unsigned int i = 0;
-				while (i < CurrentLevel->players.size())
-				{
-					if (CurrentLevel->players[i] == CurrentLevel->play)
-						break;
-					i++;
-				}
-
-				// Get the next player
-				i = (i + 1) % CurrentLevel->players.size();
-				// Change to that player
-				CurrentLevel->play = CurrentLevel->players[i];
-				cout << "F12: Took control of player #" << i + 1 << endl;
-				// Pause for 100ms so the key doesn't repeat
-				SDL_Delay(100);
-			}
-
 			// Get Input from Keyboard
 			int multiplicator = 1;
-			if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT))
+			if (KeyPressed(GLFW_KEY_LEFT_SHIFT) || KeyPressed(GLFW_KEY_RIGHT_SHIFT))
 			{
 				multiplicator *= 2;
 			}
 
 			// Input for tests
-			if (!((glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP))
-				&& (glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN))))
+			if (!((KeyPressed(GLFW_KEY_W) || KeyPressed(GLFW_KEY_UP))
+				&& (KeyPressed(GLFW_KEY_S) || KeyPressed(GLFW_KEY_DOWN))))
 			{
-				if (glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP))
+				if (KeyPressed(GLFW_KEY_W) || KeyPressed(GLFW_KEY_UP))
 				{
 					CurrentLevel->play->Cmd.forward = 10 * multiplicator;
 				}
-				if (glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN))
+				if (KeyPressed(GLFW_KEY_S) || KeyPressed(GLFW_KEY_DOWN))
 				{
 					CurrentLevel->play->Cmd.forward = -10 * multiplicator;
 				}
 			}
-			if (!(glfwGetKey(window, GLFW_KEY_A) && glfwGetKey(window, GLFW_KEY_D)))
+			if (!(KeyPressed(GLFW_KEY_A) && KeyPressed(GLFW_KEY_D)))
 			{
-				if (glfwGetKey(window, GLFW_KEY_A))
+				if (KeyPressed(GLFW_KEY_A))
 				{
 					CurrentLevel->play->Cmd.lateral = -10 * multiplicator;
 				}
-				if (glfwGetKey(window, GLFW_KEY_D))
+				if (KeyPressed(GLFW_KEY_D))
 				{
 					CurrentLevel->play->Cmd.lateral = 10 * multiplicator;
 				}
 			}
-			if (!(glfwGetKey(window, GLFW_KEY_LEFT) && glfwGetKey(window, GLFW_KEY_RIGHT)))
+			if (!(KeyPressed(GLFW_KEY_LEFT) && KeyPressed(GLFW_KEY_RIGHT)))
 			{
-				if (glfwGetKey(window, GLFW_KEY_LEFT))
+				if (KeyPressed(GLFW_KEY_LEFT))
 				{
 					CurrentLevel->play->Cmd.rotation = 200 * multiplicator;
 				}
-				if (glfwGetKey(window, GLFW_KEY_RIGHT))
+				if (KeyPressed(GLFW_KEY_RIGHT))
 				{
 					CurrentLevel->play->Cmd.rotation = -200 * multiplicator;
 				}
 			}
 
-			if (glfwGetKey(window, GLFW_KEY_END))
+			if (KeyPressed(GLFW_KEY_END))
 			{
 				CurrentLevel->play->Cmd.vertical = CurrentLevel->play->AmountToCenterLook();
 			}
-			else if (!(glfwGetKey(window, GLFW_KEY_PAGE_UP) && glfwGetKey(window, GLFW_KEY_PAGE_DOWN)))
+			else if (!(KeyPressed(GLFW_KEY_PAGE_UP) && KeyPressed(GLFW_KEY_PAGE_DOWN)))
 			{
-				if (glfwGetKey(window, GLFW_KEY_PAGE_UP))
+				if (KeyPressed(GLFW_KEY_PAGE_UP))
 				{
 					CurrentLevel->play->Cmd.vertical = 200 * multiplicator;
 				}
-				if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN))
+				if (KeyPressed(GLFW_KEY_PAGE_DOWN))
 				{
 					CurrentLevel->play->Cmd.vertical = -200 * multiplicator;
 				}
@@ -324,9 +306,9 @@ int main(int argc, const char *argv[])
 			{
 				double xpos, ypos;
 				glfwGetCursorPos(window, &xpos, &ypos);
-				glfwSetCursorPos(window, 0, 0);	// TODO: Fix look moving when changing screen mode
+				glfwSetCursorPos(window, 0, 0);
 
-				if (TicCount > 0 && GetKeyPressCount(GLFW_KEY_F1) != 1 && GetKeyPressCount(GLFW_KEY_F4) == 0)
+				if (TicCount > 0 && GetKeyPressCount(GLFW_KEY_F1) != 1 && GetKeyPressCount(GLFW_KEY_F4) == 0 && view.justChanged >= 2)
 				{
 					if (xpos != 0)
 					{
@@ -337,6 +319,9 @@ int main(int argc, const char *argv[])
 						CurrentLevel->play->Cmd.vertical = -20.0f * ypos;
 					}
 				}
+
+				// Used in order to fix the look moving because the player changed the screen mode (fullscreen <--> windowed mode)
+				view.justChanged++;
 			}
 
 			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
@@ -346,16 +331,38 @@ int main(int argc, const char *argv[])
 
 			if (DemoWrite.is_open())
 			{
-				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.forward) << endl;
-				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.lateral) << endl;
-				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.rotation) << endl;
-				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.vertical) << endl;
-				DemoWrite << static_cast<int>(CurrentLevel->play->Cmd.fire) << endl;
+				for (unsigned int i = 0; i < CurrentLevel->players.size(); i++)
+				{
+					DemoWrite << static_cast<int>(CurrentLevel->players[i]->Cmd.forward) << endl;
+					DemoWrite << static_cast<int>(CurrentLevel->players[i]->Cmd.lateral) << endl;
+					DemoWrite << static_cast<int>(CurrentLevel->players[i]->Cmd.rotation) << endl;
+					DemoWrite << static_cast<int>(CurrentLevel->players[i]->Cmd.vertical) << endl;
+					DemoWrite << static_cast<int>(CurrentLevel->players[i]->Cmd.fire) << endl;
+				}
 			}
 		}
 
+		// Spy cam. Take control of another player.
+		if (GetKeyPressCount(GLFW_KEY_F12) == 1)
+		{
+			// Find the index of the current player in the array of players
+			unsigned int i = 0;
+			while (i < CurrentLevel->players.size())
+			{
+				if (CurrentLevel->players[i] == CurrentLevel->play)
+					break;
+				i++;
+			}
+
+			// Get the next player
+			i = (i + 1) % CurrentLevel->players.size();
+			// Change to that player
+			CurrentLevel->play = CurrentLevel->players[i];
+			cout << "F12: Took control of player #" << i + 1 << endl;
+		}
+
 		// TODO: FIX ME. BROKEN.
-		/*if (glfwGetKey(window, GLFW_KEY_F5))
+		/*if (KeyPressed(GLFW_KEY_F5))
 		{
 			if (CurrentLevel->players.size() <= 1)
 			{
@@ -377,11 +384,10 @@ int main(int argc, const char *argv[])
 			else
 			{
 				cout << "F5: Reloading level not allowed when there are more than one player in the game." << endl;
-				SDL_Delay(100);
 			}
 		}*/
 
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE))
+		if (KeyPressed(GLFW_KEY_ESCAPE))
 		{
 			Quit = true;
 		}
