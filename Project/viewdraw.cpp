@@ -42,6 +42,18 @@ void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
+	if (view.chatMode && view.chat.size() > 0 && key == GLFW_KEY_BACKSPACE && (action == GLFW_REPEAT || action == GLFW_PRESS))
+		view.chat.erase(view.chat.size() - 1);
+
+	if (view.chatMode && key == GLFW_KEY_ENTER && action == GLFW_PRESS)
+	{
+		view.chatMode = false;
+		view.chat.clear();
+	}
+
+	if (!view.chatMode && key == GLFW_KEY_T && action == GLFW_RELEASE)
+		view.chatMode = true;
+
 	// Disable or enable mouse using a key
 	if (!view.fullScreen)
 	{
@@ -121,6 +133,12 @@ bool KeyPressed(int key)
 		return view.KeyPresses[key] > 0;
 
 	return 0;
+}
+
+void Char_Callback(GLFWwindow* window, unsigned int codepoint)
+{
+	if (view.chatMode && codepoint >= ' ' && codepoint <= '~' && view.chat.size() < 36)
+		view.chat += static_cast<unsigned char>(codepoint);
 }
 
 void WindowResize_Callback(GLFWwindow* window, int width, int height)
@@ -216,6 +234,7 @@ GLFWwindow* Init_OpenGL(const bool fullscreen)
 
 	// Set important stuff
 	glfwSetKeyCallback(window, Key_Callback);
+	glfwSetCharCallback(window, Char_Callback);
 	InitProjection(window);
 
 	// Set callback
@@ -485,6 +504,8 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int Frame
 
 	// Render text as the last thing because else it will break the rendering
 	RenderText(lvl, regex_replace(to_string((float)FrameDelay / 1000) + " ms", regex("0+(?=\\s)\\b"), ""), -0.9f, 0.8f, 0.05f, 0.15f);
+	if (view.chatMode)
+		RenderText(lvl, view.chat + '_', -0.9f, 0.6f, 0.05f, 0.15f);	// Chat text
 	DrawCursor(lvl);
 
 	// Resetting display to 3D
