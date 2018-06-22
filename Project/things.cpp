@@ -61,10 +61,8 @@ void Player::Reset()
 	MoY = 0;
 	MoZ = 0;
 
-	// Reset any jumping
+	// Reset any falls
 	AirTime = 0;
-	Jump = false;
-	Fly = false;
 }
 
 // TODO: Improve the movement system so the division by 64 can be avoided

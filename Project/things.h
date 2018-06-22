@@ -117,9 +117,7 @@ public:
 	const float Radius_ = 0.5f;
 	const float Height_ = 2.0f;
 
-	int AirTime = 0;
-	bool Jump = false;
-	bool Fly = false;
+	int AirTime = 0;	// When the player falls
 	bool ShouldFire = false;
 
 	// Weapons that are in the player's possession

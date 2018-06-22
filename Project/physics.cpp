@@ -56,14 +56,11 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 		{
 			play->pos_.z = NewHeight;
 			play->AirTime = 0;
-			play->Jump = false;
-			play->Fly = false;
 		}
 		else
 		{
 			play->pos_.z -= GRAVITY * 0.1f * play->AirTime;
 			play->AirTime++;
-			play->Fly = true;	// If player is falling, but has not jumped, he must not be able to jump.
 		}
 	}
 
@@ -79,14 +76,11 @@ void ApplyGravity(Player* play)
 		{
 			play->pos_.z = FloorHeight;
 			play->AirTime = 0;
-			play->Jump = false;
-			play->Fly = false;
 		}
 		else
 		{
 			play->pos_.z -= GRAVITY * 0.1f * play->AirTime;
 			play->AirTime++;
-			play->Fly = true;	// If player is falling, but has not jumped, he must not be able to jump.
 		}
 	}
 }

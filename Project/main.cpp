@@ -258,10 +258,6 @@ int main(int argc, const char *argv[])
 				}
 			}
 
-			// Update Jumping
-			if (CurrentLevel->players[i]->Jump)
-				CurrentLevel->players[i]->pos_.z = CurrentLevel->players[i]->PosZ() + GRAVITY * 1.5f;
-
 			ApplyGravity(CurrentLevel->players[i]);
 		}
 
