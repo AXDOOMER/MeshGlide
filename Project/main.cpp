@@ -23,6 +23,7 @@
 #include "vecmath.h"	/* Float3 */
 #include "physics.h"
 #include "random.h"		/* GetIndex, SetIndex, Seed */
+#include "events.h"
 
 #include <GLFW/glfw3.h>
 #include <GL/gl.h>
@@ -39,7 +40,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.42 (dev)";
+	const char* const VERSION = "0.43 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -206,193 +207,25 @@ int main(int argc, const char *argv[])
 
 		if (DemoRead.is_open())
 		{
-			try
-			{
-				string line;
-				// Demo Play is True
-				for (unsigned int i = 0; i < CurrentLevel->players.size(); i++)
-				{
-					if (!getline(DemoRead, line))
-						Quit = true;
-					if (!line.empty())
-						CurrentLevel->players[i]->Cmd.forward = stoi(line);
-					if (!getline(DemoRead, line))
-						Quit = true;
-					if (!line.empty())
-						CurrentLevel->players[i]->Cmd.lateral = stoi(line);
-					if (!getline(DemoRead, line))
-						Quit = true;
-					if (!line.empty())
-						CurrentLevel->players[i]->Cmd.rotation = stoi(line);
-					if (!getline(DemoRead, line))
-						Quit = true;
-					if (!line.empty())
-						CurrentLevel->players[i]->Cmd.vertical = stoi(line);
-					if (!getline(DemoRead, line))
-						Quit = true;
-					if (!line.empty())
-						CurrentLevel->players[i]->Cmd.fire = static_cast<bool>(stoi(line));
-				}
-			}
-			catch (...)
-			{
-				cerr << "Demo file contains invalid data." << endl;
-				Quit = true;
-			}
+			Quit = !readCmdFromDemo(DemoRead, CurrentLevel->players);
 		}
 		else
 		{
-			// Get Input from Keyboard
-			int multiplicator = 1;
-			if (KeyPressed(GLFW_KEY_LEFT_SHIFT) || KeyPressed(GLFW_KEY_RIGHT_SHIFT))
+			// Events can only be captured if the player is not in chat mode
+			if (!view.chatMode)
 			{
-				multiplicator *= 2;
-			}
-
-			// Input for tests
-			if (!((KeyPressed(GLFW_KEY_W) || KeyPressed(GLFW_KEY_UP))
-				&& (KeyPressed(GLFW_KEY_S) || KeyPressed(GLFW_KEY_DOWN))))
-			{
-				if (KeyPressed(GLFW_KEY_W) || KeyPressed(GLFW_KEY_UP))
-				{
-					CurrentLevel->play->Cmd.forward = 10 * multiplicator;
-				}
-				if (KeyPressed(GLFW_KEY_S) || KeyPressed(GLFW_KEY_DOWN))
-				{
-					CurrentLevel->play->Cmd.forward = -10 * multiplicator;
-				}
-			}
-			if (!(KeyPressed(GLFW_KEY_A) && KeyPressed(GLFW_KEY_D)))
-			{
-				if (KeyPressed(GLFW_KEY_A))
-				{
-					CurrentLevel->play->Cmd.lateral = -10 * multiplicator;
-				}
-				if (KeyPressed(GLFW_KEY_D))
-				{
-					CurrentLevel->play->Cmd.lateral = 10 * multiplicator;
-				}
-			}
-			if (!(KeyPressed(GLFW_KEY_LEFT) && KeyPressed(GLFW_KEY_RIGHT)))
-			{
-				if (KeyPressed(GLFW_KEY_LEFT))
-				{
-					CurrentLevel->play->Cmd.rotation = 200 * multiplicator;
-				}
-				if (KeyPressed(GLFW_KEY_RIGHT))
-				{
-					CurrentLevel->play->Cmd.rotation = -200 * multiplicator;
-				}
-			}
-
-			if (KeyPressed(GLFW_KEY_END))
-			{
-				CurrentLevel->play->Cmd.vertical = CurrentLevel->play->AmountToCenterLook();
-			}
-			else if (!(KeyPressed(GLFW_KEY_PAGE_UP) && KeyPressed(GLFW_KEY_PAGE_DOWN)))
-			{
-				if (KeyPressed(GLFW_KEY_PAGE_UP))
-				{
-					CurrentLevel->play->Cmd.vertical = 200 * multiplicator;
-				}
-				if (KeyPressed(GLFW_KEY_PAGE_DOWN))
-				{
-					CurrentLevel->play->Cmd.vertical = -200 * multiplicator;
-				}
-			}
-
-			// Handles mouselook
-			if (view.mouseLook)
-			{
-				double xpos, ypos;
-				glfwGetCursorPos(window, &xpos, &ypos);
-				glfwSetCursorPos(window, 0, 0);
-
-				if (TicCount > 0 && GetKeyPressCount(GLFW_KEY_F1) != 1 && GetKeyPressCount(GLFW_KEY_F4) == 0 && view.justChanged >= 2)
-				{
-					if (xpos != 0)
-					{
-						CurrentLevel->play->Cmd.rotation = -20.0f * xpos;
-					}
-					if (ypos != 0)
-					{
-						CurrentLevel->play->Cmd.vertical = -20.0f * ypos;
-					}
-				}
-
-				// Used in order to fix the look moving because the player changed the screen mode (fullscreen <--> windowed mode)
-				view.justChanged++;
-			}
-
-			if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT))
-			{
-				CurrentLevel->play->Cmd.fire = true;
+				updatePlayerWithEvents(window, view, TicCount, CurrentLevel->play);
 			}
 
 			if (DemoWrite.is_open())
 			{
-				for (unsigned int i = 0; i < CurrentLevel->players.size(); i++)
-				{
-					DemoWrite << static_cast<int>(CurrentLevel->players[i]->Cmd.forward) << endl;
-					DemoWrite << static_cast<int>(CurrentLevel->players[i]->Cmd.lateral) << endl;
-					DemoWrite << static_cast<int>(CurrentLevel->players[i]->Cmd.rotation) << endl;
-					DemoWrite << static_cast<int>(CurrentLevel->players[i]->Cmd.vertical) << endl;
-					DemoWrite << static_cast<int>(CurrentLevel->players[i]->Cmd.fire) << endl;
-				}
+				writeCmdToDemo(DemoWrite, CurrentLevel->players);
 			}
 		}
 
-		// Spy cam. Take control of another player.
-		if (GetKeyPressCount(GLFW_KEY_F12) == 1)
-		{
-			// Find the index of the current player in the array of players
-			unsigned int i = 0;
-			while (i < CurrentLevel->players.size())
-			{
-				if (CurrentLevel->players[i] == CurrentLevel->play)
-					break;
-				i++;
-			}
+		updateSpecials(CurrentLevel->play, CurrentLevel->players);
 
-			// Get the next player
-			i = (i + 1) % CurrentLevel->players.size();
-			// Change to that player
-			CurrentLevel->play = CurrentLevel->players[i];
-			cout << "F12: Took control of player #" << i + 1 << endl;
-		}
-
-		// TODO: FIX ME. BROKEN.
-		/*if (KeyPressed(GLFW_KEY_F5))
-		{
-			if (CurrentLevel->players.size() <= 1)
-			{
-				cout << "F5: Reloading level data..." << endl;
-
-				Player* SavedPlayer = CurrentLevel->play;
-				CurrentLevel->Reload();
-				delete CurrentLevel->play;
-				CurrentLevel->play = SavedPlayer;
-
-				// Set the player to floor's height
-				CurrentLevel->play->plane = GetPlaneForPlayer(CurrentLevel->play, CurrentLevel);
-				if (CurrentLevel->play->plane == nullptr)
-				{
-					cerr << "Player's spawn spot is outside of map." << endl;
-					exit(EXIT_FAILURE);
-				}
-			}
-			else
-			{
-				cout << "F5: Reloading level not allowed when there are more than one player in the game." << endl;
-			}
-		}*/
-
-		if (KeyPressed(GLFW_KEY_ESCAPE))
-		{
-			Quit = true;
-		}
-
-		// Send Commands over Network
+		// Send commands over network and receive commands
 
 		// Update game logic
 		for (unsigned int i = 0; i < CurrentLevel->players.size(); i++)
