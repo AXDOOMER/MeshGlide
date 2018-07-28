@@ -34,8 +34,8 @@ const int MAXOWNEDWEAPONS = 10;
 
 struct Edge
 {
-	Float3 a;
-	Float3 b;
+	Float3 a;	// First
+	Float3 b;	// Second
 	short sides;
 };
 

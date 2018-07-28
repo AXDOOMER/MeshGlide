@@ -181,7 +181,7 @@ bool CheckPlanes(const Float3& target, Plane* p)
 		
 	}*/
 
-	for (int i = 0; i < p->Neighbors.size(); i++)
+	for (unsigned int i = 0; i < p->Neighbors.size(); i++)
 	{
 		if (RadiusEdges(target, p->Neighbors[i]))
 		{
@@ -198,6 +198,8 @@ bool CheckPlanes(const Float3& target, Plane* p)
 
 bool RadiusEdges(const Float3& target, Plane* p)
 {
+	vector<Edge> edges;
+
 	for (unsigned int i = 0; i < p->Edges.size(); i++)
 	{
 		float angle = (float)atan2(p->Edges[i].a.y - p->Edges[i].b.y, p->Edges[i].a.x - p->Edges[i].b.x);
@@ -212,8 +214,6 @@ bool RadiusEdges(const Float3& target, Plane* p)
 		float OrthPlayerEndX = target.x - (float) cos(angle + M_PI_2) * RadiusToUse;
 		float OrthPlayerEndY = target.y - (float) sin(angle + M_PI_2) * RadiusToUse;
 
-		cout << "Lenght: " << sqrt(pow(OrthPlayerStartX - OrthPlayerEndX, 2) + pow(OrthPlayerStartY - OrthPlayerEndY, 2)) << endl;
-
 		float angle2 = atan2(OrthPlayerStartY - OrthPlayerEndY, OrthPlayerStartX - OrthPlayerEndX);
 
 		if (CheckVectorIntersection(p->Edges[i].a, p->Edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}))
@@ -224,8 +224,14 @@ bool RadiusEdges(const Float3& target, Plane* p)
 			cout << "Diff:	" << abs(angle - angle2) * (180 / M_PI) << endl;
 
 			// Intersection
-			return true;
+			edges.push_back(p->Edges[i]);
 		}
+	}
+
+	if (edges.size() > 0)
+	{
+		cout << "Number of edges collisions: " << edges.size() << endl;
+		return true;
 	}
 
 	// No intersection
