@@ -147,7 +147,9 @@ Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane,
 			continue;
 
 		// Do not walk on walls. The impassable/blocking flag can be set to 0 to allow stairs.
-		if (p->Impassable && p->normal.z < WALL_ANGLE && p->normal.z > -WALL_ANGLE)
+//		if (p->Impassable && p->normal.z < WALL_ANGLE && p->normal.z > -WALL_ANGLE)
+//			continue;
+		if (!p->CanWalk())
 			continue;
 
 		if (pointInPolyXY(target.x, target.y, p->Vertices))
@@ -231,11 +233,41 @@ bool RadiusEdges(const Float3& target, Plane* p)
 	if (edges.size() > 0)
 	{
 		cout << "Number of edges collisions: " << edges.size() << endl;
-		return true;
+
+		// TODO: Edges loop should be on the inside to reduce different data access
+		for (unsigned int i = 0; i < edges.size(); i++)
+		{
+			for (unsigned int j = 0; j < p->Neighbors.size(); j++)
+			{
+				if (p == p->Neighbors[j])
+					continue;
+
+//				if (!p->Neighbors[j]->CanWalk())
+//					return true;
+
+				for (unsigned int k = 0; k < p->Neighbors[j]->Edges.size(); k++)
+				{
+					// Test if two edges touch
+					if ((edges[i].a == p->Neighbors[j]->Edges[k].a && edges[i].b == p->Neighbors[j]->Edges[k].b) ||
+						(edges[i].a == p->Neighbors[j]->Edges[k].b && edges[i].b == p->Neighbors[j]->Edges[k].a))
+					{
+						// No intersection, because two edges means there's another side
+						return false;
+					}
+				}
+			}
+		}
+
+		// Go to the intersection case, because two corresponding edges have not been found.
+	}
+	else
+	{
+		// No intersection
+		return false;
 	}
 
-	// No intersection
-	return false;
+	// Intersection. Can't pass over there.
+	return true;
 }
 
 // TODO: Player should not be able to step on impassable planes.
