@@ -26,6 +26,8 @@
 #include <utility>		/* pair */
 #include <algorithm>	/* find, sort */
 
+#include <iostream>	// XXX: DEBUG REMOVE
+
 using namespace std;
 
 const float WALL_ANGLE = 0.4f;	// '1' points up (floor) and '0' points to the side (wall)
@@ -170,10 +172,70 @@ Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane,
 	return nullptr;
 }
 
+bool RadiusEdges(const Float3& target, Player* play)
+{
+	Plane* p = play->plane;
+
+	for (unsigned int i = 0, j = p->Vertices.size() - 1; i < p->Vertices.size(); j = i++)
+	{
+		//Edges.push_back({Vertices[i], Vertices[j], 0});
+/*
+		bool a = CheckVectorIntersection(p->Vertices[i], p->Vertices[j], {target.x - 0.5f, target.y -0.5f, 0}, {target.x + 0.5f, target.y + 0.5f, 0});
+		bool b = CheckVectorIntersection(p->Vertices[i], p->Vertices[j], {target.x - 0.5f, target.y +0.5f, 0}, {target.x + 0.5f, target.y - 0.5f, 0});
+
+		cout << "a: " << a << endl;
+		cout << "b: " << b << endl;
+
+		if (a || b)
+			return true;
+*/
+
+		float angle = (float)atan2(p->Vertices[i].y - p->Vertices[j].y, p->Vertices[i].x - p->Vertices[j].x);
+
+/*		if (angle < 0)
+		{
+			angle += M_PI;
+		}
+*/
+		float RadiusToUse = 1.0f;
+
+		// Get the orthogonal vector, so invert the use of 'sin' and 'cos' here.
+		// Only works for 90 degrees angleS?
+
+		float OrthPlayerStartX = target.x + (float) cos(angle + M_PI_2) * RadiusToUse;
+		float OrthPlayerStartY = target.y + (float) sin(angle + M_PI_2) * RadiusToUse;
+		float OrthPlayerEndX = target.x - (float) cos(angle + M_PI_2) * RadiusToUse;
+		float OrthPlayerEndY = target.y - (float) sin(angle + M_PI_2) * RadiusToUse;
+
+
+		cout << "Lenght: " << sqrt(pow(OrthPlayerStartX- OrthPlayerEndX,2) + pow( OrthPlayerStartY-OrthPlayerEndY,2)) << endl;
+
+
+		float angle2 = (float)atan2(OrthPlayerStartY - OrthPlayerEndY, OrthPlayerStartX - OrthPlayerEndX);
+
+
+		//if (CheckVectorIntersection({OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}, p->Vertices[i], p->Vertices[j]))
+		if (CheckVectorIntersection(p->Vertices[i], p->Vertices[j], {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}))
+		{
+			cout << "Angle:	" << angle * (180 / M_PI) << endl;
+			cout << "Angle2:	" << angle2 * (180 /M_PI) << endl;
+
+			cout << "Diff:	" << abs(angle - angle2) * (180 / M_PI) << endl;
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
 // TODO: Player should not be able to step on impassable planes.
 // Moves the player to a new position. Returns false if it can't.
 bool MovePlayerToNewPosition(const Float3& origin, const Float3& target, Player* play)
 {
+	if (RadiusEdges(target, play))
+		return false;
+
 	if (pointInPolyXY(target.x, target.y, play->plane->Vertices))
 	{
 		// Player is in the same polygon

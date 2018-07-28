@@ -32,6 +32,13 @@ const float GRAVITY = 0.2f;
 //const float PI = atan(1) * 4;
 const int MAXOWNEDWEAPONS = 10;
 
+struct Edge
+{
+	Float3 a;
+	Float3 b;
+	short sides;
+};
+
 class Plane
 {
 public:
@@ -48,6 +55,7 @@ public:
 	Float3 normal;
 	Float3 centroid;
 	vector<Plane*> Neighbors;	// List of adjacent planes
+	vector<Edge> Edges;	// List of adjacent planes
 
 	void Process();		// Find centroid, find normal...
 	unsigned int CommonVertices(Plane* plane);

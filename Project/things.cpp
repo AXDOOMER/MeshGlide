@@ -24,6 +24,8 @@
 #include <limits>		/* numeric_limits */
 #include <string>		/* to_string() */
 
+#include <iostream>	//XXX REMOVE DEBUG
+
 using namespace std;
 
 Player::Player()
@@ -241,6 +243,21 @@ void Plane::Process()
 {
 	normal = ComputeNormal(Vertices);
 	centroid = ComputeAverage(Vertices);
+
+	// Create edges
+	for (unsigned int i = 0, j = Vertices.size() - 1; i < Vertices.size(); j = i++)
+	{
+		Edges.push_back({Vertices[i], Vertices[j], 0});
+	}
+
+	cout << "Created " << Edges.size() << " edges." << endl;
+
+	if (Edges.size() != Vertices.size())
+	{
+		cout << "FUCK" << endl;
+		int* a = nullptr;
+		int i = *a;
+	}
 }
 
 Weapon::Weapon(float x, float y, float z, string type)
