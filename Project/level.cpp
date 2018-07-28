@@ -132,7 +132,7 @@ void Level::LoadLevel(const string& LevelName)
 	if (EndsWith(LevelName, ".obj"))
 	{
 		LoadObj(LevelName);
-		AdjustPlayerToFloor(play, this);
+		//AdjustPlayerToFloor(play, this);
 	}
 	else
 	{

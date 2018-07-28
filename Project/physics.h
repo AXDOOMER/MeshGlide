@@ -24,7 +24,7 @@
 #include "level.h"	/* Level */
 
 // Collision detection with floors
-bool AdjustPlayerToFloor(Player* play, Level* lvl);
+//bool AdjustPlayerToFloor(Player* play, Level* lvl);
 
 void ApplyGravity(Player* play);
 

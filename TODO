@@ -1,0 +1,37 @@
+
+- Allow native level to be scaled. Add a "setting" in the format so the scale can be determined at level loading.
+- Implement the mouse look
+
+- Make every method of things inherited
+- Create a criter thing that moves
+- Use a cache for sprites. Everything should use the same cache to avoid loading files from disk.
+
+- Action on key release (F5 and F12)
+- Chat and cheat strings
+
+- Radius and collision detection with/between things
+- Radius and wall collision (throw rays?)
+- Don't spawn two player on the same spot
+
+- Server network code
+- Network code for client
+- Support multiplayer demos
+- Remove spycam from normal games (only allow it in demo mode)
+
+- Implement bullet ray tracing 
+		(NOTE1: méthode BS: On fait des "RayIntersect" pour obtenir le point de collision avec chaque poly,
+		après on sort les points pour trouver les plus proches. Après on check les points du plus proche
+		au plus loin s'il est dans le poly. Ça risque de marcher mal avec les murs totalement verticaux par contre...)
+		(NOTE2: Faudra faire des polys que la balle passe au travers pour les fenêtes. Aussi, faire un bullet puff.)
+		(NOTE3: Utiliser les normales pour déterminer comment s'y prendre pour vérifier si le point est dans le mur)
+- Implement blockmap so not every wall will be checked for bullet collision
+- Implement object pickup and weapons
+- Affichage de models 3D
+
+- Sons fichiers OGG
+- Musique fichiers OGG + contrôle musique
+
+- Timer should be inside the level (level time)
+- Frame interpolation
+- Put the framerate to 30 FPS
+

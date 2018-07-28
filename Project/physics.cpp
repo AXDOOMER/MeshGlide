@@ -31,7 +31,7 @@ using namespace std;
 const float WALL_ANGLE = 0.4f;	// '1' points up (floor) and '0' points to the side (wall)
 
 // Collision detection with floors
-bool AdjustPlayerToFloor(Player* play, Level* lvl)
+/*bool AdjustPlayerToFloor(Player* play, Level* lvl)
 {
 	float NewHeight = numeric_limits<float>::lowest();
 	bool ChangeHeight = false;
@@ -55,17 +55,11 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 		if (play->PosZ() <= NewHeight + GRAVITY)
 		{
 			play->pos_.z = NewHeight;
-			play->AirTime = 0;
-		}
-		else
-		{
-			play->pos_.z -= GRAVITY * 0.1f * play->AirTime;
-			play->AirTime++;
 		}
 	}
 
 	return ChangeHeight;
-}
+}*/
 
 void ApplyGravity(Player* play)
 {
