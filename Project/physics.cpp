@@ -173,26 +173,7 @@ Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane,
 
 	return nullptr;
 }
-/*
-bool RadiusEdges(const Float3& target, Plane* p, Level* lvl);
 
-bool CheckPlanes(const Float3& target, Plane* p)
-{
-	for (unsigned int i = 0; i < p->Neighbors.size(); i++)
-	{
-		if (RadiusEdges(target, p->Neighbors[i]))
-		{
-			// check
-			if (CheckPlanes(target, p))
-			{
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-*/
 bool RadiusEdges(const Float3& target, Plane* p)
 {
 	vector<Edge> edges;
