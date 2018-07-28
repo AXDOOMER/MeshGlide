@@ -173,16 +173,11 @@ Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane,
 
 	return nullptr;
 }
-
-bool RadiusEdges(const Float3& target, Plane* p);
+/*
+bool RadiusEdges(const Float3& target, Plane* p, Level* lvl);
 
 bool CheckPlanes(const Float3& target, Plane* p)
 {
-	/*for (int i = 0; i < p->Edges.size(); i++)
-	{
-		
-	}*/
-
 	for (unsigned int i = 0; i < p->Neighbors.size(); i++)
 	{
 		if (RadiusEdges(target, p->Neighbors[i]))
@@ -197,7 +192,7 @@ bool CheckPlanes(const Float3& target, Plane* p)
 
 	return false;
 }
-
+*/
 bool RadiusEdges(const Float3& target, Plane* p)
 {
 	vector<Edge> edges;
@@ -235,6 +230,8 @@ bool RadiusEdges(const Float3& target, Plane* p)
 	{
 		cout << "Number of edges collisions: " << edges.size() << endl;
 
+		unsigned int count = 0;
+
 		// TODO: Edges loop should be on the inside to reduce different data access
 		for (unsigned int i = 0; i < edges.size(); i++)
 		{
@@ -242,9 +239,6 @@ bool RadiusEdges(const Float3& target, Plane* p)
 			{
 				if (p == p->Neighbors[j])
 					continue;
-
-//				if (!p->Neighbors[j]->CanWalk())
-//					return true;
 
 				if (!p->Neighbors[j]->CanWalk())
 					continue;
@@ -256,13 +250,18 @@ bool RadiusEdges(const Float3& target, Plane* p)
 						(edges[i].a == p->Neighbors[j]->Edges[k].b && edges[i].b == p->Neighbors[j]->Edges[k].a))
 					{
 						// No intersection, because two edges means there's another side
-						return false;
+						count++;
 					}
 				}
 			}
 		}
 
-		// Go to the intersection case, because two corresponding edges have not been found.
+		if (count == edges.size())
+		{
+			return false;
+		}
+
+		// Else, there is an intersection.
 	}
 	else
 	{
