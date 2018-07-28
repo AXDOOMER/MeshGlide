@@ -145,7 +145,7 @@ Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane,
 			continue;
 
 		// Do not walk on walls. The impassable/blocking flag can be set to 0 to allow stairs.
-		if (p->Impassable && p->normal.z < WALL_ANGLE && p->normal.z > -WALL_ANGLE)
+		if (p->Impassable /*|| (p->normal.z < WALL_ANGLE && p->normal.z > -WALL_ANGLE)*/)
 			continue;
 
 		if (pointInPolyXY(target.x, target.y, p->Vertices))

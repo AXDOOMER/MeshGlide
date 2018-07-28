@@ -132,7 +132,7 @@ void Level::LoadLevel(const string& LevelName)
 	if (EndsWith(LevelName, ".obj"))
 	{
 		LoadObj(LevelName);
-		AdjustPlayerToFloor(play, this);
+		//AdjustPlayerToFloor(play, this);
 	}
 	else
 	{
@@ -247,7 +247,7 @@ void Level::LoadNative(const string& LevelName)
 		if (players.size() == 0)
 		{
 			// Create an arbitrary number of players for testing purposes
-			for (int i = 0; i < 2; i++)
+			for (int i = 0; i < 1; i++)
 			{
 				players.emplace_back(new Player());
 				SpawnPlayer(players[i]);
@@ -329,7 +329,7 @@ void Level::LoadObj(const string& path)
 				{
 					// Create a plane for a set of vertices
 					Plane* p = new Plane();
-					p->Impassable = 1;
+					p->Impassable = 0;
 					p->TwoSided = 0;
 					p->Xscale = 1;
 					p->Yscale = 1;

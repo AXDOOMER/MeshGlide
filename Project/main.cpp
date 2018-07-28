@@ -225,6 +225,32 @@ int main(int argc, const char *argv[])
 
 		updateSpecials(CurrentLevel->play, CurrentLevel->players);
 
+		// TODO: FIX ME. BROKEN.
+		if (KeyPressed(GLFW_KEY_F5))
+		{
+			if (CurrentLevel->players.size() <= 1)
+			{
+				cout << "F5: Reloading level data..." << endl;
+
+				Player* SavedPlayer = CurrentLevel->play;
+				CurrentLevel->Reload();
+				//delete CurrentLevel->play;
+				CurrentLevel->play = SavedPlayer;
+
+				// Set the player to floor's height
+				CurrentLevel->play->plane = GetPlaneForPlayer(CurrentLevel->play, CurrentLevel);
+				if (CurrentLevel->play->plane == nullptr)
+				{
+					cerr << "Player's spawn spot is outside of map." << endl;
+					exit(EXIT_FAILURE);
+				}
+			}
+			else
+			{
+				cout << "F5: Reloading level not allowed when there are more than one player in the game." << endl;
+			}
+		}
+
 		// Send commands over network and receive commands
 
 		// Update game logic

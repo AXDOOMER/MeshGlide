@@ -1,0 +1,18 @@
+wall_forblock_x8_y1_left:
+{
+	2sided: false;
+	impassable: true;
+	texture: DOOR9_1.bmp;
+	x: 512;
+	y: -64;
+	z: 0;
+	x: 512;
+	y: -128;
+	z: 0;
+	x: 512;
+	y: -128;
+	z: 64;
+	x: 512;
+	y: -64;
+	z: 64;
+}

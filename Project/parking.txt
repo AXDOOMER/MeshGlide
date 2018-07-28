@@ -1,0 +1,5 @@
+#THING	TYPE	X	Y	Z 	ANGLE
+thing	spawn	0	0	2	0
+
+#POLY	INVISIBLE	BLC	DBS	ScX	ScY	AlX	AlY	Lit	X	Y	Z	X	Y	Z	X	Y	Z	X	Y	Z
+poly	concr.jpg	0	0	1	1	0	0	1	-2	-2	0	2	-2	0	2	2	0	-2	2	0
