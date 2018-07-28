@@ -172,16 +172,38 @@ Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane,
 	return nullptr;
 }
 
-bool RadiusEdges(const Float3& target, Player* play)
-{
-	Plane* p = play->plane;
+bool RadiusEdges(const Float3& target, Plane* p);
 
+bool CheckPlanes(const Float3& target, Plane* p)
+{
+	/*for (int i = 0; i < p->Edges.size(); i++)
+	{
+		
+	}*/
+
+	for (int i = 0; i < p->Neighbors.size(); i++)
+	{
+		if (RadiusEdges(target, p->Neighbors[i]))
+		{
+			// check
+			if (CheckPlanes(target, p))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool RadiusEdges(const Float3& target, Plane* p)
+{
 	for (unsigned int i = 0, j = p->Vertices.size() - 1; i < p->Vertices.size(); j = i++)
 	{
 		//Edges.push_back({Vertices[i], Vertices[j], 0});
 /*
-		bool a = CheckVectorIntersection(p->Vertices[i], p->Vertices[j], {target.x - 0.5f, target.y -0.5f, 0}, {target.x + 0.5f, target.y + 0.5f, 0});
-		bool b = CheckVectorIntersection(p->Vertices[i], p->Vertices[j], {target.x - 0.5f, target.y +0.5f, 0}, {target.x + 0.5f, target.y - 0.5f, 0});
+		bool a = CheckVectorIntersection(p->Vertices[i], p->Vertices[j], {target.x - 0.5f, target.y - 0.5f, 0}, {target.x + 0.5f, target.y + 0.5f, 0});
+		bool b = CheckVectorIntersection(p->Vertices[i], p->Vertices[j], {target.x - 0.5f, target.y + 0.5f, 0}, {target.x + 0.5f, target.y - 0.5f, 0});
 
 		cout << "a: " << a << endl;
 		cout << "b: " << b << endl;
@@ -191,30 +213,21 @@ bool RadiusEdges(const Float3& target, Player* play)
 */
 
 		float angle = (float)atan2(p->Vertices[i].y - p->Vertices[j].y, p->Vertices[i].x - p->Vertices[j].x);
-
-/*		if (angle < 0)
-		{
-			angle += M_PI;
-		}
-*/
-		float RadiusToUse = 1.0f;
+		float RadiusToUse = 0.5f;
 
 		// Get the orthogonal vector, so invert the use of 'sin' and 'cos' here.
-		// Only works for 90 degrees angleS?
+		// Only works for 90 degrees angles?
+		// XXX: This was fixed by using 'cos' and 'sin' normally, but adding 90 degrees to the angle.
 
 		float OrthPlayerStartX = target.x + (float) cos(angle + M_PI_2) * RadiusToUse;
 		float OrthPlayerStartY = target.y + (float) sin(angle + M_PI_2) * RadiusToUse;
 		float OrthPlayerEndX = target.x - (float) cos(angle + M_PI_2) * RadiusToUse;
 		float OrthPlayerEndY = target.y - (float) sin(angle + M_PI_2) * RadiusToUse;
 
+		cout << "Lenght: " << sqrt(pow(OrthPlayerStartX - OrthPlayerEndX, 2) + pow(OrthPlayerStartY - OrthPlayerEndY, 2)) << endl;
 
-		cout << "Lenght: " << sqrt(pow(OrthPlayerStartX- OrthPlayerEndX,2) + pow( OrthPlayerStartY-OrthPlayerEndY,2)) << endl;
+		float angle2 = atan2(OrthPlayerStartY - OrthPlayerEndY, OrthPlayerStartX - OrthPlayerEndX);
 
-
-		float angle2 = (float)atan2(OrthPlayerStartY - OrthPlayerEndY, OrthPlayerStartX - OrthPlayerEndX);
-
-
-		//if (CheckVectorIntersection({OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}, p->Vertices[i], p->Vertices[j]))
 		if (CheckVectorIntersection(p->Vertices[i], p->Vertices[j], {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}))
 		{
 			cout << "Angle:	" << angle * (180 / M_PI) << endl;
@@ -222,10 +235,12 @@ bool RadiusEdges(const Float3& target, Player* play)
 
 			cout << "Diff:	" << abs(angle - angle2) * (180 / M_PI) << endl;
 
+			// Intersection
 			return true;
 		}
 	}
 
+	// No intersection
 	return false;
 }
 
@@ -233,7 +248,7 @@ bool RadiusEdges(const Float3& target, Player* play)
 // Moves the player to a new position. Returns false if it can't.
 bool MovePlayerToNewPosition(const Float3& origin, const Float3& target, Player* play)
 {
-	if (RadiusEdges(target, play))
+	if (RadiusEdges(target, play->plane))
 		return false;
 
 	if (pointInPolyXY(target.x, target.y, play->plane->Vertices))
