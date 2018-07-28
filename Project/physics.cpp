@@ -230,6 +230,7 @@ bool RadiusEdges(const Float3& target, Plane* p)
 		}
 	}
 
+	// The player scrossed the edge of the polygon
 	if (edges.size() > 0)
 	{
 		cout << "Number of edges collisions: " << edges.size() << endl;
@@ -244,6 +245,9 @@ bool RadiusEdges(const Float3& target, Plane* p)
 
 //				if (!p->Neighbors[j]->CanWalk())
 //					return true;
+
+				if (!p->Neighbors[j]->CanWalk())
+					continue;
 
 				for (unsigned int k = 0; k < p->Neighbors[j]->Edges.size(); k++)
 				{
