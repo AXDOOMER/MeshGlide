@@ -239,6 +239,7 @@ bool RadiusEdges(const Float3& target, Plane* p)
 
 		if (count == edges.size())
 		{
+			// No intersection at all
 			return false;
 		}
 
