@@ -198,21 +198,9 @@ bool CheckPlanes(const Float3& target, Plane* p)
 
 bool RadiusEdges(const Float3& target, Plane* p)
 {
-	for (unsigned int i = 0, j = p->Vertices.size() - 1; i < p->Vertices.size(); j = i++)
+	for (unsigned int i = 0; i < p->Edges.size(); i++)
 	{
-		//Edges.push_back({Vertices[i], Vertices[j], 0});
-/*
-		bool a = CheckVectorIntersection(p->Vertices[i], p->Vertices[j], {target.x - 0.5f, target.y - 0.5f, 0}, {target.x + 0.5f, target.y + 0.5f, 0});
-		bool b = CheckVectorIntersection(p->Vertices[i], p->Vertices[j], {target.x - 0.5f, target.y + 0.5f, 0}, {target.x + 0.5f, target.y - 0.5f, 0});
-
-		cout << "a: " << a << endl;
-		cout << "b: " << b << endl;
-
-		if (a || b)
-			return true;
-*/
-
-		float angle = (float)atan2(p->Vertices[i].y - p->Vertices[j].y, p->Vertices[i].x - p->Vertices[j].x);
+		float angle = (float)atan2(p->Edges[i].a.y - p->Edges[i].b.y, p->Edges[i].a.x - p->Edges[i].b.x);
 		float RadiusToUse = 0.5f;
 
 		// Get the orthogonal vector, so invert the use of 'sin' and 'cos' here.
@@ -228,7 +216,7 @@ bool RadiusEdges(const Float3& target, Plane* p)
 
 		float angle2 = atan2(OrthPlayerStartY - OrthPlayerEndY, OrthPlayerStartX - OrthPlayerEndX);
 
-		if (CheckVectorIntersection(p->Vertices[i], p->Vertices[j], {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}))
+		if (CheckVectorIntersection(p->Edges[i].a, p->Edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}))
 		{
 			cout << "Angle:	" << angle * (180 / M_PI) << endl;
 			cout << "Angle2:	" << angle2 * (180 /M_PI) << endl;
