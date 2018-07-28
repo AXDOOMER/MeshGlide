@@ -434,8 +434,8 @@ void Level::LinkPlanes(const string& LevelName)
 				{
 					if (i != j)
 					{
-						// Find more than one common vertex
-						if (planes[i]->CommonVertices(planes[j]) > 1)
+						// Find at least one common vertex
+						if (planes[i]->CommonVertices(planes[j]) >= 1)
 						{
 							if (first)
 							{
