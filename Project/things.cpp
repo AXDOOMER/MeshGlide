@@ -268,7 +268,28 @@ void Plane::Process()
 			float EndX = Vertices[j].x + (float) cos(angle2ij) * RadiusToUse;
 			float EndY = Vertices[j].y + (float) sin(angle2ij) * RadiusToUse;
 
+			// Create one large size
+			float StartX1 = StartX + (float) cos(angle1ji + M_PI_2) * RadiusToUse;
+			float StartY1 = StartY + (float) sin(angle1ji + M_PI_2) * RadiusToUse;
+			float EndX1 = EndX + (float) cos(angle1ji + M_PI_2) * RadiusToUse;
+			float EndY1 = EndY + (float) sin(angle1ji + M_PI_2) * RadiusToUse;
+
+			Points.push_back({StartX1, StartY1, Vertices[i].z});
+			Points.push_back({EndX1, EndY1, Vertices[j].z});
+
+			// Create the other large size
+			float StartX2 = StartX + (float) cos(angle1ji - M_PI_2) * RadiusToUse;
+			float StartY2 = StartY + (float) sin(angle1ji - M_PI_2) * RadiusToUse;
+			float EndX2 = EndX + (float) cos(angle1ji - M_PI_2) * RadiusToUse;
+			float EndY2 = EndY + (float) sin(angle1ji - M_PI_2) * RadiusToUse;
+
+			Points.push_back({StartX2, StartY2, Vertices[i].z});
+			Points.push_back({EndX2, EndY2, Vertices[j].z});
+
 			cout << "pos2: i(" << StartX << ", " << StartY << ")  j(" << EndX << ", " << EndY << ")" << endl;
+			cout << "pos3: i(" << StartX1 << ", " << StartY1 << ")  j(" << EndX1 << ", " << EndY1 << ")" << endl;
+			cout << "pos4: i(" << StartX2 << ", " << StartY2 << ")  j(" << EndX2 << ", " << EndY2 << ")" << endl;
+
 			Edges.push_back({{StartX, StartY, Vertices[i].z}, {EndX, EndY, Vertices[j].z}, 0, Points});
 		}
 		else
