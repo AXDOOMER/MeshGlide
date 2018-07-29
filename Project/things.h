@@ -37,6 +37,7 @@ struct Edge
 	Float3 a;	// First
 	Float3 b;	// Second
 	short sides;
+	vector<Float3> Vertices;
 };
 
 class Plane

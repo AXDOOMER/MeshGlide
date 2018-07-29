@@ -247,7 +247,36 @@ void Plane::Process()
 	// Create edges
 	for (unsigned int i = 0, j = Vertices.size() - 1; i < Vertices.size(); j = i++)
 	{
-		Edges.push_back({Vertices[i], Vertices[j], 0});
+		vector<Float3> Points;
+
+		float angle1ji = atan2(Vertices[i].y - Vertices[j].y, Vertices[i].x - Vertices[j].x);
+
+		float angle2ij = atan2(Vertices[j].y - Vertices[i].y, Vertices[j].x - Vertices[i].x);
+
+		// If an edge is completly vertical, then skip it.
+		if (angle1ji != angle2ij)
+		{
+			cout << "pos:  i(" << Vertices[i].x << ", " << Vertices[i].y << ")  j(" << Vertices[j].x << ", " << Vertices[j].y << ")" << endl;
+			cout << "Angle i->j: " << angle2ij << endl;
+			cout << "Angle j->i: " << angle1ji << endl;
+
+			float RadiusToUse =  0.5f;
+
+			// Create an edge that exceed both ends of the original edge.
+			float StartX = Vertices[i].x + (float) cos(angle1ji) * RadiusToUse;
+			float StartY = Vertices[i].y + (float) sin(angle1ji) * RadiusToUse;
+			float EndX = Vertices[j].x + (float) cos(angle2ij) * RadiusToUse;
+			float EndY = Vertices[j].y + (float) sin(angle2ij) * RadiusToUse;
+
+			cout << "pos2: i(" << StartX << ", " << StartY << ")  j(" << EndX << ", " << EndY << ")" << endl;
+			Edges.push_back({{StartX, StartY, Vertices[i].z}, {EndX, EndY, Vertices[j].z}, 0, Points});
+		}
+		else
+		{
+			Edges.push_back({Vertices[i], Vertices[j], 0, Points});
+		}
+
+		//Edges.push_back({Vertices[i], Vertices[j], 0, Points});
 	}
 
 	cout << "Created " << Edges.size() << " edges." << endl;
