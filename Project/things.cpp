@@ -23,8 +23,25 @@
 #include <cmath>
 #include <limits>		/* numeric_limits */
 #include <string>		/* to_string() */
+#include <cstring>		/* memcpy */
 
 using namespace std;
+
+TicCmd::TicCmd()
+{
+	Reset();
+}
+
+void TicCmd::Reset()
+{
+	// Init to default values
+	forward = 0;
+	lateral = 0;
+	rotation = 0;
+	vertical = 0;
+	fire = false;
+//	chat = "";
+}
 
 Player::Player()
 {
@@ -80,6 +97,21 @@ void Player::LateralMove(int Thrust)
 	pos_.y += ((float)Thrust / 64) * sin(LateralAngle);
 }
 
+vector<unsigned char> Player::ReadTicCmd()
+{
+	unsigned char array[sizeof(TicCmd)];
+
+	// dest, source, size
+	memcpy(&array, &Cmd, sizeof(TicCmd));
+
+	return vector<unsigned char>(array, array + sizeof(TicCmd));
+}
+
+void Player::WriteTicCmd(vector<unsigned char> v)
+{
+	memcpy(&Cmd, &v[0], v.size());
+}
+
 void Player::ExecuteTicCmd()
 {
 	ForwardMove(Cmd.forward);
@@ -92,12 +124,7 @@ void Player::ExecuteTicCmd()
 	}
 
 	// Empty the tic command
-	Cmd.forward = 0;
-	Cmd.lateral = 0;
-	Cmd.rotation = 0;
-	Cmd.vertical = 0;
-	Cmd.fire = false;
-	Cmd.chat = "";
+	Cmd.Reset();
 }
 
 float Player::GetRadianAngle(short Angle) const

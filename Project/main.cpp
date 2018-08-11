@@ -24,6 +24,7 @@
 #include "physics.h"
 #include "random.h"		/* GetIndex, SetIndex, Seed */
 #include "events.h"
+#include "network.h"
 
 #include <GLFW/glfw3.h>
 #include <GL/gl.h>
@@ -40,7 +41,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.43 (dev)";
+	const char* const VERSION = "0.44 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -52,6 +53,7 @@ int main(int argc, const char *argv[])
 	bool Fast = false;	// To unlock the speed of the game
 	auto GameStartTime = chrono::system_clock::now();
 	extern GameWindow view;
+	Network network;
 
 	cout << "                MESHGLIDE ENGINE -- " << VERSION << "\n\n";
 
@@ -186,6 +188,20 @@ int main(int argc, const char *argv[])
 		}
 	}
 
+	/****************************** NETWORKING ******************************/
+
+	if (FindArgumentPosition(argc, argv, "-server") > 0)
+	{
+		network.startServer(5555);
+		CurrentLevel->play = CurrentLevel->players[0];
+	}
+
+	if (FindArgumentPosition(argc, argv, "-client") > 0)
+	{
+		network.connectClient(5555);
+		CurrentLevel->play = CurrentLevel->players[1];
+	}
+
 	/****************************** SETUP PHASE ******************************/
 
 	if (DemoWrite.is_open())
@@ -226,6 +242,29 @@ int main(int argc, const char *argv[])
 		updateSpecials(CurrentLevel->play, CurrentLevel->players);
 
 		// Send commands over network and receive commands
+		if (network.enabled())
+		{
+			if (network.player() == 0)
+			{
+				// Receive network event from player 2
+				CurrentLevel->players[1]->WriteTicCmd(network.receive());
+
+				// Send network event to player 2
+				network.send(CurrentLevel->players[0]->ReadTicCmd());
+			}
+			else if (network.player() == 1)
+			{
+				// Send network event to player 1
+				network.send(CurrentLevel->players[1]->ReadTicCmd());
+
+				// Receive network event from player 1
+				CurrentLevel->players[0]->WriteTicCmd(network.receive());
+			}
+			else
+			{
+				cerr << "Something is wrong: Player ID is not 0 or 1." << endl;
+			}
+		}
 
 		// Update game logic
 		for (unsigned int i = 0; i < CurrentLevel->players.size(); i++)

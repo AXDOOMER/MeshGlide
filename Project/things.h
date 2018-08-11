@@ -26,6 +26,7 @@
 #include <string>
 #include <cmath>
 #include <vector>
+
 using namespace std;
 
 const float GRAVITY = 0.2f;
@@ -56,13 +57,16 @@ public:
 class TicCmd
 {
 public:
+	TicCmd();
+	void Reset();
+
 	unsigned char id;
 	signed char forward;
 	signed char lateral;
 	short rotation;
 	short vertical;
 	bool fire;
-	string chat;
+//	string chat;
 };
 
 class Thing
@@ -148,6 +152,8 @@ private:
 
 public:
 	void ExecuteTicCmd();
+	vector<unsigned char> ReadTicCmd();
+	void WriteTicCmd(vector<unsigned char> v);
 	float GetRadianAngle(short Angle) const;
 	float Radius() const;
 	float Height() const;

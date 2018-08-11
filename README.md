@@ -16,7 +16,7 @@ Packages that may need to be installed under Debian and Ubuntu are: `libglfw3 li
 
 ### Compile
 
-Compile on Linux: `g++ *.cpp -std=c++11 -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -o MeshGlide`
+Compile on Linux: `g++ *.cpp -std=c++11 -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -lzmq -o MeshGlide`
 
 It's preferable to compile and run the program using the `run.sh` script because it's tested, but this should work too.
 
