@@ -242,6 +242,7 @@ void Level::LoadNative(const string& LevelName)
 		LevelFile.close();
 
 		LinkPlanes(LevelName);
+		FinalPlaneProcessing();
 
 		// Check if no player was created
 		if (players.size() == 0)
@@ -386,9 +387,58 @@ void Level::LoadObj(const string& path)
 		} // end of while loop
 
 		LinkPlanes(path);
+		FinalPlaneProcessing();
 	}
 
 	model.close();
+}
+
+unsigned int Level::CountCommonEdgesPlanes(Plane* p1, Plane* p2)
+{
+	unsigned int count = 0;
+
+	for (unsigned int i = 0; i < p1->Edges.size(); i++)
+	{
+		for (unsigned int j = 0; j < p2->Edges.size(); j++)
+		{
+			if ((p1->Edges[i].a == p2->Edges[j].a && p1->Edges[i].b == p2->Edges[j].b) ||
+				(p1->Edges[i].a == p2->Edges[j].b && p1->Edges[i].b == p2->Edges[j].a))
+			{
+
+				// wow c'est de la shit comme algo
+				if (!p2->CanWalk())
+					continue;
+
+				{
+					// They touch. so Increase.
+					count++;
+
+					p1->Edges[i].sides++;
+//					p2->Edges[j].sides++;
+				}
+			}
+
+			// ooo
+				cout << "1-- " << p1->Edges[i].sides << endl;
+				cout << "2-- " << p2->Edges[j].sides << endl;
+		}
+	}
+
+	//if (p1 == p2)
+	//cout << "1-- " << count << endl;
+
+	return count;
+}
+
+void Level::FinalPlaneProcessing()
+{
+	for (unsigned int i = 0; i < planes.size(); i++)
+	{
+		for (unsigned int j = 0; j < planes[i]->Neighbors.size(); j++)
+		{
+			CountCommonEdgesPlanes(planes[i], planes[i]->Neighbors[j]);
+		}
+	}
 }
 
 void Level::LinkPlanes(const string& LevelName)
