@@ -70,26 +70,24 @@ void Network::send(vector<unsigned char> message)
 	sock_->send(request);
 }
 
-void Network::startServer(int port = 5555)
+void Network::startServer(string port)
 {
 	context_ = new context_t(1);
 	sock_ = new socket_t(*context_, ZMQ_REP);
 
-	cout << "Starting server... ";
-	sock_->bind("tcp://*:" + to_string(port));
-	cout << "started." << endl;
+	cout << "Starting local server on port '" << port << "'" << endl;
+	sock_->bind("tcp://*:" + port);
 
 	id_ = 0;
 }
 
-void Network::connectClient(int port = 5555)
+void Network::connectClient(string location)
 {
 	context_ = new context_t(12);
 	sock_ = new socket_t(*context_, ZMQ_REQ);
 
-	cout << "Connecting to server... ";
-	sock_->connect("tcp://localhost:" + to_string(port));
-	cout << "connected." << endl;
+	cout << "Connecting to server at '" << location << "'" << endl;
+	sock_->connect("tcp://" + location);
 
 	id_ = 1;
 }

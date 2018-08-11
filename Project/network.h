@@ -18,6 +18,7 @@
 
 #include <zmq.hpp>
 #include <vector>
+#include <string>
 
 using namespace std;
 using namespace zmq;
@@ -39,7 +40,7 @@ public:
 	vector<unsigned char> receive();
 	void send(vector<unsigned char> message);
 
-	void startServer(int port);
-	void connectClient(int port);
+	void startServer(string port);
+	void connectClient(string location);
 };
 

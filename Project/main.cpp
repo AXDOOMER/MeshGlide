@@ -41,7 +41,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.44 (dev)";
+	const char* const VERSION = "0.45 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -190,15 +190,24 @@ int main(int argc, const char *argv[])
 
 	/****************************** NETWORKING ******************************/
 
-	if (FindArgumentPosition(argc, argv, "-server") > 0)
+	string hostport;
+	if (FindArgumentPosition(argc, argv, "-host") > 0)
+		hostport = FindArgumentParameter(argc, argv, "-host", "5555");
+
+	string serverloc;
+	if (FindArgumentPosition(argc, argv, "-connect") > 0)
+		serverloc = FindArgumentParameter(argc, argv, "-connect", "localhost:5555");
+
+	if (!hostport.empty())
 	{
-		network.startServer(5555);
+		// Start a server
+		network.startServer(hostport);
 		CurrentLevel->play = CurrentLevel->players[0];
 	}
-
-	if (FindArgumentPosition(argc, argv, "-client") > 0)
+	else if (!serverloc.empty())
 	{
-		network.connectClient(5555);
+		// Or start a client that connects to a server
+		network.connectClient(serverloc);
 		CurrentLevel->play = CurrentLevel->players[1];
 	}
 
