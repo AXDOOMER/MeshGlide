@@ -30,6 +30,7 @@ using namespace std;
 TicCmd::TicCmd()
 {
 	Reset();
+	quit = false;
 }
 
 void TicCmd::Reset()

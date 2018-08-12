@@ -32,12 +32,12 @@
 #include <chrono>
 using namespace std;
 
-Level::Level(const string& level, float scaling)
+Level::Level(const string& level, float scaling, unsigned int numOfPlayers)
 {
 	auto start = chrono::system_clock::now();
 	levelname_ = level;
 	scaling_ = scaling;
-	LoadLevel(level);
+	LoadLevel(level, numOfPlayers);
 	auto end = chrono::system_clock::now();
 	auto diff = chrono::duration_cast<chrono::milliseconds>(end - start).count();
 	cout << "Level loading took " << diff << "ms." << endl;
@@ -70,7 +70,7 @@ void Level::Reload()
 	planes.clear();
 	// Load level
 	reloaded_ = true;
-	LoadLevel(levelname_);
+	LoadLevel(levelname_, players.size());
 }
 
 void Level::SpawnPlayer(Player* play)
@@ -127,7 +127,7 @@ bool Level::EndsWith(const string& str, const string& value)
 }
 
 // Detects the format and calls the right loading method
-void Level::LoadLevel(const string& LevelName)
+void Level::LoadLevel(const string& LevelName, unsigned int numOfPlayers)
 {
 	if (EndsWith(LevelName, ".obj"))
 	{
@@ -136,12 +136,12 @@ void Level::LoadLevel(const string& LevelName)
 	}
 	else
 	{
-		LoadNative(LevelName);
+		LoadNative(LevelName, numOfPlayers);
 	}
 }
 
 // Loading method for native format
-void Level::LoadNative(const string& LevelName)
+void Level::LoadNative(const string& LevelName, unsigned int numOfPlayers)
 {
 	string FileName = LevelName;       // Added to make some compiler happy
 	ifstream LevelFile(FileName.c_str());
@@ -247,7 +247,7 @@ void Level::LoadNative(const string& LevelName)
 		if (players.size() == 0)
 		{
 			// Create an arbitrary number of players for testing purposes
-			for (int i = 0; i < 2; i++)
+			for (unsigned int i = 0; i < numOfPlayers; i++)
 			{
 				players.emplace_back(new Player());
 				SpawnPlayer(players[i]);

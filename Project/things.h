@@ -66,6 +66,7 @@ public:
 	short rotation;
 	short vertical;
 	bool fire;
+	bool quit;
 //	string chat;
 };
 

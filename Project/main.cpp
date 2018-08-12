@@ -41,7 +41,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.45 (dev)";
+	const char* const VERSION = "0.46 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -54,6 +54,7 @@ int main(int argc, const char *argv[])
 	auto GameStartTime = chrono::system_clock::now();
 	extern GameWindow view;
 	Network network;
+	int numOfPlayers = 1;
 
 	cout << "                MESHGLIDE ENGINE -- " << VERSION << "\n\n";
 
@@ -117,9 +118,10 @@ int main(int argc, const char *argv[])
 		LevelName = line;
 		cout << "Level name: " << line << endl;
 		getline(DemoRead, line);
-		SetIndex(atoi(line.c_str()));		// Randomization
+		SetIndex(stoi(line));		// Randomization
 		cout << "Seed: " << line << endl;
 		getline(DemoRead, line);
+		numOfPlayers = stoi(line);
 		cout << "# of players: " << line << endl;
 	}
 	else
@@ -127,7 +129,7 @@ int main(int argc, const char *argv[])
 		if (FindArgumentPosition(argc, argv, "-seed") > 0)
 		{
 			// Accept a parameter that will change the seed
-			SetIndex(atoi(FindArgumentParameter(argc, argv, "-seed").c_str()));
+			SetIndex(stoi(FindArgumentParameter(argc, argv, "-seed")));
 		}
 		else
 		{
@@ -154,7 +156,7 @@ int main(int argc, const char *argv[])
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 
-	/****************************** LEVEL LOADING ******************************/
+	/****************************** CHOOSE LEVEL ******************************/
 
 	LevelName = FindArgumentParameter(argc, argv, "-level", LevelName);
 
@@ -169,7 +171,40 @@ int main(int argc, const char *argv[])
 		cin >> LevelName;
 	}
 
-	Level* CurrentLevel = new Level(LevelName, atof(FindArgumentParameter(argc, argv, "-scale", "1.0").c_str()));	// Holds the level's data
+	/****************************** NETWORKING ******************************/
+
+	if (!DemoRead.is_open())
+	{
+		string hostport;
+		if (FindArgumentPosition(argc, argv, "-host") > 0)
+			hostport = FindArgumentParameter(argc, argv, "-host", "5555");
+
+		string serverloc;
+		if (FindArgumentPosition(argc, argv, "-connect") > 0)
+			serverloc = FindArgumentParameter(argc, argv, "-connect", "localhost:5555");
+
+		if (!hostport.empty())
+		{
+			numOfPlayers = 2;	// (for now, it's always two players)
+			// Start a server
+			string info = LevelName + '\n' + to_string(initialIndex) + '\n' + to_string(numOfPlayers);
+			network.startServer(hostport, info);
+		}
+		else if (!serverloc.empty())
+		{
+			// Or start a client that connects to a server
+			string info = network.connectClient(serverloc);
+			// Update the game with the info from the server
+			vector<string> infos = Level::Split(info, '\n');
+			LevelName = infos[0];
+			SetIndex(initialIndex = stoi(infos[1]));
+			numOfPlayers = stoi(infos[2]);
+		}
+	}
+
+	/****************************** LEVEL LOADING ******************************/
+
+	Level* CurrentLevel = new Level(LevelName, stof(FindArgumentParameter(argc, argv, "-scale", "1.0")), numOfPlayers);	// Holds the level's data
 
 	if (!CurrentLevel || CurrentLevel->planes.size() == 0)
 	{
@@ -188,37 +223,16 @@ int main(int argc, const char *argv[])
 		}
 	}
 
-	/****************************** NETWORKING ******************************/
-
-	string hostport;
-	if (FindArgumentPosition(argc, argv, "-host") > 0)
-		hostport = FindArgumentParameter(argc, argv, "-host", "5555");
-
-	string serverloc;
-	if (FindArgumentPosition(argc, argv, "-connect") > 0)
-		serverloc = FindArgumentParameter(argc, argv, "-connect", "localhost:5555");
-
-	if (!hostport.empty())
-	{
-		// Start a server
-		network.startServer(hostport);
-		CurrentLevel->play = CurrentLevel->players[0];
-	}
-	else if (!serverloc.empty())
-	{
-		// Or start a client that connects to a server
-		network.connectClient(serverloc);
-		CurrentLevel->play = CurrentLevel->players[1];
-	}
-
 	/****************************** SETUP PHASE ******************************/
+
+	CurrentLevel->play = CurrentLevel->players[network.myPlayer()];
 
 	if (DemoWrite.is_open())
 	{
 		DemoWrite << VERSION << endl;
 		DemoWrite << LevelName << endl;
 		DemoWrite << initialIndex << endl;
-		DemoWrite << CurrentLevel->players.size() << endl;	// Number of players TODO: Right now it's hardcoded to 2
+		DemoWrite << CurrentLevel->players.size() << endl;
 	}
 
 	/****************************** GAME LOOP ******************************/
@@ -232,7 +246,13 @@ int main(int argc, const char *argv[])
 
 		if (DemoRead.is_open())
 		{
+			// Read demo. No event capture or network activity occurs.
 			Quit = !readCmdFromDemo(DemoRead, CurrentLevel->players);
+
+			if (glfwWindowShouldClose(window))
+			{
+				Quit = true;
+			}
 		}
 		else
 		{
@@ -242,6 +262,33 @@ int main(int argc, const char *argv[])
 				updatePlayerWithEvents(window, view, TicCount, CurrentLevel->play);
 			}
 
+			// Send commands over network and receive commands
+			if (network.enabled())
+			{
+				if (network.myPlayer() == 0)
+				{
+					// Receive network event from player 2
+					CurrentLevel->players[1]->WriteTicCmd(network.receive());
+
+					// Send network event to player 2
+					network.send(CurrentLevel->players[0]->ReadTicCmd());
+				}
+				else if (network.myPlayer() == 1)
+				{
+					// Send network event to player 1
+					network.send(CurrentLevel->players[1]->ReadTicCmd());
+
+					// Receive network event from player 1
+					CurrentLevel->players[0]->WriteTicCmd(network.receive());
+				}
+				else
+				{
+					cerr << "Something is wrong: Player ID is not 0 or 1." << endl;
+					Quit = true;
+				}
+			}
+
+			// Write commands to demo
 			if (DemoWrite.is_open())
 			{
 				writeCmdToDemo(DemoWrite, CurrentLevel->players);
@@ -249,31 +296,6 @@ int main(int argc, const char *argv[])
 		}
 
 		updateSpecials(CurrentLevel->play, CurrentLevel->players);
-
-		// Send commands over network and receive commands
-		if (network.enabled())
-		{
-			if (network.player() == 0)
-			{
-				// Receive network event from player 2
-				CurrentLevel->players[1]->WriteTicCmd(network.receive());
-
-				// Send network event to player 2
-				network.send(CurrentLevel->players[0]->ReadTicCmd());
-			}
-			else if (network.player() == 1)
-			{
-				// Send network event to player 1
-				network.send(CurrentLevel->players[1]->ReadTicCmd());
-
-				// Receive network event from player 1
-				CurrentLevel->players[0]->WriteTicCmd(network.receive());
-			}
-			else
-			{
-				cerr << "Something is wrong: Player ID is not 0 or 1." << endl;
-			}
-		}
 
 		// Update game logic
 		for (unsigned int i = 0; i < CurrentLevel->players.size(); i++)
@@ -340,8 +362,17 @@ int main(int argc, const char *argv[])
 		{
 			cerr << (const char*)gluErrorString(ErrorCode) << endl;
 		}
+
+		// Find a player who quits and terminate the game.
+		for (unsigned int i = 0; i < CurrentLevel->players.size(); i++)
+		{
+			if (!Quit)
+			{
+				Quit = CurrentLevel->players[i]->Cmd.quit;
+			}
+		}
 	}
-	while (!Quit && !glfwWindowShouldClose(window));
+	while (!Quit);
 
 	/****************************** TERMINATION ******************************/
 

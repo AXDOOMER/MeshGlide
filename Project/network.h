@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// netowrk.h
+// network.h
 // Networking component
 
 #include <zmq.hpp>
@@ -28,19 +28,25 @@ class Network
 private:
 	socket_t* sock_;
 	context_t* context_;
-	unsigned int id_;		// For 4 players, 0-3
+	unsigned int id_;		// For 2 players, 0-1
 
 public:
 	Network();
 	~Network();
 
 	bool enabled();
-	unsigned int player();
+	unsigned int myPlayer();
 
+	// Used when sharing tic commands
+	void send(const vector<unsigned char>& message);
 	vector<unsigned char> receive();
-	void send(vector<unsigned char> message);
 
-	void startServer(string port);
-	void connectClient(string location);
+	// Used when the server shares the game's settings with the client
+	void sendString(const string& s);
+	string receiveString();
+
+	// Handshake
+	void startServer(const string& port, const string& info);
+	string connectClient(const string& location);
 };
 
