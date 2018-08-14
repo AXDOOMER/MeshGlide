@@ -32,14 +32,20 @@ void ApplyGravity(Player* play);
 bool CompareDistanceToLength(const float DiffX, const float DiffY, const float Length);
 
 // Moves the player to a new position. Returns false if it can't.
-bool MovePlayerToNewPosition(const Float3& origin, const Float3& target, Player* play);
+//bool MovePlayerToNewPosition(const Float3& origin, const Float3& target, Player* play);
+bool MovePlayerToNewPosition(const Float3& origin, Float3 target, Player* play);
 
 // Get the plane where the player is standing
 Plane* GetPlaneForPlayer(Player* play, Level* lvl);
 
 Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play);
+Float2 MoveOnCollision2(const Float3& origin, const Float3& target, Player* play);
 
 // Hitscan
 void Hitscan(Level* lvl, Player* play);
+
+Float3 CheckCollisionPoint2(Float3 target, Float3 point, float p_rad);
+void CheckCollisionPoint(Player* moved, Float3 point);
+void CheckCollision(Player* moved, Player* other);
 
 #endif	// PHYSICS_H

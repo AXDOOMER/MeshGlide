@@ -248,7 +248,7 @@ void Level::LoadNative(const string& LevelName)
 		if (players.size() == 0)
 		{
 			// Create an arbitrary number of players for testing purposes
-			for (int i = 0; i < 2; i++)
+			for (int i = 0; i < 3; i++)
 			{
 				players.emplace_back(new Player());
 				SpawnPlayer(players[i]);
