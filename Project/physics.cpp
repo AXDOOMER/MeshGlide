@@ -26,8 +26,6 @@
 #include <utility>		/* pair */
 #include <algorithm>	/* find, sort */
 
-#include <iostream>		// XXX DEBUG
-
 using namespace std;
 
 const float WALL_ANGLE = 0.4f;	// '1' points up (floor) and '0' points to the side (wall)
@@ -328,21 +326,13 @@ void CheckCollision(Player* moved, Player* other)
 
 	if (distance < radii)
 	{
-		cout << "collision!!!" << endl;
-
 		float angle = atan2(moved->PosY() - other->PosY(), moved->PosX() - other->PosX());
 
-		cout << "angle: " << angle << endl;
-
 		Float3 pos = moved->pos_;
-
-		cout << "(radii - distance): " << (radii - distance) << endl;
 
 		pos.x += (radii - distance) * cos(angle);
 		pos.y += (radii - distance) * sin(angle);
 
 		moved->pos_ = pos;
 	}
-
-	cout << "distance: " << distance << endl;
 }
