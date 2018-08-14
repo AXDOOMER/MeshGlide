@@ -200,6 +200,12 @@ int main(int argc, const char *argv[])
 			SetIndex(initialIndex = stoi(infos[1]));
 			numOfPlayers = stoi(infos[2]);
 		}
+		else
+		{
+			// Useful for tests
+			if (FindArgumentPosition(argc, argv, "-players") > 0)
+				numOfPlayers = stoi(FindArgumentParameter(argc, argv, "-players"));
+		}
 	}
 
 	/****************************** LEVEL LOADING ******************************/
@@ -309,6 +315,12 @@ int main(int argc, const char *argv[])
 			{
 				Hitscan(CurrentLevel, CurrentLevel->players[i]);
 				CurrentLevel->players[i]->ShouldFire = false;
+			}
+
+			if (CurrentLevel->play != CurrentLevel->players[i])
+			{
+				// Player to player collision
+				CheckCollision(CurrentLevel->play, CurrentLevel->players[i]);
 			}
 
 			// Collision detection with floors and walls

@@ -42,4 +42,6 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play)
 // Hitscan
 void Hitscan(Level* lvl, Player* play);
 
+void CheckCollision(Player* moved, Player* other);
+
 #endif	// PHYSICS_H
