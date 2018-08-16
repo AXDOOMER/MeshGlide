@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="MeshGlide" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/MeshGlide" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="./Project" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-std=c++11" />
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add option="-lglfw -lGL -lGLU -lSDL2 -lSDL2_image -lzmq" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/MeshGlide" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="./Project" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-std=c++11" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+			<Target title="Server-dbg">
+				<Option output="bin/Debug/MeshGlide" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="./Project" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option parameters="-level test.txt -seed 0 -server" />
+				<Compiler>
+					<Add option="-std=c++11" />
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add option="-lglfw -lGL -lGLU -lSDL2 -lSDL2_image -lzmq" />
+				</Linker>
+			</Target>
+			<Target title="Client-dbg">
+				<Option output="bin/Debug/MeshGlide" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="./Project" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option parameters="-level test.txt -seed 0 -client" />
+				<Compiler>
+					<Add option="-std=c++11" />
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add option="-lglfw -lGL -lGLU -lSDL2 -lSDL2_image -lzmq" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="Project/MeshGlide" />
+		<Unit filename="Project/cache.h" />
+		<Unit filename="Project/chars.png" />
+		<Unit filename="Project/citadel.txt" />
+		<Unit filename="Project/citadel.txt.lnb" />
+		<Unit filename="Project/cliff.png" />
+		<Unit filename="Project/clouds.jpg" />
+		<Unit filename="Project/command.cpp" />
+		<Unit filename="Project/command.h" />
+		<Unit filename="Project/concrete.jpg" />
+		<Unit filename="Project/crosshair.png" />
+		<Unit filename="Project/door9_1.png" />
+		<Unit filename="Project/events.cpp" />
+		<Unit filename="Project/events.h" />
+		<Unit filename="Project/grass.png" />
+		<Unit filename="Project/launa0.png" />
+		<Unit filename="Project/level.cpp" />
+		<Unit filename="Project/level.h" />
+		<Unit filename="Project/level.txt" />
+		<Unit filename="Project/level.txt.lnb" />
+		<Unit filename="Project/line.h.gch" />
+		<Unit filename="Project/main.cpp" />
+		<Unit filename="Project/makefile" />
+		<Unit filename="Project/map.obj" />
+		<Unit filename="Project/map.obj.lnb" />
+		<Unit filename="Project/metal.jpg" />
+		<Unit filename="Project/mguna0.png" />
+		<Unit filename="Project/mount.obj" />
+		<Unit filename="Project/mount.obj.lnb" />
+		<Unit filename="Project/network.h" />
+		<Unit filename="Project/physics.cpp" />
+		<Unit filename="Project/physics.h" />
+		<Unit filename="Project/planet.png" />
+		<Unit filename="Project/plates.jpg" />
+		<Unit filename="Project/playa1.png" />
+		<Unit filename="Project/playa2.png" />
+		<Unit filename="Project/playa3.png" />
+		<Unit filename="Project/playa4.png" />
+		<Unit filename="Project/playa5.png" />
+		<Unit filename="Project/playa6.png" />
+		<Unit filename="Project/playa7.png" />
+		<Unit filename="Project/playa8.png" />
+		<Unit filename="Project/puffb0.png" />
+		<Unit filename="Project/random.cpp" />
+		<Unit filename="Project/random.h" />
+		<Unit filename="Project/rock.jpg" />
+		<Unit filename="Project/shadow.jpg" />
+		<Unit filename="Project/shota0.png" />
+		<Unit filename="Project/skyblue.jpg" />
+		<Unit filename="Project/test.txt" />
+		<Unit filename="Project/test.txt.lnb" />
+		<Unit filename="Project/texture.cpp" />
+		<Unit filename="Project/texture.h" />
+		<Unit filename="Project/things.cpp" />
+		<Unit filename="Project/things.h" />
+		<Unit filename="Project/vecmath.cpp" />
+		<Unit filename="Project/vecmath.h" />
+		<Unit filename="Project/viewdraw.cpp" />
+		<Unit filename="Project/viewdraw.h" />
+		<Unit filename="Project/wiremesh.png" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
