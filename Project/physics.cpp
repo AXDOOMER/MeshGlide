@@ -471,10 +471,45 @@ bool RadiusEdges4(Float3& target, Plane* p)
 	return false;
 }
 
+bool TouchPlane(Player* play, Plane* p)
+{
+cout << "ran TouchPlane(Player* play, Plane* p)" << endl;
+	// Is the player inside the polygon?
+	if (pointInPolyXY(play->PosX(), play->PosY(), p->Vertices))
+		return true;
+
+	// Is the player touching an edge of the polygon?
+	for (unsigned int i = 0; i < p->Edges.size(); i++)
+		if (lineCircle(p->Edges[i].a.x, p->Edges[i].a.y, p->Edges[i].b.x, p->Edges[i].b.y, play->PosX(), play->PosY(), 0.5f))
+			return true;
+
+	return false;
+}
+
+void TouchingPlanes(Player* play, Plane* p, vector<Plane*>& Tested)
+{
+	// Player touches the polygon
+	if (TouchPlane(play, p))
+	{
+		Tested.push_back(p);
+
+		// Try its neighbors
+		for (unsigned int i = 0; i < p->Neighbors.size(); i++)
+		{
+			// Only test if not previously tested
+			if (find(Tested.begin(), Tested.end(), p->Neighbors[i]) == Tested.end())
+				TouchingPlanes(play, p->Neighbors[i], Tested);
+		}
+	}
+}
+
 // TODO: Player should not be able to step on impassable planes.
 // Moves the player to a new position. Returns false if it can't.
 bool MovePlayerToNewPosition(const Float3& origin, Float3 target, Player* play)
 {
+	vector<Plane*> pTouched;
+	TouchingPlanes(play, play->plane, pTouched);
+	cout << "NUMBER OF PLANES TOUCHED BY PLAYER: " << pTouched.size() << endl;
 /*
 cout << "OLD TARGET: " << target.x << "	" << target.y << endl;
 	if (RadiusEdges4(target, play->plane))
@@ -804,14 +839,17 @@ void CheckCollision(Player* moved, Player* other)
 
 		cout << "angle: " << angle << endl;
 
-		Float3 pos = moved->pos_;
+		//if (abs(moved->PosZ() - other->PosZ()) <= moved->Height())
+		{
+			Float3 pos = moved->pos_;
 
-		cout << "(radii - distance): " << (radii - distance) << endl;
+			cout << "(radii - distance): " << (radii - distance) << endl;
 
-		pos.x += (radii - distance) * cos(angle);
-		pos.y += (radii - distance) * sin(angle);
+			pos.x += (radii - distance) * cos(angle);
+			pos.y += (radii - distance) * sin(angle);
 
-		moved->pos_ = pos;
+			moved->pos_ = pos;
+		}
 	}
 
 	cout << "distance: " << distance << endl;
