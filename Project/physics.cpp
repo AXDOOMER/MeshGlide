@@ -176,69 +176,6 @@ Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane,
 	return nullptr;
 }
 
-bool RadiusEdges2(const Float3& target, Plane* p)
-{
-	//vector<Edge> edges;
-
-	// The player scrossed the edge of the polygon
-	//cout << "Number of edges collisions: " << edges.size() << endl;
-	unsigned int count = 0;
-
-	// TODO idée:
-	// 1- Accumuler toutes edges non traversables dans une liste
-	// 2- Faire les tests pour voir si on est dans les edges (ça doit être les edges les plus proches en premier)
-	// 3- Accumuler les angles des murs percutés
-
-	for (unsigned int i = 0; i < p->Neighbors.size(); i++)
-	{
-		if (p == p->Neighbors[i])
-			continue;
-
-		if (!p->Neighbors[i]->CanWalk())
-			continue;
-
-		vector<Edge> edges;
-
-		/*for (unsigned int j = 0; j < p->Edges.size(); j++)
-		{
-			for (unsigned int k = 0; p->Neighbors[i]->Edges.size(); k++)
-			{
-				if ((p->Edges[j].a == p->Neighbors[i]->Edges[k].a && p->Edges[j].b == p->Neighbors[i]->Edges[k].b) ||
-					(p->Edges[j].a == p->Neighbors[i]->Edges[k].b && p->Edges[j].b == p->Neighbors[i]->Edges[k].a))
-				{
-					// Edges are connected. Player can move to this neighbor.
-
-				}
-				else
-				{
-					// Can block
-					//edges.push_back(p->Edges[j]);
-				}
-			}
-		}*/
-
-		for (unsigned int j = 0; j < p->Neighbors[i]->Edges.size(); j++)
-		{
-			// Test if two edges touch
-/*			if ((edges[i].a == p->Neighbors[j]->Edges[k].a && edges[i].b == p->Neighbors[j]->Edges[k].b) ||
-				(edges[i].a == p->Neighbors[j]->Edges[k].b && edges[i].b == p->Neighbors[j]->Edges[k].a))
-			{
-				// No intersection, because two edges means there's another side
-				count++;
-			}*/
-
-			if (pointInPolyXY(target.x, target.y, p->Neighbors[i]->Edges[j].Vertices))
-			{
-				// Player is inside edge
-				return true;
-			}
-		}
-	}
-
-	// Player doesn't touch
-	return false;
-}
-
 bool TouchPlane(Player* play, Plane* p)
 {
 cout << "ran TouchPlane(Player* play, Plane* p)" << endl;
