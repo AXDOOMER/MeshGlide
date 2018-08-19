@@ -237,238 +237,6 @@ bool RadiusEdges2(const Float3& target, Plane* p)
 
 	// Player doesn't touch
 	return false;
-
-}
-
-bool RadiusEdges(const Float3& target, Plane* p)
-{
-	vector<Edge> edges;
-
-	for (unsigned int i = 0; i < p->Edges.size(); i++)
-	{
-		float angle = (float)atan2(p->Edges[i].a.y - p->Edges[i].b.y, p->Edges[i].a.x - p->Edges[i].b.x);
-		float RadiusToUse = 0.5f;
-
-		// Get the orthogonal vector, so invert the use of 'sin' and 'cos' here.
-		// Only works for 90 degrees angles?
-		// XXX: This was fixed by using 'cos' and 'sin' normally, but adding 90 degrees to the angle.
-
-		float OrthPlayerStartX = target.x + (float) cos(angle + M_PI_2) * RadiusToUse;
-		float OrthPlayerStartY = target.y + (float) sin(angle + M_PI_2) * RadiusToUse;
-		float OrthPlayerEndX = target.x - (float) cos(angle + M_PI_2) * RadiusToUse;
-		float OrthPlayerEndY = target.y - (float) sin(angle + M_PI_2) * RadiusToUse;
-
-		float angle2 = atan2(OrthPlayerStartY - OrthPlayerEndY, OrthPlayerStartX - OrthPlayerEndX);
-
-		if (CheckVectorIntersection(p->Edges[i].a, p->Edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}))
-		{
-			cout << "Angle:	" << angle * (180 / M_PI) << endl;
-			cout << "Angle2:	" << angle2 * (180 /M_PI) << endl;
-
-			cout << "Diff:	" << abs(angle - angle2) * (180 / M_PI) << endl;
-
-			// Intersection
-			edges.push_back(p->Edges[i]);
-		}
-	}
-
-	// The player scrossed the edge of the polygon
-	if (edges.size() > 0)
-	{
-		cout << "Number of edges collisions: " << edges.size() << endl;
-
-		unsigned int count = 0;
-
-		// TODO: Edges loop should be on the inside to reduce different data access
-		for (unsigned int i = 0; i < edges.size(); i++)
-		{
-			for (unsigned int j = 0; j < p->Neighbors.size(); j++)
-			{
-				if (p == p->Neighbors[j])
-					continue;
-
-				if (!p->Neighbors[j]->CanWalk())
-					continue;
-
-				for (unsigned int k = 0; k < p->Neighbors[j]->Edges.size(); k++)
-				{
-					// Test if two edges touch
-					if ((edges[i].a == p->Neighbors[j]->Edges[k].a && edges[i].b == p->Neighbors[j]->Edges[k].b) ||
-						(edges[i].a == p->Neighbors[j]->Edges[k].b && edges[i].b == p->Neighbors[j]->Edges[k].a))
-					{
-						// No intersection, because two edges means there's another side
-						count++;
-					}
-				}
-			}
-		}
-
-		if (count == edges.size())
-		{
-			// No intersection at all
-			return false;
-		}
-
-		// Else, there is an intersection.
-	}
-	else
-	{
-		// No intersection
-		return false;
-	}
-
-	// Intersection. Can't pass over there.
-	return true;
-}
-
-bool RadiusEdges3(const Float3& target, Plane* p)
-{
-	vector<Edge> edges;
-
-	for (unsigned int i = 0; i < p->Edges.size(); i++)
-	{
-		bool touch = lineCircle(p->Edges[i].a.x, p->Edges[i].a.y, p->Edges[i].b.x, p->Edges[i].b.y, target.x, target.y, 0.5f);
-
-		if (touch)
-		{
-			edges.push_back(p->Edges[i]);
-		}
-	}
-
-	for (unsigned int j = 0; j < p->Neighbors.size(); j++)
-	{
-		for (unsigned int i = 0; i < p->Neighbors[j]->Edges.size(); i++)
-		{
-			bool touch = lineCircle(p->Neighbors[j]->Edges[i].a.x, p->Neighbors[j]->Edges[i].a.y, 
-									p->Neighbors[j]->Edges[i].b.x, p->Neighbors[j]->Edges[i].b.y, target.x, target.y, 0.5f);
-
-			if (touch)
-			{
-				edges.push_back(p->Neighbors[j]->Edges[i]);
-			}
-		}
-	}
-
-	for (int i = edges.size() - 1; i >= 0; i--)
-	{
-		cout << i << " -- " << edges[i].sides <<endl;
-
-		if (edges[i].sides > 0)
-		{
-			edges.erase(edges.begin() + i);
-			//i--;
-		}
-	}
-
-
-
-	// The player scrossed the edge of the polygon
-	if (edges.size() > 0)
-	{
-		// Intersection. Can't pass over there.
-		return true;
-	}
-
-	// No intersection
-	return false;
-}
-
-bool RadiusEdges4(Float3& target, Plane* p)
-{
-	vector<Edge> edges;
-
-	for (unsigned int i = 0; i < p->Edges.size(); i++)
-	{
-		bool touch = lineCircle(p->Edges[i].a.x, p->Edges[i].a.y, p->Edges[i].b.x, p->Edges[i].b.y, target.x, target.y, 0.5f);
-
-		if (touch)
-		{
-			edges.push_back(p->Edges[i]);
-		}
-	}
-
-	for (unsigned int j = 0; j < p->Neighbors.size(); j++)
-	{
-		for (unsigned int i = 0; i < p->Neighbors[j]->Edges.size(); i++)
-		{
-			bool touch = lineCircle(p->Neighbors[j]->Edges[i].a.x, p->Neighbors[j]->Edges[i].a.y, 
-									p->Neighbors[j]->Edges[i].b.x, p->Neighbors[j]->Edges[i].b.y, target.x, target.y, 0.5f);
-
-			if (touch)
-			{
-				edges.push_back(p->Neighbors[j]->Edges[i]);
-			}
-		}
-	}
-
-	for (int i = edges.size() - 1; i >= 0; i--)
-	{
-		cout << i << " -- " << edges[i].sides <<endl;
-
-		if (edges[i].sides > 0)
-		{
-			edges.erase(edges.begin() + i);
-			//i--;
-		}
-	}
-
-	// The player scrossed the edge of the polygon
-	if (edges.size() > 0)
-	{
-		vector<Edge> touching;
-		vector<Float2> points;
-
-		for (unsigned int i = 0; i < p->Edges.size(); i++)
-		{
-			float angle = (float)atan2(p->Edges[i].a.y - p->Edges[i].b.y, p->Edges[i].a.x - p->Edges[i].b.x);
-			float RadiusToUse = 0.5f;
-
-			// Get the orthogonal vector, so invert the use of 'sin' and 'cos' here.
-			// Only works for 90 degrees angles?
-			// XXX: This was fixed by using 'cos' and 'sin' normally, but adding 90 degrees to the angle.
-
-			float OrthPlayerStartX = target.x + (float) cos(angle + M_PI_2) * RadiusToUse;
-			float OrthPlayerStartY = target.y + (float) sin(angle + M_PI_2) * RadiusToUse;
-			float OrthPlayerEndX = target.x - (float) cos(angle + M_PI_2) * RadiusToUse;
-			float OrthPlayerEndY = target.y - (float) sin(angle + M_PI_2) * RadiusToUse;
-
-			float angle2 = atan2(OrthPlayerStartY - OrthPlayerEndY, OrthPlayerStartX - OrthPlayerEndX);
-
-			if (CheckVectorIntersection(p->Edges[i].a, p->Edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}))
-			{
-				cout << "Angle:	" << angle * (180 / M_PI) << endl;
-				cout << "Angle2:	" << angle2 * (180 /M_PI) << endl;
-
-				cout << "Diff:	" << abs(angle - angle2) * (180 / M_PI) << endl;
-
-				// Intersection
-				touching.push_back(p->Edges[i]);
-
-				points.push_back(CollisionPoint(p->Edges[i].a, p->Edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}));
-			}
-		}
-
-		cout << "Number of line touched with radius: " << touching.size() << "		points: "<<points.size()<<endl;
-
-		for (unsigned int k =0; k < touching.size(); k++)
-		{
-			if (target.x == points[k].x && target.y == points[k].y)
-				continue;
-
-			cout << "CHANGE TO New POINT" << endl;
-			cout << "New POINT: " << points[k].x << "	" << points[k].y << endl;
-			Float3 newpoint = CheckCollisionPoint2(target, {points[k].x, points[k].y, 0}, 2.0f);
-			target = newpoint;
-			cout << "NEW TARGET CHECK: " << newpoint.x << "	" << newpoint.y << endl;
-		}
-		
-
-		// Intersection. Can't pass over there.
-		return true;
-	}
-
-	// No intersection
-	return false;
 }
 
 bool TouchPlane(Player* play, Plane* p)
@@ -491,7 +259,10 @@ void TouchingPlanes(Player* play, Plane* p, vector<Plane*>& Tested)
 	// Player touches the polygon
 	if (TouchPlane(play, p))
 	{
-		Tested.push_back(p);
+		if (p->CanWalk())
+			Tested.push_back(p);
+		else
+			return;
 
 		// Try its neighbors
 		for (unsigned int i = 0; i < p->Neighbors.size(); i++)
@@ -503,23 +274,66 @@ void TouchingPlanes(Player* play, Plane* p, vector<Plane*>& Tested)
 	}
 }
 
+bool RadiusEdges3(const Float3& target, Player* play)
+{
+	vector<Plane*> pTouched;
+	TouchingPlanes(play, play->plane, pTouched);
+	cout << "RadiusEdges3: NUMBER OF PLANES TOUCHED BY PLAYER: " << pTouched.size() << endl;
+/*
+	for (int i = pTouched.size() - 1; i >= 0; i--)
+	{
+		if (!pTouched[i]->CanWalk())
+		{
+			pTouched.erase(pTouched.begin() + i);
+		}
+	}
+*/
+	vector<Edge> edges;
+	//Plane* p = play->plane;
+
+	for (unsigned int j = 0; j < pTouched.size(); j++)
+	{
+		for (unsigned int i = 0; i < pTouched[j]->Edges.size(); i++)
+		{
+			bool touch = lineCircle(pTouched[j]->Edges[i].a.x, pTouched[j]->Edges[i].a.y, 
+									pTouched[j]->Edges[i].b.x, pTouched[j]->Edges[i].b.y, target.x, target.y, 0.5f);
+
+			if (touch)
+			{
+				edges.push_back(pTouched[j]->Edges[i]);
+			}
+		}
+	}
+
+	for (int i = edges.size() - 1; i >= 0; i--)
+	{
+		cout << i << " -- " << edges[i].sides <<endl;	// --
+
+		if (edges[i].sides > 0)
+		{
+			edges.erase(edges.begin() + i);
+			//i--;
+		}
+	}
+
+
+
+	// The player scrossed the edge of the polygon
+	if (edges.size() > 0)
+	{
+		// Intersection. Can't pass over there.
+		return true;
+	}
+
+	// No intersection
+	return false;
+}
+
 // TODO: Player should not be able to step on impassable planes.
 // Moves the player to a new position. Returns false if it can't.
 bool MovePlayerToNewPosition(const Float3& origin, Float3 target, Player* play)
 {
-	vector<Plane*> pTouched;
-	TouchingPlanes(play, play->plane, pTouched);
-	cout << "NUMBER OF PLANES TOUCHED BY PLAYER: " << pTouched.size() << endl;
-/*
-cout << "OLD TARGET: " << target.x << "	" << target.y << endl;
-	if (RadiusEdges4(target, play->plane))
-	{
-		cout << "***** RadiusEdges4 returned TRUE"<<endl;
-		//return false;
-	}
-cout << "NEW TARGET: " << target.x << "	" << target.y << endl;
-*/
-	if (RadiusEdges3(target, play->plane))
+	if (RadiusEdges3(target, play))
 	{
 		return false;
 	}
@@ -587,36 +401,38 @@ float AngleOfFarthestIntersectedEdge(const Float3& origin, const Float3& target,
 
 Float2 MoveOnCollision2(const Float3& origin, const Float3& target, Player* play)
 {
+	vector<Plane*> pTouched;
+	TouchingPlanes(play, play->plane, pTouched);
+	cout << "MoveOnCollision2: NUMBER OF PLANES TOUCHED BY PLAYER: " << pTouched.size() << endl;
+/*
+	for (int i = pTouched.size() - 1; i >= 0; i--)
+	{
+		if (!pTouched[i]->CanWalk())
+		{
+			pTouched.erase(pTouched.begin() + i);
+		}
+	}
+*/
 	vector<Edge> edges;
 	Plane* p = play->plane;
 
-	for (unsigned int i = 0; i < p->Edges.size(); i++)
+	for (unsigned int j = 0; j < pTouched.size(); j++)
 	{
-		bool touch = lineCircle(p->Edges[i].a.x, p->Edges[i].a.y, p->Edges[i].b.x, p->Edges[i].b.y, target.x, target.y, 0.5f);
-
-		if (touch)
+		for (unsigned int i = 0; i < pTouched[j]->Edges.size(); i++)
 		{
-			edges.push_back(p->Edges[i]);
-		}
-	}
-
-	for (unsigned int j = 0; j < p->Neighbors.size(); j++)
-	{
-		for (unsigned int i = 0; i < p->Neighbors[j]->Edges.size(); i++)
-		{
-			bool touch = lineCircle(p->Neighbors[j]->Edges[i].a.x, p->Neighbors[j]->Edges[i].a.y, 
-									p->Neighbors[j]->Edges[i].b.x, p->Neighbors[j]->Edges[i].b.y, target.x, target.y, 0.5f);
+			bool touch = lineCircle(pTouched[j]->Edges[i].a.x, pTouched[j]->Edges[i].a.y, 
+									pTouched[j]->Edges[i].b.x, pTouched[j]->Edges[i].b.y, target.x, target.y, 0.5f);
 
 			if (touch)
 			{
-				edges.push_back(p->Neighbors[j]->Edges[i]);
+				edges.push_back(pTouched[j]->Edges[i]);
 			}
 		}
 	}
 
 	for (int i = edges.size() - 1; i >= 0; i--)
 	{
-		cout << i << " -- " << edges[i].sides <<endl;
+		cout << i << " -- " << edges[i].sides <<endl;	// --
 
 		if (edges[i].sides > 0)
 		{
@@ -625,7 +441,7 @@ Float2 MoveOnCollision2(const Float3& origin, const Float3& target, Player* play
 		}
 	}
 
-	// The player scrossed the edge of the polygon
+	// The player crossed the edge of the polygon
 	if (edges.size() > 0)
 	{
 		vector<Edge> touching;
@@ -685,7 +501,7 @@ Float2 MoveOnCollision2(const Float3& origin, const Float3& target, Player* play
 	return {origin.x, origin.y};
 }
 
-Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play)
+/*Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play)
 {
 	Plane* targetPlane = TraceOnPolygons(origin, target, play->plane, true);
 
@@ -726,7 +542,7 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play)
 
 	// Return something that is obviously wrong if the above has failed
 	return {numeric_limits<float>::quiet_NaN(), numeric_limits<float>::quiet_NaN()};
-}
+}*/
 
 void Hitscan(Level* lvl, Player* play)
 {
