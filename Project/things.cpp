@@ -291,11 +291,11 @@ void Plane::Process()
 			cout << "pos4: i(" << StartX2 << ", " << StartY2 << ")  j(" << EndX2 << ", " << EndY2 << ")" << endl;
 
 			//Edges.push_back({{StartX, StartY, Vertices[i].z}, {EndX, EndY, Vertices[j].z}, 0, Points});
-			Edges.push_back({Vertices[i], Vertices[j], 0, Points});
+			Edges.push_back({Vertices[i], Vertices[j], 0, Points, angle1ji});
 		}
 		else
 		{
-			Edges.push_back({Vertices[i], Vertices[j], 0, Points});
+			Edges.push_back({Vertices[i], Vertices[j], 0, Points, angle1ji});
 		}
 
 		//Edges.push_back({Vertices[i], Vertices[j], 0, Points});

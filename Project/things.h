@@ -38,6 +38,7 @@ struct Edge
 	Float3 b;	// Second
 	short sides;
 	vector<Float3> Vertices;
+	float angle;
 };
 
 class Plane

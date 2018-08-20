@@ -211,6 +211,40 @@ void TouchingPlanes(Player* play, Plane* p, vector<Plane*>& Tested)
 	}
 }
 
+Float2 MoveAlongAngle(const Float3& origin, const Float3& target, const float theAngle)
+{
+//	Plane* targetPlane = TraceOnPolygons(origin, target, play->plane, true);
+
+	// Get the angle that represents the direction of the player's movement
+	float moveAngle = atan2(origin.y - target.y, origin.x - target.x);
+
+	// Get the angle of the blocking wall (blocking edge of the polygon) of the target plane
+//	float wallAngle = AngleOfFarthestIntersectedEdge(origin, target, targetPlane);
+	float wallAngle = theAngle;
+
+	// Compute the difference between both angles
+	float newAngle = wallAngle - moveAngle;
+
+	// Make the angle positive. This is to constrain the possible angle values between 0 and PI * 2.
+	if (newAngle < 0)
+		newAngle += M_PI * 2;
+
+	// Check at which direction the player is going against the wall
+	if (newAngle < M_PI / 2 || newAngle > 3 * M_PI / 2)
+		wallAngle += M_PI;
+
+	// Compute the movement speed at that angle
+	float moveSpeed = sqrt(pow(origin.x - target.x, 2) + pow(origin.y - target.y, 2));
+	moveSpeed = moveSpeed * abs(cos(newAngle));
+
+	// Apply that new computer position so that the player appears to be moving along that wall
+	Float3 Return = origin;
+	Return.x += moveSpeed * cos(wallAngle);
+	Return.y += moveSpeed * sin(wallAngle);
+
+	return {Return.x, Return.y};
+}
+
 bool RadiusEdges3(const Float3& target, Player* play)
 {
 	vector<Plane*> pTouched;
@@ -351,7 +385,7 @@ Float2 MoveOnCollision2(const Float3& origin, const Float3& target, Player* play
 	}
 */
 	vector<Edge> edges;
-	Plane* p = play->plane;
+//	Plane* p = play->plane;
 
 	for (unsigned int j = 0; j < pTouched.size(); j++)
 	{
@@ -359,7 +393,6 @@ Float2 MoveOnCollision2(const Float3& origin, const Float3& target, Player* play
 		{
 			bool touch = lineCircle(pTouched[j]->Edges[i].a.x, pTouched[j]->Edges[i].a.y, 
 									pTouched[j]->Edges[i].b.x, pTouched[j]->Edges[i].b.y, target.x, target.y, 0.5f);
-
 			if (touch)
 			{
 				edges.push_back(pTouched[j]->Edges[i]);
@@ -385,33 +418,56 @@ Float2 MoveOnCollision2(const Float3& origin, const Float3& target, Player* play
 		vector<Float2> points;
 		Float3 newpoint = origin;
 
-		for (unsigned int i = 0; i < p->Edges.size(); i++)
+		for (unsigned int j = 0; j < pTouched.size(); j++)
 		{
-			float angle = (float)atan2(p->Edges[i].a.y - p->Edges[i].b.y, p->Edges[i].a.x - p->Edges[i].b.x);
-			float RadiusToUse = 0.5f;
-
-			// Get the orthogonal vector, so invert the use of 'sin' and 'cos' here.
-			// Only works for 90 degrees angles?
-			// XXX: This was fixed by using 'cos' and 'sin' normally, but adding 90 degrees to the angle.
-
-			float OrthPlayerStartX = target.x + (float) cos(angle + M_PI_2) * RadiusToUse;
-			float OrthPlayerStartY = target.y + (float) sin(angle + M_PI_2) * RadiusToUse;
-			float OrthPlayerEndX = target.x - (float) cos(angle + M_PI_2) * RadiusToUse;
-			float OrthPlayerEndY = target.y - (float) sin(angle + M_PI_2) * RadiusToUse;
-
-			float angle2 = atan2(OrthPlayerStartY - OrthPlayerEndY, OrthPlayerStartX - OrthPlayerEndX);
-
-			if (CheckVectorIntersection(p->Edges[i].a, p->Edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}))
+			for (unsigned int i = 0; i < pTouched[j]->Edges.size(); i++)
 			{
-				cout << "Angle:	" << angle * (180 / M_PI) << endl;
-				cout << "Angle2:	" << angle2 * (180 /M_PI) << endl;
+				Plane* p = pTouched[j];
+cout << j << "  ***  " << i << endl;
+				float angle = (float)atan2(p->Edges[i].a.y - p->Edges[i].b.y, p->Edges[i].a.x - p->Edges[i].b.x);
+				float RadiusToUse = 0.5f;
 
-				cout << "Diff:	" << abs(angle - angle2) * (180 / M_PI) << endl;
+				// Get the orthogonal vector, so invert the use of 'sin' and 'cos' here.
+				// Only works for 90 degrees angles?
+				// XXX: This was fixed by using 'cos' and 'sin' normally, but adding 90 degrees to the angle.
 
-				// Intersection
-				touching.push_back(p->Edges[i]);
+				float OrthPlayerStartX = target.x + (float) cos(angle + M_PI_2) * RadiusToUse;
+				float OrthPlayerStartY = target.y + (float) sin(angle + M_PI_2) * RadiusToUse;
+				float OrthPlayerEndX = target.x - (float) cos(angle + M_PI_2) * RadiusToUse;
+				float OrthPlayerEndY = target.y - (float) sin(angle + M_PI_2) * RadiusToUse;
 
-				points.push_back(CollisionPoint(p->Edges[i].a, p->Edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}));
+				float angle2 = atan2(OrthPlayerStartY - OrthPlayerEndY, OrthPlayerStartX - OrthPlayerEndX);
+
+				if (CheckVectorIntersection(p->Edges[i].a, p->Edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}))
+				{
+					cout << "Angle:	" << angle * (180 / M_PI) << endl;
+					cout << "Angle2:	" << angle2 * (180 /M_PI) << endl;
+
+					cout << "Diff:	" << abs(angle - angle2) * (180 / M_PI) << endl;
+
+					// Intersection
+					touching.push_back(p->Edges[i]);
+
+					points.push_back(CollisionPoint(p->Edges[i].a, p->Edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}));
+				}
+			}
+		}
+
+		if (points.size() != touching.size())
+		{
+			cout << "FUCK t!=p" << endl;
+			int* b = nullptr;
+			int i = *b;
+		}
+
+		// Remove lines that can be crossed
+		for (int i = touching.size() - 1; i >= 0; i--)
+		{
+			if (touching[i].sides > 0)
+			{
+				touching.erase(touching.begin() + i);
+				// also erase collision point
+				points.erase(points.begin() + i);
 			}
 		}
 
@@ -427,7 +483,11 @@ Float2 MoveOnCollision2(const Float3& origin, const Float3& target, Player* play
 			newpoint = CheckCollisionPoint2(target, {points[k].x, points[k].y, 0}, 0.55f);
 			//target = newpoint;
 			cout << "NEW TARGET CHECK: " << newpoint.x << "	" << newpoint.y << endl;
-		}
+/*
+			Float2 a = MoveAlongAngle(origin, target, touching[k].angle);
+			newpoint.x = a.x;
+			newpoint.y = a.y;
+*/		}
 		
 
 		// Intersection. Can't pass over there.
@@ -521,6 +581,7 @@ void Hitscan(Level* lvl, Player* play)
 	}
 }
 
+// Push something outside of a point to the specified distance (p_rad)
 Float3 CheckCollisionPoint2(Float3 target, Float3 point, float p_rad)
 {
 	float distance = sqrt(pow(target.x - point.x, 2) + pow(target.y - point.y, 2));
