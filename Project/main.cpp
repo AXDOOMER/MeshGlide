@@ -331,6 +331,8 @@ int main(int argc, const char *argv[])
 			ApplyGravity(CurrentLevel->players[i]);
 		}
 
+		CurrentLevel->UpdateThings();
+
 		// Draw Screen
 		DrawScreen(window, CurrentLevel->play, CurrentLevel, FrameDelay);
 

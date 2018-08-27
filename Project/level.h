@@ -56,6 +56,7 @@ public:
 	void LoadObj(const string& path);
 
 	void SpawnPlayer(Player* play);
+	void UpdateThings();
 
 private:
 	// OBJ and OpenGL stuff

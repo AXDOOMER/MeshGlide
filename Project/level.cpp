@@ -73,6 +73,21 @@ void Level::Reload()
 	LoadLevel(levelname_, players.size());
 }
 
+// Update game entities
+void Level::UpdateThings()
+{
+	for (unsigned int i = 0; i < things.size(); i++)
+	{
+		bool keep = things[i]->Update();
+
+		if (!keep)
+		{
+			delete things[i];
+			things.erase(things.begin() + i);
+		}
+	}
+}
+
 void Level::SpawnPlayer(Player* play)
 {
 	play->Reset();

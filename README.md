@@ -28,7 +28,7 @@ The following files were taken from the [Freedoom](https://github.com/freedoom/f
 * Shotgun sprite: shota0.png
 * Rocket launcher sprite: launa0.png
 * Minigun sprite: mguna0.png
-* Bullet puff: puffb0.png
+* Bullet puff: puffa0.png, puffb0.png, puffc0.png, puffd0.png
 * Door texture: door9_1.png
 
 ## Screenshots

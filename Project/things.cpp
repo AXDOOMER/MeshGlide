@@ -27,6 +27,11 @@
 
 using namespace std;
 
+bool Thing::Update()
+{
+	return true;
+}
+
 TicCmd::TicCmd()
 {
 	Reset();
@@ -324,15 +329,20 @@ Puff::Puff(float x, float y, float z)
 	pos_.y = y;
 	pos_.z = z;
 
-	sprite = new Texture(name_, false);
+	for (unsigned int i = 0; i < NUMBER_OF_SPRITES; i++)
+	{
+		sprite[i] = new Texture(name_[i], false);
+	}
 
-	Radius_ = sprite->Width() / 64.0f;
-	Height_ = sprite->Height() * 2.0f / 64.0f;
+	Age_ = 0;
 }
 
 Puff::~Puff()
 {
-	delete sprite;
+	for (unsigned int i = 0; i < NUMBER_OF_SPRITES; i++)
+	{
+		delete sprite[i];
+	}
 }
 
 float Puff::PosX() const
@@ -347,20 +357,45 @@ float Puff::PosY() const
 
 float Puff::PosZ() const
 {
-	return pos_.z - 0.10f;
+	if (Age_ < 4)
+		return pos_.z - 0.05f;
+
+	if (Age_ < 8)
+		return pos_.z - 0.10f;
+
+	return pos_.z - 0.10f + ((float)(Age_ - 8) * 0.02f);
 }
 
 float Puff::Radius() const
 {
-	return Radius_;
+	return GetSprite({0,0,0})->Width() / 64.0f;
 }
 
 float Puff::Height() const
 {
-	return Height_;
+	return GetSprite({0,0,0})->Height() * 2.0f / 64.0f;
 }
 
 Texture* Puff::GetSprite(Float3 /*CamPos*/) const
 {
-	return sprite;
+	if (Age_ < 4)
+		return sprite[0];
+
+	if (Age_ < 8)
+		return sprite[1];
+
+	if (Age_ < 12)
+		return sprite[2];
+
+	return sprite[3];
+}
+
+bool Puff::Update()
+{
+	Age_++;
+
+	if (Age_ < MAX_AGE)
+		return true;
+
+	return false;
 }
