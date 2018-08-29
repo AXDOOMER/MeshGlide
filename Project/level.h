@@ -40,7 +40,7 @@ public:
 	vector<Player*> players;	// Pointers to every player
 	vector<SpawnSpot> spawns;
 	vector<Weapon*> weapons;
-	vector<Thing*> things;	// In order to draw everything easily, everything is put in the same array.
+	vector<Thing*> things;	// In order to draw everything easily, everything is put in the same array. TODO: Use a deque?
 
 	void AddTexture(const string& name, bool enableFiltering);	// Add texture to cache if missing
 	void UseTexture(const string& name);	// Bind texture
