@@ -331,7 +331,10 @@ Puff::Puff(float x, float y, float z)
 
 	for (unsigned int i = 0; i < NUMBER_OF_SPRITES; i++)
 	{
-		sprite[i] = new Texture(name_[i], false);
+		if (!Cache::instance()->Has(name_[i]))
+		{
+			Cache::instance()->Add(name_[i], new Texture(name_[i], false));
+		}
 	}
 
 	Age_ = 0;
@@ -339,10 +342,6 @@ Puff::Puff(float x, float y, float z)
 
 Puff::~Puff()
 {
-	for (unsigned int i = 0; i < NUMBER_OF_SPRITES; i++)
-	{
-		delete sprite[i];
-	}
 }
 
 float Puff::PosX() const
@@ -379,15 +378,15 @@ float Puff::Height() const
 Texture* Puff::GetSprite(Float3 /*CamPos*/) const
 {
 	if (Age_ < 4)
-		return sprite[0];
+		return Cache::instance()->Get(name_[0]);
 
 	if (Age_ < 8)
-		return sprite[1];
+		return Cache::instance()->Get(name_[1]);
 
 	if (Age_ < 12)
-		return sprite[2];
+		return Cache::instance()->Get(name_[2]);
 
-	return sprite[3];
+	return Cache::instance()->Get(name_[3]);
 }
 
 bool Puff::Update()

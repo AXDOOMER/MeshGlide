@@ -34,7 +34,6 @@ public:
 	string SkyTexture;
 
 	// Stuff that's part of the map
-	Cache<string, Texture> cache;
 	vector<Plane*> planes;
 	Player* play = nullptr;	// Pointer to the current player
 	vector<Player*> players;	// Pointers to every player

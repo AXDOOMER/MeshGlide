@@ -107,16 +107,16 @@ void Level::SpawnPlayer(Player* play)
 
 void Level::AddTexture(const string& name, bool enableFiltering)
 {
-	if (!cache.Has(name))
+	if (!Cache::instance()->Has(name))
 	{
-		cache.Add(name, new Texture(name, enableFiltering));
+		Cache::instance()->Add(name, new Texture(name, enableFiltering));
 		cout << "Added texture " << name << endl;
 	}
 }
 
 void Level::UseTexture(const string& name)
 {
-	cache.Get(name)->Bind();
+	Cache::instance()->Get(name)->Bind();
 }
 
 // Splits a string

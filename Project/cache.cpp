@@ -13,48 +13,65 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// cache.h
+// cache.cpp
 // Generic cache that's a facade for a map and takes pointers to a value.
 // It handles the deletition when the cache object is destroyed.
 // It uses the singleton pattern.
 // The method that returns the previous element is not thread safe.
 
-#ifndef CACHE_H
-#define CACHE_H
-
+#include "cache.h"
 #include "texture.h"
 
 #include <map>
 #include <string>
 using namespace std;
 
-class Cache
+Cache* Cache::instance_ = nullptr;
+
+Cache::Cache()
 {
-private:
-	map<string, Texture*> store_;
-	string prev_;	// Previous used key when doing a Get()
+	prev_ = "";
+}
 
-	static Cache* instance_;
+void Cache::Add(const string& key, Texture* data)
+{
+	store_.insert(pair<const string&, Texture*>(key, data));
+}
 
-	Cache();
+bool Cache::Has(const string& key) const
+{
+	return store_.find(key) != store_.end();
+}
 
-public:
-	void Add(const string& key, Texture* data);
+Texture* Cache::Get(const string& key)
+{
+	prev_ = key;
+	// Will throw 'std::out_of_range' if key is not found
+	return store_.at(key);
+}
 
-	bool Has(const string& key) const;
+unsigned int Cache::Size() const
+{
+	return store_.size();
+}
 
-	// TODO: Remove 'Add' and 'Has'. This could be all done in 'Get'.
+string Cache::Previous() const
+{
+	return prev_;
+}
 
-	Texture* Get(const string& key);
+Cache* Cache::instance()
+{
+	if (!instance_)
+		instance_ = new Cache;
+	return instance_;
+}
 
-	unsigned int Size() const;
-
-	string Previous() const;
-
-	static Cache* instance();
-
-	// Destructor
-	~Cache();
-};
-
-#endif	// CACHE_H
+// Destructor
+Cache::~Cache()
+{
+	// Iterate and delete elements of the map
+	for (auto& e: store_) {
+		delete e.second;
+	}
+}
