@@ -215,7 +215,7 @@ public:
 	int Age_;
 	const int MAX_AGE = 16;
 
-	const NUMBER_OF_SPRITES = 4;
+	const static unsigned int NUMBER_OF_SPRITES = 4;
 	const string name_[NUMBER_OF_SPRITES] = {"puffa0.png", "puffb0.png", "puffc0.png", "puffd0.png"};
 	Texture* sprite[NUMBER_OF_SPRITES];
 	Texture* GetSprite(Float3 CamPos) const;
