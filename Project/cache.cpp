@@ -14,10 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // cache.cpp
-// Generic cache that's a facade for a map and takes pointers to a value.
-// It handles the deletition when the cache object is destroyed.
+// Cache that makes use of a map and manages the textures.
 // It uses the singleton pattern.
-// The method that returns the previous element is not thread safe.
 
 #include "cache.h"
 #include "texture.h"
