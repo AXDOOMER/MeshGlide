@@ -30,22 +30,22 @@ Cache* Cache::instance_ = nullptr;
 
 Cache::Cache()
 {
-	prev_ = "";
+	// Empty
 }
 
-void Cache::Add(const string& key, Texture* data)
+bool Cache::Add(const string& name, bool enableFiltering)
 {
-	store_.insert(pair<const string&, Texture*>(key, data));
-}
+	if (store_.find(name) == store_.end())
+	{
+		store_.insert(pair<const string&, Texture*>(name, new Texture(name, enableFiltering)));
+		return true;
+	}
 
-bool Cache::Has(const string& key) const
-{
-	return store_.find(key) != store_.end();
+	return false;
 }
 
 Texture* Cache::Get(const string& key)
 {
-	prev_ = key;
 	// Will throw 'std::out_of_range' if key is not found
 	return store_.at(key);
 }
@@ -53,11 +53,6 @@ Texture* Cache::Get(const string& key)
 unsigned int Cache::Size() const
 {
 	return store_.size();
-}
-
-string Cache::Previous() const
-{
-	return prev_;
 }
 
 Cache* Cache::Instance()

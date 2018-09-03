@@ -32,7 +32,6 @@ class Cache
 {
 private:
 	map<string, Texture*> store_;
-	string prev_;	// Previous used key when doing a Get()
 
 	static Cache* instance_;
 
@@ -40,11 +39,7 @@ private:
 	~Cache();	// Prevent unwanted destruction
 
 public:
-	void Add(const string& key, Texture* data);
-
-	bool Has(const string& key) const;
-
-	// TODO: Remove 'Add' and 'Has'. This could be all done in 'Get'.
+	bool Add(const string& key, bool enableFiltering);
 
 	Texture* Get(const string& key);
 

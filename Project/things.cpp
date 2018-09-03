@@ -61,10 +61,7 @@ Player::Player()
 	// Add the sprites to the cache from their filename
 	for (unsigned int i = 0; i < sprites_.size(); i++)
 	{
-		if (!Cache::Instance()->Has(sprites_[i]))
-		{
-			Cache::Instance()->Add(sprites_[i], new Texture(sprites_[i], false));
-		}
+		Cache::Instance()->Add(sprites_[i], false);
 	}
 }
 
@@ -284,10 +281,7 @@ Weapon::Weapon(float x, float y, float z, string type)
 	Type_ = type;
 
 	string name = Type_ + ".png";
-	if (!Cache::Instance()->Has(name))
-	{
-		Cache::Instance()->Add(name, new Texture(name, false));
-	}
+	Cache::Instance()->Add(name, false);
 
 	Radius_ = Cache::Instance()->Get(name)->Width() / 64.0f;
 	Height_ = Cache::Instance()->Get(name)->Height() * 2.0f / 64.0f;
@@ -336,10 +330,7 @@ Puff::Puff(float x, float y, float z)
 
 	for (unsigned int i = 0; i < sprites_.size(); i++)
 	{
-		if (!Cache::Instance()->Has(sprites_[i]))
-		{
-			Cache::Instance()->Add(sprites_[i], new Texture(sprites_[i], false));
-		}
+		Cache::Instance()->Add(sprites_[i], false);
 	}
 
 	Age_ = 0;

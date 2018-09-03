@@ -110,9 +110,8 @@ void Level::SpawnPlayer(Player* play)
 
 void Level::AddTexture(const string& name, bool enableFiltering)
 {
-	if (!Cache::Instance()->Has(name))
+	if (Cache::Instance()->Add(name, enableFiltering))
 	{
-		Cache::Instance()->Add(name, new Texture(name, enableFiltering));
 		cout << "Added texture " << name << endl;
 	}
 }
