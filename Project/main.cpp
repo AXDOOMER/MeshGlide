@@ -41,7 +41,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.46 (dev)";
+	const char* const VERSION = "0.47 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -49,7 +49,7 @@ int main(int argc, const char *argv[])
 	ofstream DemoWrite;
 	ifstream DemoRead;
 	unsigned int FrameDelay = 0;
-	string LevelName = "map.obj";
+	string LevelName = "test.txt";
 	bool Fast = false;	// To unlock the speed of the game
 	auto GameStartTime = chrono::system_clock::now();
 	extern GameWindow view;
