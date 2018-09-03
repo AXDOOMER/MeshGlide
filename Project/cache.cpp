@@ -60,11 +60,17 @@ string Cache::Previous() const
 	return prev_;
 }
 
-Cache* Cache::instance()
+Cache* Cache::Instance()
 {
 	if (!instance_)
 		instance_ = new Cache;
 	return instance_;
+}
+
+void Cache::DestroyInstance()
+{
+	delete instance_;	// The cache will be emptied
+	instance_ = nullptr;
 }
 
 // Destructor

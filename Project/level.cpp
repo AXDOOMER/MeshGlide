@@ -56,6 +56,9 @@ Level::~Level()
 	{
 		delete planes[i];
 	}
+
+	// Delete the cache instance and its contents
+	Cache::Instance()->DestroyInstance();
 }
 
 void Level::Reload()
@@ -107,16 +110,16 @@ void Level::SpawnPlayer(Player* play)
 
 void Level::AddTexture(const string& name, bool enableFiltering)
 {
-	if (!Cache::instance()->Has(name))
+	if (!Cache::Instance()->Has(name))
 	{
-		Cache::instance()->Add(name, new Texture(name, enableFiltering));
+		Cache::Instance()->Add(name, new Texture(name, enableFiltering));
 		cout << "Added texture " << name << endl;
 	}
 }
 
 void Level::UseTexture(const string& name)
 {
-	Cache::instance()->Get(name)->Bind();
+	Cache::Instance()->Get(name)->Bind();
 }
 
 // Splits a string

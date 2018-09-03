@@ -37,6 +37,7 @@ private:
 	static Cache* instance_;
 
 	Cache();
+	~Cache();	// Prevent unwanted destruction
 
 public:
 	void Add(const string& key, Texture* data);
@@ -51,10 +52,10 @@ public:
 
 	string Previous() const;
 
-	static Cache* instance();
+	static Cache* Instance();
 
-	// Destructor
-	~Cache();
+	// Resets the "instance_" pointer
+	static void DestroyInstance();
 };
 
 #endif	// CACHE_H

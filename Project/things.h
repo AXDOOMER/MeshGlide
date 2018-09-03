@@ -143,8 +143,9 @@ public:
 	float PosY() const;
 	float PosZ() const;
 
+	// Sprite names
+	const vector<string> sprites_ = {"playa1.png", "playa2.png", "playa3.png", "playa4.png", "playa5.png", "playa6.png", "playa7.png", "playa8.png"};
 	Texture* GetSprite(Float3 CamPos) const;
-	Texture** sprite;
 
 private:
 	const float MaxWalkSpeed = 0.6f;
@@ -191,11 +192,10 @@ public:
 	float Radius() const;
 	float Height() const;
 
-	string Type;
+	string Type_;
 	float Radius_;
 	float Height_;
 
-	Texture* sprite;
 	Texture* GetSprite(Float3 CamPos) const;
 };
 
@@ -215,9 +215,8 @@ public:
 	int Age_;
 	const int MAX_AGE = 16;
 
-	const static unsigned int NUMBER_OF_SPRITES = 4;
-	const string name_[NUMBER_OF_SPRITES] = {"puffa0.png", "puffb0.png", "puffc0.png", "puffd0.png"};
-	Texture* sprite[NUMBER_OF_SPRITES];
+	// Sprite names
+	const vector<string> sprites_ = {"puffa0.png", "puffb0.png", "puffc0.png", "puffd0.png"};
 	Texture* GetSprite(Float3 CamPos) const;
 	bool Update();
 };
