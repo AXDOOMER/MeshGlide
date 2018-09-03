@@ -314,6 +314,8 @@ void Hitscan(Level* lvl, Player* play)
 
 	if (points.size() > 0)
 	{
-		lvl->things.push_back(new Puff(points[0].x, points[0].y, points[0].z));
+		Float3 dir = {points[0].x - play->PosX(), points[0].y - play->PosY(), points[0].z - play->CamZ()};
+		dir = subVectors(dir, normalize(dir));	// The puff must not touch the wall
+		lvl->things.push_back(new Puff({play->PosX() + dir.x, play->PosY() + dir.y, play->CamZ() + dir.z}));
 	}
 }

@@ -27,6 +27,11 @@
 
 using namespace std;
 
+bool Thing::Update()
+{
+	return true;
+}
+
 TicCmd::TicCmd()
 {
 	Reset();
@@ -53,20 +58,16 @@ Player::Player()
 		OwnedWeapons[i] = false;
 	}
 
-	sprite = new Texture*[8];
-
-	for (int i = 0; i < 8; i++)
-		sprite[i] = new Texture("playa" + to_string(i + 1) + ".png", false);
+	// Add the sprites to the cache from their filename
+	for (unsigned int i = 0; i < sprites_.size(); i++)
+	{
+		Cache::Instance()->Add(sprites_[i], false);
+	}
 }
 
 Player::~Player()
 {
-	// Delete the array's content
-	for (int i = 0; i < 8; i++)
-		delete sprite[i];
-
-	// Delete the array
-	delete[] sprite;
+	// Empty
 }
 
 void Player::Reset()
@@ -248,7 +249,7 @@ Texture* Player::GetSprite(Float3 CamPos) const
 	// Cross-multiply and the correct sprite rotation can be retrieved from the array using the quotient
 	int Quotient = (Theta * 8) / (M_PI * 2);
 
-	return sprite[Quotient % 8];
+	return Cache::Instance()->Get(sprites_[Quotient % 8]);
 }
 
 // Used to compare two planes by counting the amount of common vertices
@@ -277,15 +278,17 @@ Weapon::Weapon(float x, float y, float z, string type)
 	pos_.y = y;
 	pos_.z = z;
 
-	sprite = new Texture(type + ".png", false);
+	Type_ = type;
+	Filename_ = Type_ + ".png";
 
-	Radius_ = sprite->Width() / 64.0f;
-	Height_ = sprite->Height() * 2.0f / 64.0f;
+	Cache::Instance()->Add(Filename_, false);
+	Radius_ = Cache::Instance()->Get(Filename_)->Width() / 64.0f;
+	Height_ = Cache::Instance()->Get(Filename_)->Height() * 2.0f / 64.0f;
 }
 
 Weapon::~Weapon()
 {
-	delete sprite;
+	// Empty
 }
 
 float Weapon::PosX() const
@@ -315,7 +318,7 @@ float Weapon::Height() const
 
 Texture* Weapon::GetSprite(Float3 /*CamPos*/) const
 {
-	return sprite;
+	return Cache::Instance()->Get(Filename_);
 }
 
 Puff::Puff(float x, float y, float z)
@@ -324,15 +327,17 @@ Puff::Puff(float x, float y, float z)
 	pos_.y = y;
 	pos_.z = z;
 
-	sprite = new Texture(name_, false);
+	for (unsigned int i = 0; i < sprites_.size(); i++)
+	{
+		Cache::Instance()->Add(sprites_[i], false);
+	}
 
-	Radius_ = sprite->Width() / 64.0f;
-	Height_ = sprite->Height() * 2.0f / 64.0f;
+	Age_ = 0;
 }
 
 Puff::~Puff()
 {
-	delete sprite;
+	// Empty
 }
 
 float Puff::PosX() const
@@ -347,20 +352,45 @@ float Puff::PosY() const
 
 float Puff::PosZ() const
 {
-	return pos_.z - 0.10f;
+	if (Age_ < 4)
+		return pos_.z - 0.05f;
+
+	if (Age_ < 8)
+		return pos_.z - 0.10f;
+
+	return pos_.z - 0.10f + ((float)(Age_ - 8) * 0.02f);
 }
 
 float Puff::Radius() const
 {
-	return Radius_;
+	return GetSprite({0,0,0})->Width() / 64.0f;
 }
 
 float Puff::Height() const
 {
-	return Height_;
+	return GetSprite({0,0,0})->Height() * 2.0f / 64.0f;
 }
 
 Texture* Puff::GetSprite(Float3 /*CamPos*/) const
 {
-	return sprite;
+	if (Age_ < 4)
+		return Cache::Instance()->Get(sprites_[0]);
+
+	if (Age_ < 8)
+		return Cache::Instance()->Get(sprites_[1]);
+
+	if (Age_ < 12)
+		return Cache::Instance()->Get(sprites_[2]);
+
+	return Cache::Instance()->Get(sprites_[3]);
+}
+
+bool Puff::Update()
+{
+	Age_++;
+
+	if (Age_ < MAX_AGE)
+		return true;
+
+	return false;
 }

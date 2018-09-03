@@ -92,6 +92,8 @@ public:
 
 	virtual Texture* GetSprite(Float3 CamPos) const = 0;
 
+	virtual bool Update();	// Returns 'true' if still alive, 'false' if it needs to be deleted.
+
 	// So the compiler doesn't warn on deleting an object of polymorphic class type
 	// https://stackoverflow.com/questions/353817/should-every-class-have-a-virtual-destructor
 	virtual ~Thing() = default;
@@ -141,8 +143,9 @@ public:
 	float PosY() const;
 	float PosZ() const;
 
+	// Sprite names
+	const vector<string> sprites_ = {"playa1.png", "playa2.png", "playa3.png", "playa4.png", "playa5.png", "playa6.png", "playa7.png", "playa8.png"};
 	Texture* GetSprite(Float3 CamPos) const;
-	Texture** sprite;
 
 private:
 	const float MaxWalkSpeed = 0.6f;
@@ -189,11 +192,11 @@ public:
 	float Radius() const;
 	float Height() const;
 
-	string Type;
+	string Type_;
+	string Filename_;	// For the sprite
 	float Radius_;
 	float Height_;
 
-	Texture* sprite;
 	Texture* GetSprite(Float3 CamPos) const;
 };
 
@@ -210,12 +213,13 @@ public:
 	float Height() const;
 
 	string Type;
-	float Radius_;
-	float Height_;
-	const string name_ = "puffb0.png";
+	int Age_;
+	const int MAX_AGE = 16;
 
-	Texture* sprite;
+	// Sprite names
+	const vector<string> sprites_ = {"puffa0.png", "puffb0.png", "puffc0.png", "puffd0.png"};
 	Texture* GetSprite(Float3 CamPos) const;
+	bool Update();
 };
 
 class Critter: public Thing

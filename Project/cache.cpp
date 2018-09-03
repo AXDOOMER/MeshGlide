@@ -13,42 +13,64 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// cache.h
+// cache.cpp
 // Cache that makes use of a map and manages the textures.
 // It uses the singleton pattern.
 
-#ifndef CACHE_H
-#define CACHE_H
-
+#include "cache.h"
 #include "texture.h"
 
 #include <map>
 #include <string>
 using namespace std;
 
-class Cache
+Cache* Cache::instance_ = nullptr;
+
+Cache::Cache()
 {
-private:
-	map<string, Texture*> store_;
+	// Empty
+}
 
-	static Cache* instance_;
+bool Cache::Add(const string& name, bool enableFiltering)
+{
+	if (store_.find(name) == store_.end())
+	{
+		store_.insert(pair<const string&, Texture*>(name, new Texture(name, enableFiltering)));
+		return true;
+	}
 
-	Cache();
-	~Cache();	// Prevent unwanted destruction
+	return false;
+}
 
-public:
-	bool Add(const string& key, bool enableFiltering);
+Texture* Cache::Get(const string& key)
+{
+	// Will throw 'std::out_of_range' if key is not found
+	return store_.at(key);
+}
 
-	Texture* Get(const string& key);
+unsigned int Cache::Size() const
+{
+	return store_.size();
+}
 
-	unsigned int Size() const;
+Cache* Cache::Instance()
+{
+	if (!instance_)
+		instance_ = new Cache;
+	return instance_;
+}
 
-	string Previous() const;
+void Cache::DestroyInstance()
+{
+	delete instance_;	// The cache will be emptied
+	instance_ = nullptr;
+}
 
-	static Cache* Instance();
-
-	// Resets the "instance_" pointer
-	static void DestroyInstance();
-};
-
-#endif	// CACHE_H
+// Destructor
+Cache::~Cache()
+{
+	// Iterate and delete elements of the map
+	for (auto& e: store_) {
+		delete e.second;
+	}
+}

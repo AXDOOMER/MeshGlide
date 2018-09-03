@@ -34,13 +34,12 @@ public:
 	string SkyTexture;
 
 	// Stuff that's part of the map
-	Cache<string, Texture> cache;
 	vector<Plane*> planes;
 	Player* play = nullptr;	// Pointer to the current player
 	vector<Player*> players;	// Pointers to every player
 	vector<SpawnSpot> spawns;
 	vector<Weapon*> weapons;
-	vector<Thing*> things;	// In order to draw everything easily, everything is put in the same array.
+	vector<Thing*> things;	// In order to draw everything easily, everything is put in the same array. TODO: Use a deque?
 
 	void AddTexture(const string& name, bool enableFiltering);	// Add texture to cache if missing
 	void UseTexture(const string& name);	// Bind texture
@@ -56,6 +55,7 @@ public:
 	void LoadObj(const string& path);
 
 	void SpawnPlayer(Player* play);
+	void UpdateThings();
 
 private:
 	// OBJ and OpenGL stuff

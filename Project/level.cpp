@@ -56,6 +56,9 @@ Level::~Level()
 	{
 		delete planes[i];
 	}
+
+	// Delete the cache instance and its contents
+	Cache::Instance()->DestroyInstance();
 }
 
 void Level::Reload()
@@ -71,6 +74,21 @@ void Level::Reload()
 	// Load level
 	reloaded_ = true;
 	LoadLevel(levelname_, players.size());
+}
+
+// Update game entities
+void Level::UpdateThings()
+{
+	for (unsigned int i = 0; i < things.size(); i++)
+	{
+		bool keep = things[i]->Update();
+
+		if (!keep)
+		{
+			delete things[i];
+			things.erase(things.begin() + i);
+		}
+	}
 }
 
 void Level::SpawnPlayer(Player* play)
@@ -92,16 +110,15 @@ void Level::SpawnPlayer(Player* play)
 
 void Level::AddTexture(const string& name, bool enableFiltering)
 {
-	if (!cache.Has(name))
+	if (Cache::Instance()->Add(name, enableFiltering))
 	{
-		cache.Add(name, new Texture(name, enableFiltering));
 		cout << "Added texture " << name << endl;
 	}
 }
 
 void Level::UseTexture(const string& name)
 {
-	cache.Get(name)->Bind();
+	Cache::Instance()->Get(name)->Bind();
 }
 
 // Splits a string
