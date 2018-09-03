@@ -35,6 +35,10 @@ The following files were taken from the [Freedoom](https://github.com/freedoom/f
 
 ## Screenshots
 
+### Version 0.47
+
+![screenshot_2018-09-02_22-38-51](https://user-images.githubusercontent.com/6194072/44964940-13fd5e00-af01-11e8-92a3-ee4c36e36aa8.png)
+
 ### Version 0.39
 
 ![screenshot at 2018-05-10 21-06-32](https://user-images.githubusercontent.com/6194072/40698505-4aac5550-639d-11e8-949c-be9c2fab0723.png)
