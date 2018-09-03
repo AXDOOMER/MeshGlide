@@ -279,12 +279,11 @@ Weapon::Weapon(float x, float y, float z, string type)
 	pos_.z = z;
 
 	Type_ = type;
+	Filename_ = Type_ + ".png";
 
-	string name = Type_ + ".png";
-	Cache::Instance()->Add(name, false);
-
-	Radius_ = Cache::Instance()->Get(name)->Width() / 64.0f;
-	Height_ = Cache::Instance()->Get(name)->Height() * 2.0f / 64.0f;
+	Cache::Instance()->Add(Filename_, false);
+	Radius_ = Cache::Instance()->Get(Filename_)->Width() / 64.0f;
+	Height_ = Cache::Instance()->Get(Filename_)->Height() * 2.0f / 64.0f;
 }
 
 Weapon::~Weapon()
@@ -319,7 +318,7 @@ float Weapon::Height() const
 
 Texture* Weapon::GetSprite(Float3 /*CamPos*/) const
 {
-	return Cache::Instance()->Get(Type_ + ".png");
+	return Cache::Instance()->Get(Filename_);
 }
 
 Puff::Puff(float x, float y, float z)

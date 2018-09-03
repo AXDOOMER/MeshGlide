@@ -193,6 +193,7 @@ public:
 	float Height() const;
 
 	string Type_;
+	string Filename_;	// For the sprite
 	float Radius_;
 	float Height_;
 
