@@ -401,26 +401,26 @@ unsigned int Level::CountCommonEdgesPlanes(Plane* p1, Plane* p2)
 	{
 		for (unsigned int j = 0; j < p2->Edges.size(); j++)
 		{
-			if ((p1->Edges[i].a == p2->Edges[j].a && p1->Edges[i].b == p2->Edges[j].b) ||
-				(p1->Edges[i].a == p2->Edges[j].b && p1->Edges[i].b == p2->Edges[j].a))
+//			if (i != j)		// On peut pas faire ça
 			{
-
-				// wow c'est de la shit comme algo
-				if (!p2->CanWalk())
-					continue;
-
+				if ((p1->Edges[i].a == p2->Edges[j].a && p1->Edges[i].b == p2->Edges[j].b) ||
+					(p1->Edges[i].a == p2->Edges[j].b && p1->Edges[i].b == p2->Edges[j].a))
 				{
+					// wow c'est de la shit comme algo
+					if (!p2->CanWalk())
+						continue;
+
 					// They touch. so Increase.
 					count++;
 
 					p1->Edges[i].sides++;
-//					p2->Edges[j].sides++;
+	//				p2->Edges[j].sides++;
 				}
-			}
 
-			// ooo
+				// ooo
 				cout << "1-- " << p1->Edges[i].sides << endl;
 				cout << "2-- " << p2->Edges[j].sides << endl;
+			}
 		}
 	}
 

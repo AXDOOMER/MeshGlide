@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2018 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2018 Alexandre-Xavier Labontï¿½-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -178,7 +178,7 @@ Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane,
 
 bool TouchPlane(Player* play, Plane* p)
 {
-cout << "ran TouchPlane(Player* play, Plane* p)" << endl;
+//cout << "ran TouchPlane(Player* play, Plane* p)" << endl;
 	// Is the player inside the polygon?
 	if (pointInPolyXY(play->PosX(), play->PosY(), p->Vertices))
 		return true;
@@ -247,21 +247,13 @@ Float2 MoveAlongAngle(const Float3& origin, const Float3& target, const float th
 
 bool RadiusEdges3(const Float3& target, Player* play)
 {
+	// Check the planes that are touched
 	vector<Plane*> pTouched;
 	TouchingPlanes(play, play->plane, pTouched);
-	cout << "RadiusEdges3: NUMBER OF PLANES TOUCHED BY PLAYER: " << pTouched.size() << endl;
-/*
-	for (int i = pTouched.size() - 1; i >= 0; i--)
-	{
-		if (!pTouched[i]->CanWalk())
-		{
-			pTouched.erase(pTouched.begin() + i);
-		}
-	}
-*/
-	vector<Edge> edges;
-	//Plane* p = play->plane;
+//	cout << "RadiusEdges3: NUMBER OF PLANES TOUCHED BY PLAYER: " << pTouched.size() << endl;
 
+	// Check for the edges that are touched
+	vector<Edge> edges;
 	for (unsigned int j = 0; j < pTouched.size(); j++)
 	{
 		for (unsigned int i = 0; i < pTouched[j]->Edges.size(); i++)
@@ -278,7 +270,7 @@ bool RadiusEdges3(const Float3& target, Player* play)
 
 	for (int i = edges.size() - 1; i >= 0; i--)
 	{
-		cout << i << " -- " << edges[i].sides <<endl;	// --
+//		cout << i << " -- " << edges[i].sides <<endl;	// --
 
 		if (edges[i].sides > 0)
 		{
@@ -286,8 +278,6 @@ bool RadiusEdges3(const Float3& target, Player* play)
 			//i--;
 		}
 	}
-
-
 
 	// The player scrossed the edge of the polygon
 	if (edges.size() > 0)
@@ -370,23 +360,16 @@ float AngleOfFarthestIntersectedEdge(const Float3& origin, const Float3& target,
 	return edgeAngle;
 }
 
+// Push player out of point (extremity of a line)
 Float2 MoveOnCollision2(const Float3& origin, const Float3& target, Player* play)
 {
+	// Get planes that are touched by the player
 	vector<Plane*> pTouched;
 	TouchingPlanes(play, play->plane, pTouched);
 	cout << "MoveOnCollision2: NUMBER OF PLANES TOUCHED BY PLAYER: " << pTouched.size() << endl;
-/*
-	for (int i = pTouched.size() - 1; i >= 0; i--)
-	{
-		if (!pTouched[i]->CanWalk())
-		{
-			pTouched.erase(pTouched.begin() + i);
-		}
-	}
-*/
-	vector<Edge> edges;
-//	Plane* p = play->plane;
 
+	// Check the edges of polygons that are touched
+	vector<Edge> edges;
 	for (unsigned int j = 0; j < pTouched.size(); j++)
 	{
 		for (unsigned int i = 0; i < pTouched[j]->Edges.size(); i++)
@@ -400,9 +383,10 @@ Float2 MoveOnCollision2(const Float3& origin, const Float3& target, Player* play
 		}
 	}
 
+	// Erase edges that are not one-sided
 	for (int i = edges.size() - 1; i >= 0; i--)
 	{
-		cout << i << " -- " << edges[i].sides <<endl;	// --
+//		cout << i << " -- " << edges[i].sides <<endl;	// --
 
 		if (edges[i].sides > 0)
 		{
@@ -411,6 +395,10 @@ Float2 MoveOnCollision2(const Float3& origin, const Float3& target, Player* play
 		}
 	}
 
+	// TODO: For list of possible edges, get the distance from them
+	// (perpendicular and from the start point and end point)
+	// Then find the closest edge and slide against it.
+
 	// The player crossed the edge of the polygon
 	if (edges.size() > 0)
 	{
@@ -418,80 +406,139 @@ Float2 MoveOnCollision2(const Float3& origin, const Float3& target, Player* play
 		vector<Float2> points;
 		Float3 newpoint = origin;
 
-		for (unsigned int j = 0; j < pTouched.size(); j++)
+		for (unsigned int i = 0; i < edges.size(); i++)
 		{
-			for (unsigned int i = 0; i < pTouched[j]->Edges.size(); i++)
+			// Check for extremities
+			if (CompareDistanceToLength(edges[i].a.x - target.x, edges[i].a.y - target.y, 0.5f))
 			{
-				Plane* p = pTouched[j];
-cout << j << "  ***  " << i << endl;
-				float angle = (float)atan2(p->Edges[i].a.y - p->Edges[i].b.y, p->Edges[i].a.x - p->Edges[i].b.x);
-				float RadiusToUse = 0.5f;
+				points.push_back({edges[i].a.x, edges[i].a.y});
+			}
 
-				// Get the orthogonal vector, so invert the use of 'sin' and 'cos' here.
-				// Only works for 90 degrees angles?
-				// XXX: This was fixed by using 'cos' and 'sin' normally, but adding 90 degrees to the angle.
-
-				float OrthPlayerStartX = target.x + (float) cos(angle + M_PI_2) * RadiusToUse;
-				float OrthPlayerStartY = target.y + (float) sin(angle + M_PI_2) * RadiusToUse;
-				float OrthPlayerEndX = target.x - (float) cos(angle + M_PI_2) * RadiusToUse;
-				float OrthPlayerEndY = target.y - (float) sin(angle + M_PI_2) * RadiusToUse;
-
-				float angle2 = atan2(OrthPlayerStartY - OrthPlayerEndY, OrthPlayerStartX - OrthPlayerEndX);
-
-				if (CheckVectorIntersection(p->Edges[i].a, p->Edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}))
-				{
-					cout << "Angle:	" << angle * (180 / M_PI) << endl;
-					cout << "Angle2:	" << angle2 * (180 /M_PI) << endl;
-
-					cout << "Diff:	" << abs(angle - angle2) * (180 / M_PI) << endl;
-
-					// Intersection
-					touching.push_back(p->Edges[i]);
-
-					points.push_back(CollisionPoint(p->Edges[i].a, p->Edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}));
-				}
+			if (CompareDistanceToLength(edges[i].b.x - target.x, edges[i].b.y - target.y, 0.5f))
+			{
+				points.push_back({edges[i].b.x, edges[i].b.y});
 			}
 		}
 
-		if (points.size() != touching.size())
-		{
-			cout << "FUCK t!=p" << endl;
-			int* b = nullptr;
-			int i = *b;
-		}
+		cout << "MoveOnCollision2: Number of points touched: " << points.size() <<endl;
 
-		// Remove lines that can be crossed
-		for (int i = touching.size() - 1; i >= 0; i--)
+		float distance = 3000.0f;
+
+		for (unsigned int k = 0; k < points.size(); k++)
 		{
-			if (touching[i].sides > 0)
+			if (distance > sqrt( pow(points[k].x, 2) + pow(points[k].y, 2) ))
 			{
-				touching.erase(touching.begin() + i);
-				// also erase collision point
-				points.erase(points.begin() + i);
+				cout << "MoveOnCollision2: New " << k << " point closer." << endl;
+				newpoint = CheckCollisionPoint2(target, {points[k].x, points[k].y, 0}, 0.50f);
 			}
 		}
-
-		cout << "Number of line touched with radius: " << touching.size() << "		points: "<<points.size()<<endl;
-
-		for (unsigned int k = 0; k < touching.size(); k++)
-		{
-			if (target.x == points[k].x && target.y == points[k].y)
-				continue;
-
-			cout << "CHANGE TO New POINT!!!!" << endl;
-			cout << "New POINT: " << points[k].x << "	" << points[k].y << endl;
-			newpoint = CheckCollisionPoint2(target, {points[k].x, points[k].y, 0}, 0.55f);
-			//target = newpoint;
-			cout << "NEW TARGET CHECK: " << newpoint.x << "	" << newpoint.y << endl;
-/*
-			Float2 a = MoveAlongAngle(origin, target, touching[k].angle);
-			newpoint.x = a.x;
-			newpoint.y = a.y;
-*/		}
 		
 
 		// Intersection. Can't pass over there.
 		return {newpoint.x, newpoint.y};
+	}
+
+	// No intersection
+	return {origin.x, origin.y};
+}
+
+// Slide player along edge
+Float2 MoveOnCollision5(const Float3& origin, const Float3& target, Player* play)
+{
+	// Get planes that are touched by the player
+	vector<Plane*> pTouched;
+	TouchingPlanes(play, play->plane, pTouched);
+	cout << "MoveOnCollision5: NUMBER OF PLANES TOUCHED BY PLAYER: " << pTouched.size() << endl;
+
+	// Check the edges of polygons that are touched
+	vector<Edge> edges;
+	for (unsigned int j = 0; j < pTouched.size(); j++)
+	{
+		for (unsigned int i = 0; i < pTouched[j]->Edges.size(); i++)
+		{
+			bool touch = lineCircle(pTouched[j]->Edges[i].a.x, pTouched[j]->Edges[i].a.y, 
+									pTouched[j]->Edges[i].b.x, pTouched[j]->Edges[i].b.y, target.x, target.y, 0.5f);
+			if (touch)
+			{
+				edges.push_back(pTouched[j]->Edges[i]);
+			}
+		}
+	}
+
+	// Erase edges that are not one-sided
+	for (int i = edges.size() - 1; i >= 0; i--)
+	{
+//		cout << i << " -- " << edges[i].sides <<endl;	// --
+
+		if (edges[i].sides > 0)
+		{
+			edges.erase(edges.begin() + i);
+			//i--;
+		}
+	}
+
+	// TODO: For list of possible edges, get the distance from them
+	// (perpendicular and from the start point and end point)
+	// Then find the closest edge and slide against it.
+
+	// The player crossed the edge of the polygon
+	if (edges.size() > 0)
+	{
+		vector<Edge> touching;
+		vector<Float2> points;
+		Float3 newpoint = origin;
+
+		for (unsigned int i = 0; i < edges.size(); i++)
+		{
+			// Check along the line
+			float angle = (float)atan2(edges[i].a.y - edges[i].b.y, edges[i].a.x - edges[i].b.x);
+			float RadiusToUse = 0.5f;
+
+			// Get the orthogonal vector, so invert the use of 'sin' and 'cos' here.
+			// Only works for 90 degrees angles?
+			// XXX: This was fixed by using 'cos' and 'sin' normally, but adding 90 degrees to the angle.
+
+			float OrthPlayerStartX = target.x + (float) cos(angle + M_PI_2) * RadiusToUse;
+			float OrthPlayerStartY = target.y + (float) sin(angle + M_PI_2) * RadiusToUse;
+			float OrthPlayerEndX = target.x - (float) cos(angle + M_PI_2) * RadiusToUse;
+			float OrthPlayerEndY = target.y - (float) sin(angle + M_PI_2) * RadiusToUse;
+
+			float angle2 = atan2(OrthPlayerStartY - OrthPlayerEndY, OrthPlayerStartX - OrthPlayerEndX);
+
+			if (CheckVectorIntersection(edges[i].a, edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}))
+			{
+				cout << "Angle:	" << angle * (180 / M_PI) << endl;
+				cout << "Angle2:	" << angle2 * (180 /M_PI) << endl;
+				cout << "Diff:	" << abs(angle - angle2) * (180 / M_PI) << endl;
+
+				// Intersection
+				points.push_back(CollisionPoint(edges[i].a, edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}));
+				touching.push_back(edges[i]);
+			}
+		}
+
+		cout << "MoveOnCollision5:  Number of edges touched: " << touching.size() <<endl;
+
+		float distance = 3000.0f;
+		Edge closest;
+
+		for (unsigned int k = 0; k < touching.size(); k++)
+		{
+			if (distance > sqrt( pow(points[k].x, 2) + pow(points[k].y, 2) ))
+			{
+				cout << "MoveOnCollision5: New " << k << " point closer." << endl;
+				newpoint = CheckCollisionPoint2(target, {points[k].x, points[k].y, 0}, 0.50f);
+
+				closest = touching[k];
+			}
+		}
+
+		float theAngle = (float)atan2(closest.a.y - closest.b.y, closest.a.x - closest.b.x);
+		return MoveAlongAngle(origin, target, theAngle);
+		
+
+		// Intersection. Can't pass over there.
+		//return {newpoint.x, newpoint.y};
 	}
 
 	// No intersection
