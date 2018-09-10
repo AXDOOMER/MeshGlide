@@ -418,8 +418,8 @@ unsigned int Level::CountCommonEdgesPlanes(Plane* p1, Plane* p2)
 				}
 
 				// ooo
-				cout << "1-- " << p1->Edges[i].sides << endl;
-				cout << "2-- " << p2->Edges[j].sides << endl;
+//				cout << "1-- " << p1->Edges[i].sides << endl;
+//				cout << "2-- " << p2->Edges[j].sides << endl;
 			}
 		}
 	}

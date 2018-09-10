@@ -251,7 +251,7 @@ int main(int argc, const char *argv[])
 			if (!MovePlayerToNewPosition(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i]))
 			{
 				// Compute the position where the player would be if he slide against the wall
-				Float2 pos = MoveOnCollision2(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i]);
+				Float2 pos = MoveOnCollision(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i]);
 
 				// Move the player back to its original position
 				CurrentLevel->players[i]->pos_ = pt;
@@ -265,11 +265,7 @@ int main(int argc, const char *argv[])
 			}
 
 			ApplyGravity(CurrentLevel->players[i]);
-
-			cout << "======================================" << endl;
 		}
-
-		cout << "+++++++++++++++++++++++++++++++++++++++++++++" << endl;
 
 		// Draw Screen
 		DrawScreen(window, CurrentLevel->play, CurrentLevel, FrameDelay);
