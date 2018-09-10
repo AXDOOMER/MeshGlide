@@ -404,6 +404,7 @@ Float2 MoveOnCollision2(const Float3& origin, const Float3& target, Player* play
 	{
 		vector<Edge> touching;
 		vector<Float2> points;
+		vector<Float2> pointsintersection;
 		Float3 newpoint = origin;
 
 		for (unsigned int i = 0; i < edges.size(); i++)
@@ -418,78 +419,7 @@ Float2 MoveOnCollision2(const Float3& origin, const Float3& target, Player* play
 			{
 				points.push_back({edges[i].b.x, edges[i].b.y});
 			}
-		}
 
-		cout << "MoveOnCollision2: Number of points touched: " << points.size() <<endl;
-
-		float distance = 3000.0f;
-
-		for (unsigned int k = 0; k < points.size(); k++)
-		{
-			if (distance > sqrt( pow(points[k].x, 2) + pow(points[k].y, 2) ))
-			{
-				cout << "MoveOnCollision2: New " << k << " point closer." << endl;
-				newpoint = CheckCollisionPoint2(target, {points[k].x, points[k].y, 0}, 0.50f);
-			}
-		}
-		
-
-		// Intersection. Can't pass over there.
-		return {newpoint.x, newpoint.y};
-	}
-
-	// No intersection
-	return {origin.x, origin.y};
-}
-
-// Slide player along edge
-Float2 MoveOnCollision5(const Float3& origin, const Float3& target, Player* play)
-{
-	// Get planes that are touched by the player
-	vector<Plane*> pTouched;
-	TouchingPlanes(play, play->plane, pTouched);
-	cout << "MoveOnCollision5: NUMBER OF PLANES TOUCHED BY PLAYER: " << pTouched.size() << endl;
-
-	// Check the edges of polygons that are touched
-	vector<Edge> edges;
-	for (unsigned int j = 0; j < pTouched.size(); j++)
-	{
-		for (unsigned int i = 0; i < pTouched[j]->Edges.size(); i++)
-		{
-			bool touch = lineCircle(pTouched[j]->Edges[i].a.x, pTouched[j]->Edges[i].a.y, 
-									pTouched[j]->Edges[i].b.x, pTouched[j]->Edges[i].b.y, target.x, target.y, 0.5f);
-			if (touch)
-			{
-				edges.push_back(pTouched[j]->Edges[i]);
-			}
-		}
-	}
-
-	// Erase edges that are not one-sided
-	for (int i = edges.size() - 1; i >= 0; i--)
-	{
-//		cout << i << " -- " << edges[i].sides <<endl;	// --
-
-		if (edges[i].sides > 0)
-		{
-			edges.erase(edges.begin() + i);
-			//i--;
-		}
-	}
-
-	// TODO: For list of possible edges, get the distance from them
-	// (perpendicular and from the start point and end point)
-	// Then find the closest edge and slide against it.
-
-	// The player crossed the edge of the polygon
-	if (edges.size() > 0)
-	{
-		vector<Edge> touching;
-		vector<Float2> points;
-		Float3 newpoint = origin;
-
-		for (unsigned int i = 0; i < edges.size(); i++)
-		{
 			// Check along the line
 			float angle = (float)atan2(edges[i].a.y - edges[i].b.y, edges[i].a.x - edges[i].b.x);
 			float RadiusToUse = 0.5f;
@@ -512,33 +442,51 @@ Float2 MoveOnCollision5(const Float3& origin, const Float3& target, Player* play
 				cout << "Diff:	" << abs(angle - angle2) * (180 / M_PI) << endl;
 
 				// Intersection
-				points.push_back(CollisionPoint(edges[i].a, edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}));
+				pointsintersection.push_back(CollisionPoint(edges[i].a, edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}));
 				touching.push_back(edges[i]);
+			}
+		}
+
+		cout << "MoveOnCollision2: Number of points touched: " << points.size() <<endl;
+		bool isWall = false;
+		float distance = 3000.0f;
+
+		for (unsigned int k = 0; k < points.size(); k++)
+		{
+			if (distance > sqrt( pow(points[k].x, 2) + pow(points[k].y, 2) ))
+			{
+				cout << "MoveOnCollision2: New " << k << " point closer." << endl;
+				newpoint = CheckCollisionPoint2(target, {points[k].x, points[k].y, 0}, 0.55f);
+//				isWall = false;
 			}
 		}
 
 		cout << "MoveOnCollision5:  Number of edges touched: " << touching.size() <<endl;
 
-		float distance = 3000.0f;
+		//float distance = 3000.0f;
 		Edge closest;
 
 		for (unsigned int k = 0; k < touching.size(); k++)
 		{
-			if (distance > sqrt( pow(points[k].x, 2) + pow(points[k].y, 2) ))
+			if (distance > sqrt( pow(pointsintersection[k].x, 2) + pow(pointsintersection[k].y, 2) ))
 			{
 				cout << "MoveOnCollision5: New " << k << " point closer." << endl;
-				newpoint = CheckCollisionPoint2(target, {points[k].x, points[k].y, 0}, 0.50f);
-
+				newpoint = CheckCollisionPoint2(target, {pointsintersection[k].x, pointsintersection[k].y, 0}, 0.50f);
+				isWall = true;
 				closest = touching[k];
 			}
 		}
 
-		float theAngle = (float)atan2(closest.a.y - closest.b.y, closest.a.x - closest.b.x);
-		return MoveAlongAngle(origin, target, theAngle);
-		
-
-		// Intersection. Can't pass over there.
-		//return {newpoint.x, newpoint.y};
+		if (isWall)
+		{
+			float theAngle = (float)atan2(closest.a.y - closest.b.y, closest.a.x - closest.b.x);
+			return MoveAlongAngle(origin, target, theAngle);
+		}
+		else
+		{
+			// Intersection. Can't pass over there.
+			return {newpoint.x, newpoint.y};
+		}
 	}
 
 	// No intersection

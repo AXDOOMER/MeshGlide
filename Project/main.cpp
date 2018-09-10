@@ -251,7 +251,7 @@ int main(int argc, const char *argv[])
 			if (!MovePlayerToNewPosition(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i]))
 			{
 				// Compute the position where the player would be if he slide against the wall
-				Float2 pos = MoveOnCollision5(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i]);
+				Float2 pos = MoveOnCollision2(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i]);
 
 				// Move the player back to its original position
 				CurrentLevel->players[i]->pos_ = pt;
@@ -261,21 +261,6 @@ int main(int argc, const char *argv[])
 				{
 					CurrentLevel->players[i]->pos_.x = pos.x;
 					CurrentLevel->players[i]->pos_.y = pos.y;
-				}
-				else
-				{
-					// Compute the position where the player would be if he slide against the wall
-					Float2 pos = MoveOnCollision2(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i]);
-
-					// Move the player back to its original position
-					CurrentLevel->players[i]->pos_ = pt;
-
-					// Try to slide the player against the wall to a valid position
-					if (MovePlayerToNewPosition(pt, {pos.x, pos.y, 0}, CurrentLevel->players[i]))
-					{
-						CurrentLevel->players[i]->pos_.x = pos.x;
-						CurrentLevel->players[i]->pos_.y = pos.y;
-					}
 				}
 			}
 

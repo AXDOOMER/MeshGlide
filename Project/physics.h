@@ -38,9 +38,7 @@ bool MovePlayerToNewPosition(const Float3& origin, Float3 target, Player* play);
 // Get the plane where the player is standing
 Plane* GetPlaneForPlayer(Player* play, Level* lvl);
 
-Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play);
 Float2 MoveOnCollision2(const Float3& origin, const Float3& target, Player* play);
-Float2 MoveOnCollision5(const Float3& origin, const Float3& target, Player* play);
 
 // Hitscan
 void Hitscan(Level* lvl, Player* play);
