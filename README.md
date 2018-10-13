@@ -14,7 +14,7 @@ It's called the MeshGlide engine. It's due to the way it's optimized. The player
 
 Packages that need to be installed under **Debian** and **Ubuntu** are: `libglfw3-dev libsdl2-image-dev libsdl2-dev libczmq-dev`.
 
-Under **Open Suse 15 Leap**, these packages need to be installed: `libglfw3 libglfw-devel libglut3 freeglut-devel libSDL2-2_0-0 libSDL2-devel libSDL2_image-2_0-0 libSDL2_image-devel czmq libzmq5 cppzmq-devel`
+Under **Open Suse 15 Leap**, these packages need to be installed: `libglfw-devel freeglut-devel libSDL2_image-devel cppzmq-devel`.
 
 ### Compile
 
