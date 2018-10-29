@@ -20,7 +20,7 @@
 #include "vecmath.h"	/* Float3, ComputeNormal */
 #include "things.h"	/* Player, Plane */
 #include "cache.h"	/* Cache */
-#include "physics.h"	/* AdjustPlayerToFloor */
+// #include "physics.h"	/* AdjustPlayerToFloor */
 #include "random.h"	/* Rand() */
 
 #include <vector>
@@ -149,7 +149,7 @@ void Level::LoadLevel(const string& LevelName, unsigned int numOfPlayers)
 	if (EndsWith(LevelName, ".obj"))
 	{
 		LoadObj(LevelName);
-		AdjustPlayerToFloor(play, this);
+		// AdjustPlayerToFloor(play, this);
 	}
 	else
 	{
