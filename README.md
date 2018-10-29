@@ -22,6 +22,17 @@ Compile on Linux: `g++ *.cpp -std=c++11 -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -l
 
 It's preferable to compile and run the program using the `run.sh` script because it's tested, but this should work too.
 
+#### To compile using bazel
+
+1rst, install bazel https://docs.bazel.build/versions/master/install.html
+
+Then :
+
+```
+bazel build //Project:MeshGlide
+```
+
+
 ## Credits
 
 The following files were taken from the [Freedoom](https://github.com/freedoom/freedoom) project. See their [license](https://github.com/freedoom/freedoom/blob/master/COPYING.adoc).
