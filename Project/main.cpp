@@ -25,6 +25,7 @@
 #include "random.h"		/* GetIndex, SetIndex, Seed */
 #include "events.h"
 #include "network.h"
+#include "strutils.h"	/* Split */
 
 #include <GLFW/glfw3.h>
 #include <GL/gl.h>
@@ -195,7 +196,7 @@ int main(int argc, const char *argv[])
 			// Or start a client that connects to a server
 			string info = network.connectClient(serverloc);
 			// Update the game with the info from the server
-			vector<string> infos = Level::Split(info, '\n');
+			vector<string> infos = Split(info, '\n');
 			LevelName = infos[0];
 			SetIndex(initialIndex = stoi(infos[1]));
 			numOfPlayers = stoi(infos[2]);

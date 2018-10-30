@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2017 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2018 Alexandre-Xavier LabontÃ©-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,14 +13,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// command.h
-// Command line parameters
+// strutils.h
+// Functions to help with strings
 
 #include <string>
+#include <vector>
 using namespace std;
 
-// Returns the position of an argument
-int FindArgumentPosition(const int argc, const char* argv[], const string& Argument);
+vector<string> Split(string s, const char delimiter);
 
-// Returns a parameter to an argument (the fourth function argument is optional)
-string FindArgumentParameter(const int argc, const char* argv[], const string& Argument, const string& Default = "");
+bool EndsWith(const string& str, const string& value);

@@ -22,6 +22,7 @@
 #include "cache.h"	/* Cache */
 #include "physics.h"	/* AdjustPlayerToFloor */
 #include "random.h"	/* Rand() */
+#include "strutils.h"
 
 #include <vector>
 #include <string>
@@ -119,28 +120,6 @@ void Level::AddTexture(const string& name, bool enableFiltering)
 void Level::UseTexture(const string& name)
 {
 	Cache::Instance()->Get(name)->Bind();
-}
-
-// Splits a string
-// Will not work correctly if multiple delimiters touch each other or if there is a delimiter at the end of the string
-vector<string> Level::Split(string s, const char delimiter)
-{
-	size_t pos = 0;
-	vector<string> tokens;
-	while ((pos = s.find(delimiter)) != string::npos) {
-		tokens.emplace_back(s.substr(0, pos));	// Extract a token and add it to the vector
-		s.erase(0, pos + 1);
-	}
-
-	// There may not be any delimiter remaining, but let's not forget the last token.
-	tokens.push_back(s);
-
-	return tokens;
-}
-
-bool Level::EndsWith(const string& str, const string& value)
-{
-	return str.rfind(value) == str.size() - value.size();
 }
 
 // Detects the format and calls the right loading method

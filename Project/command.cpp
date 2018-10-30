@@ -19,7 +19,7 @@
 #include "command.h"
 
 #include <string>
-#include <string.h>		/* strcmp */
+#include <cstring>		/* strcmp */
 using namespace std;
 
 // Returns the position of an argument

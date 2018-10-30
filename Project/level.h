@@ -48,8 +48,6 @@ public:
 	~Level();
 	void Reload();	// Reload level geometry
 
-	static vector<string> Split(string s, const char delimiter);
-	bool EndsWith(const string& str, const string& value);
 	void LoadLevel(const string& LevelName, unsigned int numOfPlayers);
 	void LoadNative(const string& LevelName, unsigned int numOfPlayers);
 	void LoadObj(const string& path);
