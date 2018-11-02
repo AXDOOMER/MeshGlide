@@ -664,3 +664,15 @@ void CheckCollision(Player* moved, Player* other)
 
 //	cout << "distance: " << distance << endl;
 }
+
+bool bCheckCollision(Player* moved, Player* other)
+{
+	float distance = sqrt(pow(moved->PosX() - other->PosX(), 2) + pow(moved->PosY() - other->PosY(), 2));
+
+	float radii = moved->Radius() + other->Radius();
+
+	if (distance < radii)
+		return true;
+
+	return false;
+}

@@ -1,4 +1,5 @@
 // http://www.jeffreythompson.org/collision-detection/poly-circle.php
+// https://github.com/jeffThompson/CollisionDetection/blob/master/CodeExamples/LineCircle/LineCircle.pde
 // https://github.com/jeffThompson/CollisionDetection
 
 /*float cx = 0;    // position of the circle

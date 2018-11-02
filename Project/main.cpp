@@ -264,6 +264,12 @@ int main(int argc, const char *argv[])
 				}
 			}
 
+			if (CurrentLevel->play != CurrentLevel->players[i])
+			{
+				// Player to player collision
+				CheckCollision(CurrentLevel->play, CurrentLevel->players[i]);
+			}
+
 			ApplyGravity(CurrentLevel->players[i]);
 		}
 

@@ -46,5 +46,6 @@ void Hitscan(Level* lvl, Player* play);
 Float3 CheckCollisionPoint2(Float3 target, Float3 point, float p_rad);
 void CheckCollisionPoint(Player* moved, Float3 point);
 void CheckCollision(Player* moved, Player* other);
+bool bCheckCollision(Player* moved, Player* other);
 
 #endif	// PHYSICS_H
