@@ -241,11 +241,7 @@ int main(int argc, const char *argv[])
 				CurrentLevel->players[i]->ShouldFire = false;
 			}
 
-			if (CurrentLevel->play != CurrentLevel->players[i])
-			{
-				// Player to player collision
-				CheckCollision(CurrentLevel->play, CurrentLevel->players[i]);
-			}
+			Float3 pt2 = CurrentLevel->players[i]->pos_;
 
 			// Collision detection with floors and walls
 			if (!MovePlayerToNewPosition(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i]))
@@ -259,15 +255,36 @@ int main(int argc, const char *argv[])
 				// Try to slide the player against the wall to a valid position
 				if (MovePlayerToNewPosition(pt, {pos.x, pos.y, 0}, CurrentLevel->players[i]))
 				{
-					CurrentLevel->players[i]->pos_.x = pos.x;
-					CurrentLevel->players[i]->pos_.y = pos.y;
+					// Make sure the wall didn't push the player inside other players
+					if (!bvCheckCollision(CurrentLevel->players[i], CurrentLevel->players))
+					{
+						// Set the new position
+						CurrentLevel->players[i]->pos_.x = pos.x;
+						CurrentLevel->players[i]->pos_.y = pos.y;
+					}
+					else
+					{
+						CurrentLevel->players[i]->pos_ = pt2;
+					}
 				}
 			}
 
-			if (CurrentLevel->play != CurrentLevel->players[i])
+			Float3 pt3 = CurrentLevel->players[i]->pos_;
+
+			for (unsigned int j = 0; j < CurrentLevel->players.size(); j++)
 			{
-				// Player to player collision
-				CheckCollision(CurrentLevel->play, CurrentLevel->players[i]);
+				if (CurrentLevel->players[i] != CurrentLevel->players[j])
+				{
+					// Execute Player to player collision
+					CheckCollision(CurrentLevel->players[i], CurrentLevel->players[j]);
+
+					// Check if there's a Player to player collision
+					if (bCheckCollision(CurrentLevel->players[i], CurrentLevel->players[j]))
+					{
+						// Restore original position
+						CurrentLevel->players[i]->pos_ = pt2;
+					}
+				}
 			}
 
 			ApplyGravity(CurrentLevel->players[i]);

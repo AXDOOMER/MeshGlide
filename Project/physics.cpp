@@ -655,8 +655,8 @@ void CheckCollision(Player* moved, Player* other)
 
 //			cout << "(radii - distance): " << (radii - distance) << endl;
 
-			pos.x += (radii - distance) * cos(angle);
-			pos.y += (radii - distance) * sin(angle);
+			pos.x += (radii - distance) * cos(angle) * 1.05f;
+			pos.y += (radii - distance) * sin(angle) * 1.05f;
 
 			moved->pos_ = pos;
 		}
@@ -673,6 +673,23 @@ bool bCheckCollision(Player* moved, Player* other)
 
 	if (distance < radii)
 		return true;
+
+	return false;
+}
+
+bool bvCheckCollision(Player* source, vector<Player*> players)
+{
+	for (unsigned int i = 0; i < players.size(); i++)
+	{
+		if (source != players[i])
+		{
+			float distance = sqrt(pow(source->PosX() - players[i]->PosX(), 2) + pow(source->PosY() - players[i]->PosY(), 2));
+			float radii = source->Radius() + players[i]->Radius();
+
+			if (distance < radii)
+				return true;
+		}
+	}
 
 	return false;
 }

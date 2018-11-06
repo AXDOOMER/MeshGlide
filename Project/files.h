@@ -36,4 +36,11 @@ char* loadfile(const char* filename)
 
 // XXX: read whole file to string https://stackoverflow.com/a/2602060
 
+stringstream loadfile(const string& filename)
+{
+	ifstream t(filename);
+	stringstream buffer;
+	buffer << t.rdbuf();
 
+	return buffer;
+}
