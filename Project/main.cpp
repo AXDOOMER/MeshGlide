@@ -269,6 +269,11 @@ int main(int argc, const char *argv[])
 				}
 			}
 
+/*			if (bvCheckCollision(CurrentLevel->players[i], CurrentLevel->players))
+			{
+				CurrentLevel->players[i]->pos_ = pt;
+			}
+*/
 			Float3 pt3 = CurrentLevel->players[i]->pos_;
 
 			for (unsigned int j = 0; j < CurrentLevel->players.size(); j++)
@@ -279,10 +284,11 @@ int main(int argc, const char *argv[])
 					CheckCollision(CurrentLevel->players[i], CurrentLevel->players[j]);
 
 					// Check if there's a Player to player collision
-					if (bCheckCollision(CurrentLevel->players[i], CurrentLevel->players[j]))
+					if (bCheckCollision(CurrentLevel->players[i], CurrentLevel->players[j]) ||
+						RadiusEdges(CurrentLevel->players[i]->pos_, CurrentLevel->players[i]))
 					{
 						// Restore original position
-						CurrentLevel->players[i]->pos_ = pt2;
+						CurrentLevel->players[i]->pos_ = pt3;
 					}
 				}
 			}

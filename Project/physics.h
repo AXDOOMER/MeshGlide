@@ -48,5 +48,6 @@ void CheckCollisionPoint(Player* moved, Float3 point);
 void CheckCollision(Player* moved, Player* other);
 bool bCheckCollision(Player* moved, Player* other);
 bool bvCheckCollision(Player* source, vector<Player*> players);
+bool RadiusEdges(const Float3& target, Player* play);
 
 #endif	// PHYSICS_H

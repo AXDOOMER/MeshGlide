@@ -245,12 +245,12 @@ Float2 MoveAlongAngle(const Float3& origin, const Float3& target, const float th
 	return {Return.x, Return.y};
 }
 
-bool RadiusEdges3(const Float3& target, Player* play)
+bool RadiusEdges(const Float3& target, Player* play)
 {
 	// Check the planes that are touched
 	vector<Plane*> pTouched;
 	TouchingPlanes(play, play->plane, pTouched);
-//	cout << "RadiusEdges3: NUMBER OF PLANES TOUCHED BY PLAYER: " << pTouched.size() << endl;
+//	cout << "RadiusEdges: NUMBER OF PLANES TOUCHED BY PLAYER: " << pTouched.size() << endl;
 
 	// Check for the edges that are touched
 	vector<Edge> edges;
@@ -294,7 +294,7 @@ bool RadiusEdges3(const Float3& target, Player* play)
 // Moves the player to a new position. Returns false if it can't.
 bool MovePlayerToNewPosition(const Float3& origin, Float3 target, Player* play)
 {
-	if (RadiusEdges3(target, play))
+	if (RadiusEdges(target, play))
 	{
 		return false;
 	}
