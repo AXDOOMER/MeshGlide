@@ -31,6 +31,8 @@ The following files were taken from the [Freedoom](https://github.com/freedoom/f
 * Bullet puff: puffb0.png
 * Door texture: door9_1.png
 
+MeshGlide uses code from [CollisionDetection](https://github.com/jeffThompson/CollisionDetection) written by Jeff Thompson. The code is used in `line.h` and `line.cpp`. Permission has been granted to use and redistribute it under the GNU GPLv3 which is the same license as MeshGlide. The original license for this code was [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/).
+
 ## Screenshots
 
 ### Version 0.39
