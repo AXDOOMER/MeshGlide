@@ -254,7 +254,7 @@ int main(int argc, const char *argv[])
 				if (MovePlayerToNewPosition(pt, {pos.x, pos.y, 0}, CurrentLevel->players[i]))
 				{
 					// Make sure the wall didn't push the player inside other players
-					if (!bvCheckCollision(CurrentLevel->players[i], CurrentLevel->players))
+					if (!PlayerToPlayersCollisionCheck(CurrentLevel->players[i], CurrentLevel->players))
 					{
 						// Set the new position
 						CurrentLevel->players[i]->pos_.x = pos.x;
@@ -267,18 +267,18 @@ int main(int argc, const char *argv[])
 				}
 			}
 
-			if (bvCheckCollision(CurrentLevel->players[i], CurrentLevel->players))
+			if (PlayerToPlayersCollisionCheck(CurrentLevel->players[i], CurrentLevel->players))
 			{
 				for (unsigned int j = 0; j < CurrentLevel->players.size(); j++)
 				{
 					if (CurrentLevel->players[i] != CurrentLevel->players[j])
 					{
 						// Execute Player to player collision
-						CheckCollision(CurrentLevel->players[i], CurrentLevel->players[j]);
+						PlayerToPlayerCollisionReact(CurrentLevel->players[i], CurrentLevel->players[j]);
 
 						// Check if there's a Player to player collision
-						if (bCheckCollision(CurrentLevel->players[i], CurrentLevel->players[j]) ||
-							RadiusEdges(CurrentLevel->players[i]->pos_, CurrentLevel->players[i]))
+						if (PlayerToPlayerCollisionCheck(CurrentLevel->players[i], CurrentLevel->players[j]) ||
+							RadiusClearOfEdges(CurrentLevel->players[i]->pos_, CurrentLevel->players[i]))
 						{
 							// Restore original position
 							CurrentLevel->players[i]->pos_ = pt;

@@ -43,11 +43,11 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play)
 // Hitscan
 void Hitscan(Level* lvl, Player* play);
 
-Float3 CheckCollisionPoint2(Float3 target, Float3 point, float p_rad);
-void CheckCollisionPoint(Player* moved, Float3 point);
-void CheckCollision(Player* moved, Player* other);
-bool bCheckCollision(const Player* moved, const Player* other);
-bool bvCheckCollision(const Player* source, const vector<Player*> players);
-bool RadiusEdges(const Float3& target, Player* play);
+// Collision detection with player radius and collision response
+Float3 PushTargetOutOfPoint(Float3 target, Float3 point, const float p_rad);
+void PlayerToPlayerCollisionReact(Player* moved, Player* other);
+bool PlayerToPlayerCollisionCheck(const Player* moved, const Player* other);
+bool PlayerToPlayersCollisionCheck(const Player* source, const vector<Player*> players);
+bool RadiusClearOfEdges(const Float3& target, Player* play);
 
 #endif	// PHYSICS_H

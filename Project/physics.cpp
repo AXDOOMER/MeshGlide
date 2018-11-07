@@ -245,12 +245,12 @@ Float2 MoveAlongAngle(const Float3& origin, const Float3& target, const float th
 	return {Return.x, Return.y};
 }
 
-bool RadiusEdges(const Float3& target, Player* play)
+bool RadiusClearOfEdges(const Float3& target, Player* play)
 {
 	// Check the planes that are touched
 	vector<Plane*> pTouched;
 	TouchingPlanes(play, play->plane, pTouched);
-//	cout << "RadiusEdges: NUMBER OF PLANES TOUCHED BY PLAYER: " << pTouched.size() << endl;
+//	cout << "RadiusClearOfEdges: NUMBER OF PLANES TOUCHED BY PLAYER: " << pTouched.size() << endl;
 
 	// Check for the edges that are touched
 	vector<Edge> edges;
@@ -294,7 +294,7 @@ bool RadiusEdges(const Float3& target, Player* play)
 // Moves the player to a new position. Returns false if it can't.
 bool MovePlayerToNewPosition(const Float3& origin, Float3 target, Player* play)
 {
-	if (RadiusEdges(target, play))
+	if (RadiusClearOfEdges(target, play))
 	{
 		return false;
 	}
@@ -451,12 +451,14 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play)
 		bool isWall = false;
 		float distance = 3000.0f;
 
+		const float epsilon = 0.05f;
+
 		for (unsigned int k = 0; k < points.size(); k++)
 		{
 			if (distance > sqrt( pow(points[k].x, 2) + pow(points[k].y, 2) ))
 			{
 //				cout << "MoveOnCollision2: New " << k << " point closer." << endl;
-				newpoint = CheckCollisionPoint2(target, {points[k].x, points[k].y, 0}, 0.55f);
+				newpoint = PushTargetOutOfPoint(target, {points[k].x, points[k].y, 0}, 0.50f + epsilon);
 //				isWall = false;
 			}
 		}
@@ -470,7 +472,7 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play)
 			if (distance > sqrt( pow(pointsintersection[k].x, 2) + pow(pointsintersection[k].y, 2) ))
 			{
 //				cout << "MoveOnCollision5: New " << k << " point closer." << endl;
-				newpoint = CheckCollisionPoint2(target, {pointsintersection[k].x, pointsintersection[k].y, 0}, 0.50f);
+				newpoint = PushTargetOutOfPoint(target, {pointsintersection[k].x, pointsintersection[k].y, 0}, 0.50f);
 				isWall = true;
 				closest = touching[k];
 			}
@@ -578,23 +580,16 @@ void Hitscan(Level* lvl, Player* play)
 }
 
 // Push something outside of a point to the specified distance (p_rad)
-Float3 CheckCollisionPoint2(Float3 target, Float3 point, float p_rad)
+Float3 PushTargetOutOfPoint(Float3 target, Float3 point, const float p_rad)
 {
 	float distance = sqrt(pow(target.x - point.x, 2) + pow(target.y - point.y, 2));
-
 	float radii = p_rad;
 
 	if (distance < radii)
 	{
-//		cout << "collision!!!" << endl;
-
 		float angle = atan2(target.y - point.y, target.x - point.x);
 
-//		cout << "angle: " << angle << endl;
-
 		Float3 pos = {target.x, target.y, 0};
-
-//		cout << "(radii - distance): " << (radii - distance) << endl;
 
 		pos.x += (radii - distance) * cos(angle);
 		pos.y += (radii - distance) * sin(angle);
@@ -603,72 +598,32 @@ Float3 CheckCollisionPoint2(Float3 target, Float3 point, float p_rad)
 		target.y = pos.y;
 	}
 
-//	cout << "distance: " << distance << endl;
-
 	return target;
 }
 
-void CheckCollisionPoint(Player* moved, Float3 point)
+void PlayerToPlayerCollisionReact(Player* moved, Player* other)
 {
-	float distance = sqrt(pow(moved->PosX() - point.x, 2) + pow(moved->PosY() - point.y, 2));
+	const float epsilon = 1.05f;
 
-	float radii = moved->Radius();
-
-	if (distance < radii)
-	{
-//		cout << "collision!!!" << endl;
-
-		float angle = atan2(moved->PosY() - point.y, moved->PosX() - point.x);
-
-//		cout << "angle: " << angle << endl;
-
-		Float3 pos = moved->pos_;
-
-//		cout << "(radii - distance): " << (radii - distance) << endl;
-
-		pos.x += (radii - distance) * cos(angle);
-		pos.y += (radii - distance) * sin(angle);
-
-		moved->pos_ = pos;
-	}
-
-//	cout << "distance: " << distance << endl;
-}
-
-void CheckCollision(Player* moved, Player* other)
-{
 	float distance = sqrt(pow(moved->PosX() - other->PosX(), 2) + pow(moved->PosY() - other->PosY(), 2));
-
 	float radii = moved->Radius() + other->Radius();
 
 	if (distance < radii)
 	{
-//		cout << "collision!!!" << endl;
-
 		float angle = atan2(moved->PosY() - other->PosY(), moved->PosX() - other->PosX());
 
-//		cout << "angle: " << angle << endl;
+		Float3 pos = moved->pos_;
 
-		//if (abs(moved->PosZ() - other->PosZ()) <= moved->Height())
-		{
-			Float3 pos = moved->pos_;
+		pos.x += (radii - distance) * cos(angle) * epsilon;
+		pos.y += (radii - distance) * sin(angle) * epsilon;
 
-//			cout << "(radii - distance): " << (radii - distance) << endl;
-
-			pos.x += (radii - distance) * cos(angle) * 1.05f;
-			pos.y += (radii - distance) * sin(angle) * 1.05f;
-
-			moved->pos_ = pos;
-		}
+		moved->pos_ = pos;
 	}
-
-//	cout << "distance: " << distance << endl;
 }
 
-bool bCheckCollision(const Player* moved, const Player* other)
+bool PlayerToPlayerCollisionCheck(const Player* moved, const Player* other)
 {
 	float distance = sqrt(pow(moved->PosX() - other->PosX(), 2) + pow(moved->PosY() - other->PosY(), 2));
-
 	float radii = moved->Radius() + other->Radius();
 
 	if (distance < radii)
@@ -677,7 +632,7 @@ bool bCheckCollision(const Player* moved, const Player* other)
 	return false;
 }
 
-bool bvCheckCollision(const Player* source, const vector<Player*> players)
+bool PlayerToPlayersCollisionCheck(const Player* source, const vector<Player*> players)
 {
 	for (unsigned int i = 0; i < players.size(); i++)
 	{
