@@ -241,8 +241,6 @@ int main(int argc, const char *argv[])
 				CurrentLevel->players[i]->ShouldFire = false;
 			}
 
-//			Float3 pt2 = CurrentLevel->players[i]->pos_;
-
 			// Collision detection with floors and walls
 			if (!MovePlayerToNewPosition(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i]))
 			{
@@ -271,8 +269,6 @@ int main(int argc, const char *argv[])
 
 			if (bvCheckCollision(CurrentLevel->players[i], CurrentLevel->players))
 			{
-//				Float3 pt3 = CurrentLevel->players[i]->pos_;
-
 				for (unsigned int j = 0; j < CurrentLevel->players.size(); j++)
 				{
 					if (CurrentLevel->players[i] != CurrentLevel->players[j])
