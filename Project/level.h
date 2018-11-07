@@ -68,7 +68,7 @@ private:
 	bool reloaded_ = false;
 	void LinkPlanes(const string& LevelName);
 	void FinalPlaneProcessing();
-	unsigned int CountCommonEdgesPlanes(Plane* p1, Plane* p2);
+	void CountCommonEdgesPlanes(Plane* p1, Plane* p2);
 };
 
 #endif // LEVEL_H

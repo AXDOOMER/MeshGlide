@@ -393,41 +393,27 @@ void Level::LoadObj(const string& path)
 	model.close();
 }
 
-unsigned int Level::CountCommonEdgesPlanes(Plane* p1, Plane* p2)
+void Level::CountCommonEdgesPlanes(Plane* p1, Plane* p2)
 {
-	unsigned int count = 0;
-
 	for (unsigned int i = 0; i < p1->Edges.size(); i++)
 	{
 		for (unsigned int j = 0; j < p2->Edges.size(); j++)
 		{
-//			if (i != j)		// On peut pas faire ça
+			if ((p1->Edges[i].a == p2->Edges[j].a && p1->Edges[i].b == p2->Edges[j].b) ||
+				(p1->Edges[i].a == p2->Edges[j].b && p1->Edges[i].b == p2->Edges[j].a))
 			{
-				if ((p1->Edges[i].a == p2->Edges[j].a && p1->Edges[i].b == p2->Edges[j].b) ||
-					(p1->Edges[i].a == p2->Edges[j].b && p1->Edges[i].b == p2->Edges[j].a))
-				{
-					// wow c'est de la shit comme algo
-					if (!p2->CanWalk())
-						continue;
+				// wow c'est de la shit comme algo (temps de computation exponentiel pour les planes)
+				if (!p2->CanWalk())
+					continue;
 
-					// They touch. so Increase.
-					count++;
-
-					p1->Edges[i].sides++;
-	//				p2->Edges[j].sides++;
-				}
-
-				// ooo
-//				cout << "1-- " << p1->Edges[i].sides << endl;
-//				cout << "2-- " << p2->Edges[j].sides << endl;
+				p1->Edges[i].sides++;
+//				p2->Edges[j].sides++;
 			}
+
+//			cout << "1-- " << p1->Edges[i].sides << endl;
+//			cout << "2-- " << p2->Edges[j].sides << endl;
 		}
 	}
-
-	//if (p1 == p2)
-	//cout << "1-- " << count << endl;
-
-	return count;
 }
 
 void Level::FinalPlaneProcessing()
