@@ -665,7 +665,7 @@ void CheckCollision(Player* moved, Player* other)
 //	cout << "distance: " << distance << endl;
 }
 
-bool bCheckCollision(Player* moved, Player* other)
+bool bCheckCollision(const Player* moved, const Player* other)
 {
 	float distance = sqrt(pow(moved->PosX() - other->PosX(), 2) + pow(moved->PosY() - other->PosY(), 2));
 
@@ -677,7 +677,7 @@ bool bCheckCollision(Player* moved, Player* other)
 	return false;
 }
 
-bool bvCheckCollision(Player* source, vector<Player*> players)
+bool bvCheckCollision(const Player* source, const vector<Player*> players)
 {
 	for (unsigned int i = 0; i < players.size(); i++)
 	{

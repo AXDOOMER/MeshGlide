@@ -46,8 +46,8 @@ void Hitscan(Level* lvl, Player* play);
 Float3 CheckCollisionPoint2(Float3 target, Float3 point, float p_rad);
 void CheckCollisionPoint(Player* moved, Float3 point);
 void CheckCollision(Player* moved, Player* other);
-bool bCheckCollision(Player* moved, Player* other);
-bool bvCheckCollision(Player* source, vector<Player*> players);
+bool bCheckCollision(const Player* moved, const Player* other);
+bool bvCheckCollision(const Player* source, const vector<Player*> players);
 bool RadiusEdges(const Float3& target, Player* play);
 
 #endif	// PHYSICS_H

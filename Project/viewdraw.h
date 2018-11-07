@@ -38,8 +38,8 @@ const string fontfile = "chars.png";
 
 struct GameWindow
 {
-	int width = 640;
-	int height = 480;
+	int width = 800;
+	int height = 600;
 	int xpos = 0;
 	int ypos = 0;
 	bool mouseLook = false;
