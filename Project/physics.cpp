@@ -648,3 +648,22 @@ bool PlayerToPlayersCollisionCheck(const Player* source, const vector<Player*> p
 
 	return false;
 }
+
+vector<Player*> GetPlayersTouched(const Player* source, const vector<Player*> players)
+{
+	vector<Player*> list;
+
+	for (unsigned int i = 0; i < players.size(); i++)
+	{
+		if (source != players[i])
+		{
+			float distance = sqrt(pow(source->PosX() - players[i]->PosX(), 2) + pow(source->PosY() - players[i]->PosY(), 2));
+			float radii = source->Radius() + players[i]->Radius();
+
+			if (distance < radii)
+				list.push_back(players[i]);
+		}
+	}
+
+	return list;
+}

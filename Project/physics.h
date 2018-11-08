@@ -23,6 +23,9 @@
 #include "vecmath.h"	/* Float3 */
 #include "level.h"	/* Level */
 
+#include <vector>
+using namespace std;
+
 // Collision detection with floors
 bool AdjustPlayerToFloor(Player* play, Level* lvl);
 
@@ -49,5 +52,9 @@ void PlayerToPlayerCollisionReact(Player* moved, Player* other);
 bool PlayerToPlayerCollisionCheck(const Player* moved, const Player* other);
 bool PlayerToPlayersCollisionCheck(const Player* source, const vector<Player*> players);
 bool RadiusClearOfEdges(const Float3& target, Player* play);
+vector<Player*> GetPlayersTouched(const Player* source, const vector<Player*> players);
+
+// Add function check player height touch
+// Player to Player collision should be Player to player radius touching
 
 #endif	// PHYSICS_H

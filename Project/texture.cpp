@@ -36,6 +36,7 @@ Texture::Texture(const string& Path, bool enableFiltering)
 	if (!Surface)
 	{
 		throw runtime_error("Error loading texture: " + Path);
+//IMG_GetError()
 	}
 
 	Name_ = Path;
