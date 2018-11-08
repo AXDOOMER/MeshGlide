@@ -62,7 +62,7 @@ public:
 	void Process();		// Find centroid, find normal...
 	unsigned int CommonVertices(Plane* plane);
 
-	bool CanWalk()
+	bool CanWalk() const
 	{
 		const float WALL_ANGLE = 0.4f;
 

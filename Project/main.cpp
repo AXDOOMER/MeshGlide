@@ -269,6 +269,7 @@ int main(int argc, const char *argv[])
 				}
 			}
 
+			// Player to player collision check
 			if (PlayerToPlayersCollisionCheck(CurrentLevel->players[i], CurrentLevel->players))
 			{
 				for (unsigned int j = 0; j < CurrentLevel->players.size(); j++)
@@ -289,6 +290,7 @@ int main(int argc, const char *argv[])
 				}
 			}
 
+			// Adjust height
 			ApplyGravity(CurrentLevel->players[i]);
 		}
 

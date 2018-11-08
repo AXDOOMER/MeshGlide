@@ -51,7 +51,7 @@ Float3 PushTargetOutOfPoint(const Float3& target, const Float3& point, const flo
 Float3 PlayerToPlayerCollisionReact(const Player* moved, const Player* other);
 bool PlayerToPlayerCollisionCheck(const Player* moved, const Player* other);
 bool PlayerToPlayersCollisionCheck(const Player* source, const vector<Player*> players);
-bool RadiusClearOfEdges(const Float3& target, Player* play);
+bool RadiusClearOfEdges(const Float3& target, const Player* play);
 vector<Player*> GetPlayersTouched(const Player* source, const vector<Player*> players);
 bool PlayerHeightCheck(const Player* moved, const Player* other);
 

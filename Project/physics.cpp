@@ -176,7 +176,7 @@ Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane,
 	return nullptr;
 }
 
-bool TouchPlane(Player* play, Plane* p)
+bool TouchPlane(const Player* play, const Plane* p)
 {
 //cout << "ran TouchPlane(Player* play, Plane* p)" << endl;
 	// Is the player inside the polygon?
@@ -191,7 +191,7 @@ bool TouchPlane(Player* play, Plane* p)
 	return false;
 }
 
-void TouchingPlanes(Player* play, Plane* p, vector<Plane*>& Tested)
+void TouchingPlanes(const Player* play, Plane* p, vector<Plane*>& Tested)
 {
 	// Player touches the polygon
 	if (TouchPlane(play, p))
@@ -245,12 +245,11 @@ Float2 MoveAlongAngle(const Float3& origin, const Float3& target, const float th
 	return {Return.x, Return.y};
 }
 
-bool RadiusClearOfEdges(const Float3& target, Player* play)
+bool RadiusClearOfEdges(const Float3& target, const Player* play)
 {
 	// Check the planes that are touched
 	vector<Plane*> pTouched;
 	TouchingPlanes(play, play->plane, pTouched);
-//	cout << "RadiusClearOfEdges: NUMBER OF PLANES TOUCHED BY PLAYER: " << pTouched.size() << endl;
 
 	// Check for the edges that are touched
 	vector<Edge> edges;
