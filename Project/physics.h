@@ -41,7 +41,7 @@ bool MovePlayerToNewPosition(const Float3& origin, Float3 target, Player* play);
 // Get the plane where the player is standing
 Plane* GetPlaneForPlayer(Player* play, Level* lvl);
 
-Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play);
+Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player* play);
 
 // Hitscan
 void Hitscan(Level* lvl, Player* play);
@@ -49,8 +49,8 @@ void Hitscan(Level* lvl, Player* play);
 // Collision detection with player radius and collision response
 Float3 PushTargetOutOfPoint(const Float3& target, const Float3& point, const float p_rad);
 Float3 PlayerToPlayerCollisionReact(const Player* moved, const Player* other);
-bool PlayerToPlayerCollisionCheck(const Player* moved, const Player* other);
-bool PlayerToPlayersCollisionCheck(const Player* source, const vector<Player*> players);
+bool PlayerToPlayerCollision(const Player* moved, const Player* other);
+bool PlayerToPlayersCollision(const Player* source, const vector<Player*> players);
 bool RadiusClearOfEdges(const Float3& target, const Player* play);
 vector<Player*> GetPlayersTouched(const Player* source, const vector<Player*> players);
 bool PlayerHeightCheck(const Player* moved, const Player* other);

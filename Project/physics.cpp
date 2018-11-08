@@ -258,7 +258,7 @@ bool RadiusClearOfEdges(const Float3& target, const Player* play)
 		for (unsigned int i = 0; i < pTouched[j]->Edges.size(); i++)
 		{
 			bool touch = lineCircle(pTouched[j]->Edges[i].a.x, pTouched[j]->Edges[i].a.y, 
-									pTouched[j]->Edges[i].b.x, pTouched[j]->Edges[i].b.y, target.x, target.y, 0.5f);
+									pTouched[j]->Edges[i].b.x, pTouched[j]->Edges[i].b.y, target.x, target.y, play->Radius());
 
 			if (touch)
 			{
@@ -360,7 +360,7 @@ float AngleOfFarthestIntersectedEdge(const Float3& origin, const Float3& target,
 }
 
 // Push player out of point (extremity of a line)
-Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play)
+Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player* play)
 {
 	// Get planes that are touched by the player
 	vector<Plane*> pTouched;
@@ -623,7 +623,7 @@ Float3 PlayerToPlayerCollisionReact(const Player* moved, const Player* other)
 	return moved->pos_;	// Original position
 }
 
-bool PlayerToPlayerCollisionCheck(const Player* moved, const Player* other)
+bool PlayerToPlayerCollision(const Player* moved, const Player* other)
 {
 	float distance = sqrt(pow(moved->PosX() - other->PosX(), 2) + pow(moved->PosY() - other->PosY(), 2));
 	float radii = moved->Radius() + other->Radius();
@@ -634,7 +634,7 @@ bool PlayerToPlayerCollisionCheck(const Player* moved, const Player* other)
 	return false;
 }
 
-bool PlayerToPlayersCollisionCheck(const Player* source, const vector<Player*> players)
+bool PlayerToPlayersCollision(const Player* source, const vector<Player*> players)
 {
 	for (unsigned int i = 0; i < players.size(); i++)
 	{
