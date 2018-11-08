@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // physics.cpp
-// What affects a thing's movement in space
+// What affects a thing's movement in space (collision detection and response)
 
 #include "things.h"
 #include "vecmath.h"	/* Float3 */
@@ -580,8 +580,9 @@ void Hitscan(Level* lvl, Player* play)
 }
 
 // Push something outside of a point to the specified distance (p_rad)
-Float3 PushTargetOutOfPoint(Float3 target, Float3 point, const float p_rad)
+Float3 PushTargetOutOfPoint(const Float3& target, const Float3& point, const float p_rad)
 {
+	Float3 newpoint = target;
 	float distance = sqrt(pow(target.x - point.x, 2) + pow(target.y - point.y, 2));
 	float radii = p_rad;
 
@@ -594,16 +595,16 @@ Float3 PushTargetOutOfPoint(Float3 target, Float3 point, const float p_rad)
 		pos.x += (radii - distance) * cos(angle);
 		pos.y += (radii - distance) * sin(angle);
 
-		target.x = pos.x;
-		target.y = pos.y;
+		newpoint.x = pos.x;
+		newpoint.y = pos.y;
 	}
 
-	return target;
+	return newpoint;
 }
 
-void PlayerToPlayerCollisionReact(Player* moved, Player* other)
+Float3 PlayerToPlayerCollisionReact(const Player* moved, const Player* other)
 {
-	const float epsilon = 1.05f;
+	const float epsilon = 1.05f;	// To avoid still touching the player once pushed out of it
 
 	float distance = sqrt(pow(moved->PosX() - other->PosX(), 2) + pow(moved->PosY() - other->PosY(), 2));
 	float radii = moved->Radius() + other->Radius();
@@ -617,8 +618,10 @@ void PlayerToPlayerCollisionReact(Player* moved, Player* other)
 		pos.x += (radii - distance) * cos(angle) * epsilon;
 		pos.y += (radii - distance) * sin(angle) * epsilon;
 
-		moved->pos_ = pos;
+		return pos;	// New position
 	}
+
+	return moved->pos_;	// Original position
 }
 
 bool PlayerToPlayerCollisionCheck(const Player* moved, const Player* other)
@@ -646,6 +649,13 @@ bool PlayerToPlayersCollisionCheck(const Player* source, const vector<Player*> p
 		}
 	}
 
+	return false;
+}
+
+bool PlayerHeightCheck(const Player* moved, const Player* other)
+{
+	if (abs(moved->PosZ() - other->PosZ()) <= moved->Height())
+		return true;
 	return false;
 }
 

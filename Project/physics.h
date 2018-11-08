@@ -47,12 +47,13 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, Player* play)
 void Hitscan(Level* lvl, Player* play);
 
 // Collision detection with player radius and collision response
-Float3 PushTargetOutOfPoint(Float3 target, Float3 point, const float p_rad);
-void PlayerToPlayerCollisionReact(Player* moved, Player* other);
+Float3 PushTargetOutOfPoint(const Float3& target, const Float3& point, const float p_rad);
+Float3 PlayerToPlayerCollisionReact(const Player* moved, const Player* other);
 bool PlayerToPlayerCollisionCheck(const Player* moved, const Player* other);
 bool PlayerToPlayersCollisionCheck(const Player* source, const vector<Player*> players);
 bool RadiusClearOfEdges(const Float3& target, Player* play);
 vector<Player*> GetPlayersTouched(const Player* source, const vector<Player*> players);
+bool PlayerHeightCheck(const Player* moved, const Player* other);
 
 // Add function check player height touch
 // Player to Player collision should be Player to player radius touching

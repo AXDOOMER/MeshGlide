@@ -276,7 +276,7 @@ int main(int argc, const char *argv[])
 					if (CurrentLevel->players[i] != CurrentLevel->players[j])
 					{
 						// Execute Player to player collision
-						PlayerToPlayerCollisionReact(CurrentLevel->players[i], CurrentLevel->players[j]);
+						CurrentLevel->players[i]->pos_ = PlayerToPlayerCollisionReact(CurrentLevel->players[i], CurrentLevel->players[j]);
 
 						// Check if there's a Player to player collision
 						if (PlayerToPlayerCollisionCheck(CurrentLevel->players[i], CurrentLevel->players[j]) ||
