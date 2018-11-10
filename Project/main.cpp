@@ -287,6 +287,12 @@ int main(int argc, const char *argv[])
 					cerr << "Something is wrong: Player ID is not 0 or 1." << endl;
 					Quit = true;
 				}
+
+				// Quit on errors
+				if (network.error())
+				{
+					Quit = true;
+				}
 			}
 
 			// Write commands to demo

@@ -32,6 +32,7 @@ Network::Network()
 	id_ = 0;
 	sock_ = nullptr;
 	context_ = nullptr;
+	error_ = false;
 }
 
 Network::~Network()
@@ -53,18 +54,40 @@ unsigned int Network::myPlayer()
 	return id_;
 }
 
+bool Network::error() const
+{
+	return error_;
+}
+
 void Network::send(const vector<unsigned char>& message)
 {
 	message_t request(message.size());
 	memcpy(request.data(), &message[0], message.size());
 
-	sock_->send(request);
+	try
+	{
+		sock_->send(request);
+	}
+	catch (zmq::error_t const& err)
+	{
+		cerr << "Network send error. Timed out while waiting for peer." << endl;
+		error_ = true;
+	}
 }
 
 vector<unsigned char> Network::receive()
 {
 	message_t message;
-	sock_->recv(&message);
+
+	try
+	{
+		sock_->recv(&message);
+	}
+	catch (zmq::error_t const& err)
+	{
+		cerr << "Network receive error. Timed out while waiting for peer." << endl;
+		error_ = true;
+	}
 
 	vector<unsigned char> v(message.size());
 	memcpy(v.data(), message.data(), message.size());
@@ -100,12 +123,16 @@ void Network::startServer(const string& port, const string& info)
 	receiveString();
 	sendString(info);
 
+	// Allow the socket to timeout while the game is running
+	sock_->setsockopt(ZMQ_RCVTIMEO, &TIMEOUT, sizeof(int));
+	sock_->setsockopt(ZMQ_SNDTIMEO, &TIMEOUT, sizeof(int));
+
 	id_ = 0;
 }
 
 string Network::connectClient(const string& location)
 {
-	context_ = new context_t(12);
+	context_ = new context_t(1);
 	sock_ = new socket_t(*context_, ZMQ_REQ);
 
 	cout << "Connecting to server at '" << location << "'" << endl;
@@ -114,6 +141,10 @@ string Network::connectClient(const string& location)
 	// Init game
 	sendString("Hello, World!");
 	string settings = receiveString();
+
+	// Allow the socket to timeout while the game is running
+	sock_->setsockopt(ZMQ_RCVTIMEO, &TIMEOUT, sizeof(int));
+	sock_->setsockopt(ZMQ_SNDTIMEO, &TIMEOUT, sizeof(int));
 
 	id_ = 1;
 
