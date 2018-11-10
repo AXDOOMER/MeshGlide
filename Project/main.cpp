@@ -140,23 +140,6 @@ int main(int argc, const char *argv[])
 
 	unsigned short initialIndex = GetIndex();
 
-	/****************************** OPENGL HANDLING ******************************/
-
-	// Load OpenGL
-	GLFWwindow* window = Init_OpenGL(FindArgumentPosition(argc, argv, "-fullscreen") > 0);
-
-	if (!window)
-	{
-		cout << "Could not create OpenGL window!" << endl;
-		exit(EXIT_FAILURE);
-	}
-
-	if (FindArgumentPosition(argc, argv, "-wireframe") > 0)
-	{
-		cout << "_OpenGL: Wireframe mode activated." << endl;
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-
 	/****************************** CHOOSE LEVEL ******************************/
 
 	LevelName = FindArgumentParameter(argc, argv, "-level", LevelName);
@@ -201,6 +184,23 @@ int main(int argc, const char *argv[])
 			SetIndex(initialIndex = stoi(infos[1]));
 			numOfPlayers = stoi(infos[2]);
 		}
+	}
+
+	/****************************** OPENGL HANDLING ******************************/
+
+	// Load OpenGL
+	GLFWwindow* window = Init_OpenGL(FindArgumentPosition(argc, argv, "-fullscreen") > 0);
+
+	if (!window)
+	{
+		cout << "Could not create OpenGL window!" << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	if (FindArgumentPosition(argc, argv, "-wireframe") > 0)
+	{
+		cout << "_OpenGL: Wireframe mode activated." << endl;
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 
 	/****************************** LEVEL LOADING ******************************/
