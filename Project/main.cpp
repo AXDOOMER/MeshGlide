@@ -42,7 +42,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.48 (dev)";
+	const char* const VERSION = "0.49 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -55,7 +55,7 @@ int main(int argc, const char *argv[])
 	auto GameStartTime = chrono::system_clock::now();
 	extern GameWindow view;
 	Network network;
-	int numOfPlayers = 1;
+	int numOfPlayers = 3;
 
 	cout << "                MESHGLIDE ENGINE -- " << VERSION << "\n\n";
 
@@ -243,6 +243,8 @@ int main(int argc, const char *argv[])
 		auto start = chrono::system_clock::now();
 
 		glfwPollEvents();
+		if (FindArgumentPosition(argc, argv, "-eventpoolfix") > 0)
+			glfwPollEvents();
 		RegisterKeyPresses(window);
 
 		if (DemoRead.is_open())
@@ -330,11 +332,41 @@ int main(int argc, const char *argv[])
 				// Try to slide the player against the wall to a valid position
 				if (MovePlayerToNewPosition(pt, {pos.x, pos.y, 0}, CurrentLevel->players[i]))
 				{
-					CurrentLevel->players[i]->pos_.x = pos.x;
-					CurrentLevel->players[i]->pos_.y = pos.y;
+					// Make sure the wall didn't push the player inside other players
+					if (!PlayerToPlayersCollision(CurrentLevel->players[i], CurrentLevel->players))
+					{
+						// Set the new position
+						CurrentLevel->players[i]->pos_.x = pos.x;
+						CurrentLevel->players[i]->pos_.y = pos.y;
+					}
+					else
+					{
+						CurrentLevel->players[i]->pos_ = pt;
+					}
 				}
 			}
 
+			// Player to player collision check
+			if (PlayerToPlayersCollision(CurrentLevel->players[i], CurrentLevel->players))
+			{
+				for (unsigned int j = 0; j < CurrentLevel->players.size(); j++)
+				{
+					if (CurrentLevel->players[i] != CurrentLevel->players[j])
+					{
+						// Execute Player to player collision
+						CurrentLevel->players[i]->pos_ = PlayerToPlayerCollisionReact(CurrentLevel->players[i], CurrentLevel->players[j]);
+						// Check if there's a Player to player collision
+						if (PlayerToPlayerCollision(CurrentLevel->players[i], CurrentLevel->players[j]) ||
+							RadiusClearOfEdges(CurrentLevel->players[i]->pos_, CurrentLevel->players[i]))
+						{
+							// Restore original position
+							CurrentLevel->players[i]->pos_ = pt;
+						}
+					}
+				}
+			}
+
+			// Adjust height
 			ApplyGravity(CurrentLevel->players[i]);
 		}
 

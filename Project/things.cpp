@@ -270,6 +270,72 @@ void Plane::Process()
 {
 	normal = ComputeNormal(Vertices);
 	centroid = ComputeAverage(Vertices);
+
+	// Create edges
+	for (unsigned int i = 0, j = Vertices.size() - 1; i < Vertices.size(); j = i++)
+	{
+		vector<Float3> Points;
+
+		float angle1ji = atan2(Vertices[i].y - Vertices[j].y, Vertices[i].x - Vertices[j].x);
+
+		float angle2ij = atan2(Vertices[j].y - Vertices[i].y, Vertices[j].x - Vertices[i].x);
+
+		// If an edge is completly vertical, then skip it.
+		if (angle1ji != angle2ij)
+		{
+//			cout << "pos:  i(" << Vertices[i].x << ", " << Vertices[i].y << ")  j(" << Vertices[j].x << ", " << Vertices[j].y << ")" << endl;
+//			cout << "Angle i->j: " << angle2ij << endl;
+//			cout << "Angle j->i: " << angle1ji << endl;
+
+			float RadiusToUse =  0.5f;
+
+			// Create an edge that exceed both ends of the original edge.
+			float StartX = Vertices[i].x + (float) cos(angle1ji) * RadiusToUse;
+			float StartY = Vertices[i].y + (float) sin(angle1ji) * RadiusToUse;
+			float EndX = Vertices[j].x + (float) cos(angle2ij) * RadiusToUse;
+			float EndY = Vertices[j].y + (float) sin(angle2ij) * RadiusToUse;
+
+			// Create one large size
+			float StartX1 = StartX + (float) cos(angle1ji + M_PI_2) * RadiusToUse;
+			float StartY1 = StartY + (float) sin(angle1ji + M_PI_2) * RadiusToUse;
+			float EndX1 = EndX + (float) cos(angle1ji + M_PI_2) * RadiusToUse;
+			float EndY1 = EndY + (float) sin(angle1ji + M_PI_2) * RadiusToUse;
+
+			Points.push_back({StartX1, StartY1, Vertices[i].z});
+			Points.push_back({EndX1, EndY1, Vertices[j].z});
+
+			// Create the other large size
+			float StartX2 = StartX + (float) cos(angle1ji - M_PI_2) * RadiusToUse;
+			float StartY2 = StartY + (float) sin(angle1ji - M_PI_2) * RadiusToUse;
+			float EndX2 = EndX + (float) cos(angle1ji - M_PI_2) * RadiusToUse;
+			float EndY2 = EndY + (float) sin(angle1ji - M_PI_2) * RadiusToUse;
+
+			Points.push_back({StartX2, StartY2, Vertices[i].z});
+			Points.push_back({EndX2, EndY2, Vertices[j].z});
+
+//			cout << "pos2: i(" << StartX << ", " << StartY << ")  j(" << EndX << ", " << EndY << ")" << endl;
+//			cout << "pos3: i(" << StartX1 << ", " << StartY1 << ")  j(" << EndX1 << ", " << EndY1 << ")" << endl;
+//			cout << "pos4: i(" << StartX2 << ", " << StartY2 << ")  j(" << EndX2 << ", " << EndY2 << ")" << endl;
+
+			//Edges.push_back({{StartX, StartY, Vertices[i].z}, {EndX, EndY, Vertices[j].z}, 0, Points});
+			Edges.push_back({Vertices[i], Vertices[j], 0, Points, angle1ji});
+		}
+		else
+		{
+			Edges.push_back({Vertices[i], Vertices[j], 0, Points, angle1ji});
+		}
+
+		//Edges.push_back({Vertices[i], Vertices[j], 0, Points});
+	}
+
+//	cout << "Created " << Edges.size() << " edges." << endl;
+
+	if (Edges.size() != Vertices.size())
+	{
+//		cout << "FUCK" << endl;
+		int* a = nullptr;
+		int i = *a;
+	}
 }
 
 Weapon::Weapon(float x, float y, float z, string type)
