@@ -243,8 +243,6 @@ int main(int argc, const char *argv[])
 		auto start = chrono::system_clock::now();
 
 		glfwPollEvents();
-		if (FindArgumentPosition(argc, argv, "-eventpoolfix") > 0)
-			glfwPollEvents();
 		RegisterKeyPresses(window);
 
 		if (DemoRead.is_open())
@@ -329,10 +327,10 @@ int main(int argc, const char *argv[])
 				// Move the player back to its original position
 				CurrentLevel->players[i]->pos_ = pt;
 
-				// Try to slide the player against the wall to a valid position
+				// Try to slide the player against the walls to a valid position
 				if (MovePlayerToNewPosition(pt, {pos.x, pos.y, 0}, CurrentLevel->players[i]))
 				{
-					// Make sure the wall didn't push the player inside other players
+					// Make sure the walls didn't push the player inside other players
 					if (!PlayerToPlayersCollision(CurrentLevel->players[i], CurrentLevel->players))
 					{
 						// Set the new position
@@ -355,7 +353,7 @@ int main(int argc, const char *argv[])
 					{
 						// Execute Player to player collision
 						CurrentLevel->players[i]->pos_ = PlayerToPlayerCollisionReact(CurrentLevel->players[i], CurrentLevel->players[j]);
-						// Check if there's a Player to player collision
+						// Check if there's a collision between players
 						if (PlayerToPlayerCollision(CurrentLevel->players[i], CurrentLevel->players[j]) ||
 							RadiusClearOfEdges(CurrentLevel->players[i]->pos_, CurrentLevel->players[i]))
 						{

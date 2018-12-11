@@ -171,21 +171,22 @@ Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane,
 	return nullptr;
 }
 
+// Test if the player is inside the polygon or touching one of its edges
 bool TouchPlane(const Player* play, const Plane* p)
 {
-//cout << "ran TouchPlane(Player* play, Plane* p)" << endl;
 	// Is the player inside the polygon?
 	if (pointInPolyXY(play->PosX(), play->PosY(), p->Vertices))
 		return true;
 
 	// Is the player touching an edge of the polygon?
 	for (unsigned int i = 0; i < p->Edges.size(); i++)
-		if (lineCircle(p->Edges[i].a.x, p->Edges[i].a.y, p->Edges[i].b.x, p->Edges[i].b.y, play->PosX(), play->PosY(), 0.5f))
+		if (lineCircle(p->Edges[i].a.x, p->Edges[i].a.y, p->Edges[i].b.x, p->Edges[i].b.y,play->PosX(), play->PosY(), play->Radius()))
 			return true;
 
 	return false;
 }
 
+// Test if the player is touching a plane and find the neighbors to that plane
 void TouchingPlanes(const Player* play, Plane* p, vector<Plane*>& Tested)
 {
 	// Player touches the polygon
@@ -208,13 +209,10 @@ void TouchingPlanes(const Player* play, Plane* p, vector<Plane*>& Tested)
 
 Float2 MoveAlongAngle(const Float3& origin, const Float3& target, const float theAngle)
 {
-//	Plane* targetPlane = TraceOnPolygons(origin, target, play->plane, true);
-
 	// Get the angle that represents the direction of the player's movement
 	float moveAngle = atan2(origin.y - target.y, origin.x - target.x);
 
 	// Get the angle of the blocking wall (blocking edge of the polygon) of the target plane
-//	float wallAngle = AngleOfFarthestIntersectedEdge(origin, target, targetPlane);
 	float wallAngle = theAngle;
 
 	// Compute the difference between both angles
@@ -240,6 +238,7 @@ Float2 MoveAlongAngle(const Float3& origin, const Float3& target, const float th
 	return {Return.x, Return.y};
 }
 
+// Check if the player (including his radius) is touching edges that may block him
 bool RadiusClearOfEdges(const Float3& target, const Player* play)
 {
 	// Check the planes that are touched
@@ -253,7 +252,7 @@ bool RadiusClearOfEdges(const Float3& target, const Player* play)
 		for (unsigned int i = 0; i < pTouched[j]->Edges.size(); i++)
 		{
 			bool touch = lineCircle(pTouched[j]->Edges[i].a.x, pTouched[j]->Edges[i].a.y, 
-									pTouched[j]->Edges[i].b.x, pTouched[j]->Edges[i].b.y, target.x, target.y, play->Radius());
+				pTouched[j]->Edges[i].b.x, pTouched[j]->Edges[i].b.y, target.x, target.y, play->Radius());
 
 			if (touch)
 			{
@@ -264,12 +263,10 @@ bool RadiusClearOfEdges(const Float3& target, const Player* play)
 
 	for (int i = edges.size() - 1; i >= 0; i--)
 	{
-//		cout << i << " -- " << edges[i].sides <<endl;	// --
-
+		// If the is not blocking, remove it.
 		if (edges[i].sides > 0)
 		{
 			edges.erase(edges.begin() + i);
-			//i--;
 		}
 	}
 
@@ -285,7 +282,7 @@ bool RadiusClearOfEdges(const Float3& target, const Player* play)
 }
 
 // TODO: Player should not be able to step on impassable planes.
-// Moves the player to a new position. Returns false if it can't.
+// Moves the player to a new position. Returns false if it failed.
 bool MovePlayerToNewPosition(const Float3& origin, Float3 target, Player* play)
 {
 	if (RadiusClearOfEdges(target, play))
@@ -355,12 +352,13 @@ float AngleOfFarthestIntersectedEdge(const Float3& origin, const Float3& target,
 }
 
 // Push player out of point (extremity of a line)
+// TODO: Deduplicate code that's also found in "RadiusClearOfEdges()"
+// TODO: Reduce size. Function is big and complicated.
 Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player* play)
 {
 	// Get planes that are touched by the player
 	vector<Plane*> pTouched;
 	TouchingPlanes(play, play->plane, pTouched);
-//	cout << "MoveOnCollision2: NUMBER OF PLANES TOUCHED BY PLAYER: " << pTouched.size() << endl;
 
 	// Check the edges of polygons that are touched
 	vector<Edge> edges;
@@ -369,7 +367,8 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 		for (unsigned int i = 0; i < pTouched[j]->Edges.size(); i++)
 		{
 			bool touch = lineCircle(pTouched[j]->Edges[i].a.x, pTouched[j]->Edges[i].a.y, 
-									pTouched[j]->Edges[i].b.x, pTouched[j]->Edges[i].b.y, target.x, target.y, 0.5f);
+				pTouched[j]->Edges[i].b.x, pTouched[j]->Edges[i].b.y, target.x, target.y, play->Radius());
+
 			if (touch)
 			{
 				edges.push_back(pTouched[j]->Edges[i]);
@@ -377,15 +376,12 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 		}
 	}
 
-	// Erase edges that are not one-sided
+	// Erase edges that are not at least one-sided
 	for (int i = edges.size() - 1; i >= 0; i--)
 	{
-//		cout << i << " -- " << edges[i].sides <<endl;	// --
-
 		if (edges[i].sides > 0)
 		{
 			edges.erase(edges.begin() + i);
-			//i--;
 		}
 	}
 
@@ -404,69 +400,54 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 		for (unsigned int i = 0; i < edges.size(); i++)
 		{
 			// Check for extremities
-			if (CompareDistanceToLength(edges[i].a.x - target.x, edges[i].a.y - target.y, 0.5f))
+			if (CompareDistanceToLength(edges[i].a.x - target.x, edges[i].a.y - target.y, play->Radius()))
 			{
 				points.push_back({edges[i].a.x, edges[i].a.y});
 			}
 
-			if (CompareDistanceToLength(edges[i].b.x - target.x, edges[i].b.y - target.y, 0.5f))
+			if (CompareDistanceToLength(edges[i].b.x - target.x, edges[i].b.y - target.y, play->Radius()))
 			{
 				points.push_back({edges[i].b.x, edges[i].b.y});
 			}
 
 			// Check along the line
 			float angle = (float)atan2(edges[i].a.y - edges[i].b.y, edges[i].a.x - edges[i].b.x);
-			float RadiusToUse = 0.5f;
 
-			// Get the orthogonal vector, so invert the use of 'sin' and 'cos' here.
-			// Only works for 90 degrees angles?
-			// XXX: This was fixed by using 'cos' and 'sin' normally, but adding 90 degrees to the angle.
-
-			float OrthPlayerStartX = target.x + (float) cos(angle + M_PI_2) * RadiusToUse;
-			float OrthPlayerStartY = target.y + (float) sin(angle + M_PI_2) * RadiusToUse;
-			float OrthPlayerEndX = target.x - (float) cos(angle + M_PI_2) * RadiusToUse;
-			float OrthPlayerEndY = target.y - (float) sin(angle + M_PI_2) * RadiusToUse;
-
-//			float angle2 = atan2(OrthPlayerStartY - OrthPlayerEndY, OrthPlayerStartX - OrthPlayerEndX);
+			// Get the orthogonal vector by adding 90 degrees to the angle.
+			float OrthPlayerStartX = target.x + (float) cos(angle + M_PI_2) * play->Radius();
+			float OrthPlayerStartY = target.y + (float) sin(angle + M_PI_2) * play->Radius();
+			float OrthPlayerEndX = target.x - (float) cos(angle + M_PI_2) * play->Radius();
+			float OrthPlayerEndY = target.y - (float) sin(angle + M_PI_2) * play->Radius();
 
 			if (CheckVectorIntersection(edges[i].a, edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}))
 			{
-//				cout << "Angle:	" << angle * (180 / M_PI) << endl;
-//				cout << "Angle2:	" << angle2 * (180 /M_PI) << endl;
-//				cout << "Diff:	" << abs(angle - angle2) * (180 / M_PI) << endl;
-
 				// Intersection
-				pointsintersection.push_back(CollisionPoint(edges[i].a, edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}));
+				pointsintersection.push_back(CollisionPoint(edges[i].a, edges[i].b,
+					{OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}));
 				touching.push_back(edges[i]);
 			}
 		}
 
-//		cout << "MoveOnCollision2: Number of points touched: " << points.size() <<endl;
 		bool isWall = false;
-		float distance = 3000.0f;
+		float distance = numeric_limits<float>::max();
 
-		const float epsilon = 0.05f;
+		const float EPSILON = 0.05f;
 
 		for (unsigned int k = 0; k < points.size(); k++)
 		{
 			if (distance > sqrt( pow(points[k].x, 2) + pow(points[k].y, 2) ))
 			{
-//				cout << "MoveOnCollision2: New " << k << " point closer." << endl;
-				newpoint = PushTargetOutOfPoint(target, {points[k].x, points[k].y, 0}, 0.50f + epsilon);
-//				isWall = false;
+				newpoint = PushTargetOutOfPoint(target, {points[k].x, points[k].y, 0}, play->Radius() + EPSILON);
 			}
 		}
 
-//		cout << "MoveOnCollision5:  Number of edges touched: " << touching.size() <<endl;
-		//float distance = 3000.0f;
 		Edge closest;
 
 		for (unsigned int k = 0; k < touching.size(); k++)
 		{
 			if (distance > sqrt( pow(pointsintersection[k].x, 2) + pow(pointsintersection[k].y, 2) ))
 			{
-//				cout << "MoveOnCollision5: New " << k << " point closer." << endl;
-				newpoint = PushTargetOutOfPoint(target, {pointsintersection[k].x, pointsintersection[k].y, 0}, 0.50f);
+				newpoint = PushTargetOutOfPoint(target, {pointsintersection[k].x, pointsintersection[k].y, 0}, play->Radius());
 				isWall = true;
 				closest = touching[k];
 			}
@@ -475,13 +456,11 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 		if (isWall)
 		{
 			float theAngle = (float)atan2(closest.a.y - closest.b.y, closest.a.x - closest.b.x);
-//			cout << "Touching a wall which has angle " << theAngle << " out of " << touching.size() << " walls." << endl;
 			return MoveAlongAngle(origin, target, theAngle);
 		}
 		else
 		{
 			// Intersection. Can't pass over there.
-//			cout << "Touching a point out of " << points.size() << " points." << endl;
 			return {newpoint.x, newpoint.y};
 		}
 	}
@@ -557,7 +536,7 @@ Float3 PushTargetOutOfPoint(const Float3& target, const Float3& point, const flo
 
 Float3 PlayerToPlayerCollisionReact(const Player* moved, const Player* other)
 {
-	const float epsilon = 1.05f;	// To avoid still touching the player once pushed out of it
+	const float EPSILON = 1.05f;	// To avoid still touching the player once pushed out of it, push it away by 105%.
 
 	float distance = sqrt(pow(moved->PosX() - other->PosX(), 2) + pow(moved->PosY() - other->PosY(), 2));
 	float radii = moved->Radius() + other->Radius();
@@ -568,8 +547,8 @@ Float3 PlayerToPlayerCollisionReact(const Player* moved, const Player* other)
 
 		Float3 pos = moved->pos_;
 
-		pos.x += (radii - distance) * cos(angle) * epsilon;
-		pos.y += (radii - distance) * sin(angle) * epsilon;
+		pos.x += (radii - distance) * cos(angle) * EPSILON;
+		pos.y += (radii - distance) * sin(angle) * EPSILON;
 
 		return pos;	// New position
 	}
@@ -605,6 +584,7 @@ bool PlayerToPlayersCollision(const Player* source, const vector<Player*> player
 	return false;
 }
 
+// TODO: Remove if unused
 bool PlayerHeightCheck(const Player* moved, const Player* other)
 {
 	if (abs(moved->PosZ() - other->PosZ()) <= moved->Height())

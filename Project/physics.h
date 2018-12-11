@@ -34,7 +34,7 @@ void ApplyGravity(Player* play);
 // Distance smaller than length (inside or touches)
 bool CompareDistanceToLength(const float DiffX, const float DiffY, const float Length);
 
-// Moves the player to a new position. Returns false if it can't.
+// Moves the player to a new position. Returns false if it failed.
 bool MovePlayerToNewPosition(const Float3& origin, Float3 target, Player* play);
 
 // Get the plane where the player is standing
@@ -47,14 +47,16 @@ void Hitscan(Level* lvl, Player* play);
 
 // Collision detection with player radius and collision response
 Float3 PushTargetOutOfPoint(const Float3& target, const Float3& point, const float p_rad);
+
 Float3 PlayerToPlayerCollisionReact(const Player* moved, const Player* other);
 bool PlayerToPlayerCollision(const Player* moved, const Player* other);
 bool PlayerToPlayersCollision(const Player* source, const vector<Player*> players);
+
 bool RadiusClearOfEdges(const Float3& target, const Player* play);
 vector<Player*> GetPlayersTouched(const Player* source, const vector<Player*> players);
 bool PlayerHeightCheck(const Player* moved, const Player* other);
 
-// Add function check player height touch
+// Add a function that checks player height touches another (but based on occupied plane area)
 // Player to Player collision should be Player to player radius touching
 
 #endif	// PHYSICS_H
