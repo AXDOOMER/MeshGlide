@@ -238,6 +238,7 @@ void Level::LoadNative(const string& LevelName, unsigned int numOfPlayers)
 		LevelFile.close();
 
 		LinkPlanes(LevelName);
+		FinalPlaneProcessing();
 
 		// Check if no player was created
 		if (players.size() == 0)
@@ -382,9 +383,40 @@ void Level::LoadObj(const string& path)
 		} // end of while loop
 
 		LinkPlanes(path);
+		FinalPlaneProcessing();
 	}
 
 	model.close();
+}
+
+void Level::CountCommonEdgesPlanes(Plane* p1, Plane* p2)
+{
+	for (unsigned int i = 0; i < p1->Edges.size(); i++)
+	{
+		for (unsigned int j = 0; j < p2->Edges.size(); j++)
+		{
+			if ((p1->Edges[i].a == p2->Edges[j].a && p1->Edges[i].b == p2->Edges[j].b) ||
+				(p1->Edges[i].a == p2->Edges[j].b && p1->Edges[i].b == p2->Edges[j].a))
+			{
+				// Increment the edge count if it is considered an edge
+				if (!p2->CanWalk())
+					continue;
+				p1->Edges[i].sides++;
+			}
+		}
+	}
+}
+
+void Level::FinalPlaneProcessing()
+{
+	for (unsigned int i = 0; i < planes.size(); i++)
+	{
+		for (unsigned int j = 0; j < planes[i]->Neighbors.size(); j++)
+		{
+			// For each plane, we must update the edge count.
+			CountCommonEdgesPlanes(planes[i], planes[i]->Neighbors[j]);
+		}
+	}
 }
 
 void Level::LinkPlanes(const string& LevelName)
@@ -430,8 +462,8 @@ void Level::LinkPlanes(const string& LevelName)
 				{
 					if (i != j)
 					{
-						// Find more than one common vertex
-						if (planes[i]->CommonVertices(planes[j]) > 1)
+						// Find at least one common vertex
+						if (planes[i]->CommonVertices(planes[j]) >= 1)
 						{
 							if (first)
 							{
