@@ -29,7 +29,6 @@ using namespace std;
 
 /****************************** Constants ******************************/
 
-const string WindowTitle = "MeshGlide engine";
 const string WindowIcon = "planet.png";
 const string chars = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 const string fontfile = "chars.png";
@@ -63,7 +62,7 @@ bool KeyPressed(int key);
 
 void SetWindowTitle(GLFWwindow* window, string Title);
 
-GLFWwindow* Init_OpenGL(const bool fullscreen);
+GLFWwindow* Init_OpenGL(const bool fullscreen, const string& windowTitle);
 
 void InitProjection(GLFWwindow* window);
 
