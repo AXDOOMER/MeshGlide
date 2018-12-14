@@ -24,8 +24,13 @@ elif [ "$#" -ge 1 ] && [ "$1" == "release" ]; then
 	shift
 	echo "$EXENAME args: $@"
 	g++ *.cpp -std=c++11 -O2 -s -Wall -Wextra -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -lzmq -o $EXENAME && ./$EXENAME $@
+elif [ "$#" -ge 1 ] && [ "$1" == "gdb" ]; then
+	echo "Building and running on GDB"
+	shift
+	echo "$EXENAME args: $@"
+	g++ *.cpp -std=c++11 -O0 -Wall -Wextra -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -lzmq -o $EXENAME && gdb --args ./$EXENAME $@
 else
 	echo "Building default"
 	echo "$EXENAME args: $@"
-	g++ *.cpp -std=c++11 -Wall -Wextra -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -lzmq -o $EXENAME && ./$EXENAME $@
+	g++ *.cpp -std=c++11 -O0 -Wall -Wextra -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -lzmq -o $EXENAME && ./$EXENAME $@
 fi

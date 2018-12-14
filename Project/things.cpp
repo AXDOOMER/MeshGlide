@@ -25,6 +25,9 @@
 #include <string>		/* to_string() */
 #include <cstring>		/* memcpy */
 
+#include <iostream>
+#include <bitset>
+
 using namespace std;
 
 bool Thing::Update()
@@ -101,17 +104,85 @@ void Player::LateralMove(int Thrust)
 
 vector<unsigned char> Player::ReadTicCmd()
 {
-	unsigned char array[sizeof(TicCmd)];
+	// Serialize the command
+	vector<unsigned char> c;
+	c.resize(9, 0);	// 7 bytes
 
-	// dest, source, size
-	memcpy(&array, &Cmd, sizeof(TicCmd));
+	c[0] = Cmd.quit;
+//	c[0] = c[0] << 1;
 
-	return vector<unsigned char>(array, array + sizeof(TicCmd));
+//	c[0] = c[0] | Cmd.fire;
+//	c[0] = c[0] << 6;
+
+//	c[0] = c[0] | Cmd.id;
+
+	c[1] = Cmd.forward;
+	c[2] = Cmd.lateral;
+
+	c[3] = Cmd.rotation >> 8;
+	c[4] = Cmd.rotation;
+
+	c[5] = Cmd.vertical >> 8;
+	c[6] = Cmd.vertical;
+
+	c[7] = Cmd.fire;
+	c[8] = Cmd.id;
+
+	// DIIJ
+	cout << "bitset: " << bitset<8>(c[0]) << endl;
+	for (unsigned int i = 0; i < c.size(); i++)
+	{
+		cout << dec << i << ": " << dec << static_cast<unsigned int>(c[i]) << endl;
+	}
+	cout << dec;
+	cout << "^ read =============================" << endl;
+
+	return c;
 }
 
 void Player::WriteTicCmd(vector<unsigned char> v)
 {
-	memcpy(&Cmd, &v[0], v.size());
+	cout << "SIZE: " << v.size() << endl;
+
+	// BUG: Handle the case where THE FUCKING VECTOR IS 0 IN SIZE. WTF.
+	if (v.size() != 9)
+		return;
+
+	// Deserialize the command
+//	Cmd.quit = v[0] & 128;
+//	Cmd.fire = v[0] & 64;
+//	Cmd.id = v[0] & 63;
+
+	Cmd.quit = v[0];
+	Cmd.fire = v[7];
+	Cmd.id = v[8];
+
+	Cmd.forward = v[1];
+	Cmd.lateral = v[2];
+
+	Cmd.rotation = v[3];
+	Cmd.rotation = Cmd.rotation << 8;
+	Cmd.rotation |= v[4];
+
+	Cmd.vertical = v[5];
+	Cmd.vertical = Cmd.vertical << 8;
+	Cmd.vertical |= v[6];
+
+
+	cout << "bitset: " << bitset<8>(v[0]) << endl;
+
+	cout << dec;
+	cout << static_cast<int>(Cmd.id) << endl;
+
+	cout << static_cast<int>(Cmd.forward) << endl;
+	cout << static_cast<int>(Cmd.lateral) << endl;
+
+	cout << static_cast<int>(Cmd.rotation) << endl;
+	cout << static_cast<int>(Cmd.vertical) << endl;
+
+	cout << static_cast<int>(Cmd.fire) << endl;
+	cout << static_cast<int>(Cmd.quit) << endl;	
+	cout << "^ write =============================" << endl;
 }
 
 void Player::ExecuteTicCmd()
