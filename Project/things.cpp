@@ -20,6 +20,8 @@
 #include "texture.h"
 #include "cache.h"
 
+#include <SDL2/SDL_endian.h>
+
 #include <cmath>
 #include <limits>		/* numeric_limits */
 #include <string>		/* to_string() */
@@ -119,11 +121,19 @@ vector<unsigned char> Player::ReadTicCmd()
 	c[1] = Cmd.forward;
 	c[2] = Cmd.lateral;
 
+#if SDL_BYTEORDER != SDL_BIG_ENDIAN
+	c[4] = Cmd.rotation >> 8;
+	c[3] = Cmd.rotation;
+
+	c[6] = Cmd.vertical >> 8;
+	c[5] = Cmd.vertical;
+#else
 	c[3] = Cmd.rotation >> 8;
 	c[4] = Cmd.rotation;
 
 	c[5] = Cmd.vertical >> 8;
 	c[6] = Cmd.vertical;
+#endif
 
 	c[7] = Cmd.fire;
 	c[8] = Cmd.id;
@@ -160,6 +170,15 @@ void Player::WriteTicCmd(vector<unsigned char> v)
 	Cmd.forward = v[1];
 	Cmd.lateral = v[2];
 
+#if SDL_BYTEORDER != SDL_BIG_ENDIAN
+	Cmd.rotation = v[4];
+	Cmd.rotation = Cmd.rotation << 8;
+	Cmd.rotation |= v[3];
+
+	Cmd.vertical = v[6];
+	Cmd.vertical = Cmd.vertical << 8;
+	Cmd.vertical |= v[5];
+#else
 	Cmd.rotation = v[3];
 	Cmd.rotation = Cmd.rotation << 8;
 	Cmd.rotation |= v[4];
@@ -167,7 +186,7 @@ void Player::WriteTicCmd(vector<unsigned char> v)
 	Cmd.vertical = v[5];
 	Cmd.vertical = Cmd.vertical << 8;
 	Cmd.vertical |= v[6];
-
+#endif
 
 	cout << "bitset: " << bitset<8>(v[0]) << endl;
 
