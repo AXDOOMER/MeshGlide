@@ -24,7 +24,6 @@
 
 #include <string>
 #include <iostream>
-//#include <stdexcept>
 #include <utility>	/* swap */
 using namespace std;
 
