@@ -110,15 +110,15 @@ vector<unsigned char> Player::ReadTicCmd() const
 
 	// Serialize the command
 	vector<unsigned char> c;
-	c.resize(9, 0);	// 7 bytes
+	c.resize(7, 0);	// 7 bytes
 
 	c[0] = Cmd.quit;
-//	c[0] = c[0] << 1;
+	c[0] = c[0] << 1;
 
-//	c[0] = c[0] | Cmd.fire;
-//	c[0] = c[0] << 6;
+	c[0] = c[0] | Cmd.fire;
+	c[0] = c[0] << 6;
 
-//	c[0] = c[0] | Cmd.id;
+	c[0] = c[0] | Cmd.id;
 
 	c[1] = Cmd.forward;
 	c[2] = Cmd.lateral;
@@ -139,9 +139,6 @@ cout << "big" <<endl;
 cout << "little" <<endl;
 #endif
 
-	c[7] = Cmd.fire;
-	c[8] = Cmd.id;
-
 	// DIIJ
 	cout << "bitset: " << bitset<8>(c[0]) << endl;
 	for (unsigned int i = 0; i < c.size(); i++)
@@ -149,7 +146,7 @@ cout << "little" <<endl;
 		cout << dec << i << ": " << dec << static_cast<unsigned int>(c[i]) << endl;
 	}
 	cout << dec;
-	cout << "^ read =============================" << endl;
+	cout << "^ read (created) =============================" << endl;
 
 	return c;
 }
@@ -161,17 +158,17 @@ void Player::WriteTicCmd(vector<unsigned char> v)
 	cout << "SIZE: " << v.size() << endl;
 
 	// BUG: Handle the case where THE FUCKING VECTOR IS 0 IN SIZE. WTF.
-	if (v.size() != 9)
+	if (v.size() != 7)
 		return;
 
 	// Deserialize the command
-//	Cmd.quit = v[0] & 128;
-//	Cmd.fire = v[0] & 64;
-//	Cmd.id = v[0] & 63;
+	Cmd.quit = v[0] & 128;
+	Cmd.fire = v[0] & 64;
+	Cmd.id = v[0] & 63;
 
-	Cmd.quit = v[0];
-	Cmd.fire = v[7];
-	Cmd.id = v[8];
+//	Cmd.quit = v[0];
+//	Cmd.fire = v[7];
+//	Cmd.id = v[8];
 
 	Cmd.forward = v[1];
 	Cmd.lateral = v[2];
@@ -209,7 +206,7 @@ cout << "little 2" <<endl;
 
 	cout << static_cast<int>(Cmd.fire) << endl;
 	cout << static_cast<int>(Cmd.quit) << endl;	
-	cout << "^ write =============================" << endl;
+	cout << "^ write (decomposed) =============================" << endl;
 }
 
 void Player::ExecuteTicCmd()

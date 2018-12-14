@@ -227,6 +227,7 @@ int main(int argc, const char *argv[])
 	/****************************** SETUP PHASE ******************************/
 
 	CurrentLevel->play = CurrentLevel->players[network.myPlayer()];
+	CurrentLevel->play->Cmd.id = network.myPlayer();
 
 	if (DemoWrite.is_open())
 	{
