@@ -175,7 +175,7 @@ private:
 
 public:
 	void ExecuteTicCmd();
-	vector<unsigned char> ReadTicCmd();
+	vector<unsigned char> ReadTicCmd() const;
 	void WriteTicCmd(vector<unsigned char> v);
 	float GetRadianAngle(short Angle) const;
 	float Radius() const;

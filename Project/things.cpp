@@ -104,8 +104,10 @@ void Player::LateralMove(int Thrust)
 	pos_.y += ((float)Thrust / 64) * sin(LateralAngle);
 }
 
-vector<unsigned char> Player::ReadTicCmd()
+vector<unsigned char> Player::ReadTicCmd() const
 {
+	// TODO: move serialization to object TicCmd
+
 	// Serialize the command
 	vector<unsigned char> c;
 	c.resize(9, 0);	// 7 bytes
@@ -121,18 +123,20 @@ vector<unsigned char> Player::ReadTicCmd()
 	c[1] = Cmd.forward;
 	c[2] = Cmd.lateral;
 
-#if SDL_BYTEORDER != SDL_BIG_ENDIAN
-	c[4] = Cmd.rotation >> 8;
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
 	c[3] = Cmd.rotation;
+	c[4] = Cmd.rotation >> 8;
 
-	c[6] = Cmd.vertical >> 8;
 	c[5] = Cmd.vertical;
+	c[6] = Cmd.vertical >> 8;
+cout << "big" <<endl;
 #else
 	c[3] = Cmd.rotation >> 8;
 	c[4] = Cmd.rotation;
 
 	c[5] = Cmd.vertical >> 8;
 	c[6] = Cmd.vertical;
+cout << "little" <<endl;
 #endif
 
 	c[7] = Cmd.fire;
@@ -152,6 +156,8 @@ vector<unsigned char> Player::ReadTicCmd()
 
 void Player::WriteTicCmd(vector<unsigned char> v)
 {
+	// TODO: move to contents to object TicCmd
+
 	cout << "SIZE: " << v.size() << endl;
 
 	// BUG: Handle the case where THE FUCKING VECTOR IS 0 IN SIZE. WTF.
@@ -170,22 +176,24 @@ void Player::WriteTicCmd(vector<unsigned char> v)
 	Cmd.forward = v[1];
 	Cmd.lateral = v[2];
 
-#if SDL_BYTEORDER != SDL_BIG_ENDIAN
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
 	Cmd.rotation = v[4];
-	Cmd.rotation = Cmd.rotation << 8;
+	Cmd.rotation <<= 8;
 	Cmd.rotation |= v[3];
 
 	Cmd.vertical = v[6];
-	Cmd.vertical = Cmd.vertical << 8;
+	Cmd.vertical <<= 8;
 	Cmd.vertical |= v[5];
+cout << "big 2" << endl;
 #else
 	Cmd.rotation = v[3];
-	Cmd.rotation = Cmd.rotation << 8;
+	Cmd.rotation <<= 8;
 	Cmd.rotation |= v[4];
 
 	Cmd.vertical = v[5];
-	Cmd.vertical = Cmd.vertical << 8;
+	Cmd.vertical <<= 8;
 	Cmd.vertical |= v[6];
+cout << "little 2" <<endl;
 #endif
 
 	cout << "bitset: " << bitset<8>(v[0]) << endl;
