@@ -471,7 +471,7 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 
 void Hitscan(Level* lvl, Player* play)
 {
-	vector<Float3> points;
+	vector<pair<Float3, Plane*>> points;
 
 	for (unsigned int i = 0; i < lvl->planes.size(); i++)
 	{
@@ -493,20 +493,21 @@ void Hitscan(Level* lvl, Player* play)
 				float front = atan2(play->PosY() - f.y, play->PosX() - f.x) - play->GetRadianAngle(play->Angle);
 
 				if (front > M_PI_4 || front < -M_PI_4)
-					points.push_back(f);
+					points.push_back(make_pair(f, lvl->planes[i]));
 			}
 		}
 	}
 
-	sort(points.begin(), points.end(), [play](const Float3 a, const Float3 b)
+	sort(points.begin(), points.end(), [play](const pair<Float3, Plane*> a, const pair<Float3, Plane*> b)
 	{
-		return pow(play->PosX() - a.x, 2) + pow(play->PosY() - a.y, 2) < pow(play->PosX() - b.x, 2) + pow(play->PosY() - b.y, 2);
+		return pow(play->PosX() - a.first.x, 2) + pow(play->PosY() - a.first.y, 2) < pow(play->PosX() - b.first.x, 2) + pow(play->PosY() - b.first.y, 2);
 	});
 
 	if (points.size() > 0)
 	{
-		Float3 dir = {points[0].x - play->PosX(), points[0].y - play->PosY(), points[0].z - play->CamZ()};
-		dir = subVectors(dir, normalize(dir));	// The puff must not touch the wall
+		Float3 dir = {points[0].first.x - play->PosX(), points[0].first.y - play->PosY(), points[0].first.z - play->CamZ()};
+		dir = subVectors(dir, scaleVector(0.1f, normalize(dir)));	// The puff must not touch the wall
+		//dir = addVectors(dir, scaleVector(0.1f, points[0].second->normal));	// TODO: Use this later when every normal will point inside the level
 		lvl->things.push_back(new Puff({play->PosX() + dir.x, play->PosY() + dir.y, play->CamZ() + dir.z}));
 	}
 }
