@@ -271,19 +271,41 @@ int main(int argc, const char *argv[])
 			{
 				if (network.myPlayer() == 0)
 				{
+					if (view.send)
+					{
+						CurrentLevel->players[0]->Cmd.chat = view.chat;
+						view.send = false;
+						view.chat.clear();
+					}
+
 					// Receive network event from player 2
 					CurrentLevel->players[1]->WriteTicCmd(network.receive());
 
 					// Send network event to player 2
 					network.send(CurrentLevel->players[0]->ReadTicCmd());
+
+					view.message = CurrentLevel->players[1]->Cmd.chat;
+					view.timer = 60 * 1;
+
 				}
 				else if (network.myPlayer() == 1)
 				{
+					if (view.send)
+					{
+						CurrentLevel->players[1]->Cmd.chat = view.chat;
+						view.send = false;
+						view.chat.clear();
+					}
+
 					// Send network event to player 1
 					network.send(CurrentLevel->players[1]->ReadTicCmd());
 
 					// Receive network event from player 1
 					CurrentLevel->players[0]->WriteTicCmd(network.receive());
+
+					view.message = CurrentLevel->players[0]->Cmd.chat;
+					view.timer = 60 * 1;
+
 				}
 				else
 				{

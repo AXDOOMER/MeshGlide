@@ -51,7 +51,7 @@ void TicCmd::Reset()
 	rotation = 0;
 	vertical = 0;
 	fire = false;
-//	chat = "";
+	chat = "";
 }
 
 Player::Player()
@@ -110,7 +110,7 @@ vector<unsigned char> Player::ReadTicCmd() const
 
 	// Serialize the command
 	vector<unsigned char> c;
-	c.resize(7, 0);	// 7 bytes
+	c.resize(8, 0);	// 7 bytes
 
 	c[0] = Cmd.quit;
 	c[0] = c[0] << 1;
@@ -139,6 +139,15 @@ cout << "big" <<endl;
 cout << "little" <<endl;
 #endif
 
+	// Save the chat string's size
+	c[7] = Cmd.chat.size();
+
+	for (unsigned int i = 0; i < Cmd.chat.size(); i++)
+	{
+		//c[7 + i] = Cmd.chat[i];
+		c.push_back(Cmd.chat[i]);
+	}
+
 	// DIIJ
 	cout << "bitset: " << bitset<8>(c[0]) << endl;
 	for (unsigned int i = 0; i < c.size(); i++)
@@ -158,7 +167,7 @@ void Player::WriteTicCmd(vector<unsigned char> v)
 	cout << "SIZE: " << v.size() << endl;
 
 	// BUG: Handle the case where THE FUCKING VECTOR IS 0 IN SIZE. WTF.
-	if (v.size() != 7)
+	if (v.size() < 8)
 		return;
 
 	// Deserialize the command
@@ -192,6 +201,17 @@ cout << "big 2" << endl;
 	Cmd.vertical |= v[6];
 cout << "little 2" <<endl;
 #endif
+
+	//Cmd.chat. = v[7];
+
+	Cmd.chat = "";	// needed?
+
+	for (unsigned int i = 0; i < v[7] && i < 36; i++)
+	{
+		Cmd.chat.push_back(v[i + 8]);
+	}
+
+cout << "GOT TIC CMD WITH CHAT: " << Cmd.chat << "   WITH SIZE " << Cmd.chat.size() << endl;
 
 	cout << "bitset: " << bitset<8>(v[0]) << endl;
 

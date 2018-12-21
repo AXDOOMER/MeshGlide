@@ -47,8 +47,11 @@ void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	if (view.chatMode && key == GLFW_KEY_ENTER && action == GLFW_PRESS)
 	{
+//		if (view.chatMode)
+		view.send = true;
+
 		view.chatMode = false;
-		view.chat.clear();
+		//view.chat.clear();
 	}
 
 	if (!view.chatMode && key == GLFW_KEY_T && action == GLFW_RELEASE)
@@ -506,6 +509,12 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int Frame
 	RenderText(lvl, regex_replace(to_string((float)FrameDelay / 1000) + " ms", regex("0+(?=\\s)\\b"), ""), -0.9f, 0.8f, 0.05f, 0.15f);
 	if (view.chatMode)
 		RenderText(lvl, view.chat + '_', -0.9f, 0.6f, 0.05f, 0.15f);	// Chat text
+	if (view.message.size() > 0 && view.timer > 0)
+	{
+		RenderText(lvl, view.message, -0.9f, 0.3f, 0.05f, 0.15f);	// Message
+		view.timer--;
+	}
+
 	DrawCursor(lvl);
 
 	// Resetting display to 3D

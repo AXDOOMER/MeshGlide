@@ -86,7 +86,7 @@ public:
 	short vertical;
 	bool fire;
 	bool quit;
-//	string chat;
+	string chat;
 };
 
 class Thing
