@@ -284,8 +284,11 @@ int main(int argc, const char *argv[])
 					// Send network event to player 2
 					network.send(CurrentLevel->players[0]->ReadTicCmd());
 
-					view.message = CurrentLevel->players[1]->Cmd.chat;
-					view.timer = 60 * 1;
+					if (CurrentLevel->players[1]->Cmd.chat.size() > 0)
+					{
+						view.message = CurrentLevel->players[1]->Cmd.chat;
+						view.timer = 60 * 5;
+					}
 
 				}
 				else if (network.myPlayer() == 1)
@@ -303,9 +306,11 @@ int main(int argc, const char *argv[])
 					// Receive network event from player 1
 					CurrentLevel->players[0]->WriteTicCmd(network.receive());
 
-					view.message = CurrentLevel->players[0]->Cmd.chat;
-					view.timer = 60 * 1;
-
+					if (CurrentLevel->players[0]->Cmd.chat.size() > 0)
+					{
+						view.message = CurrentLevel->players[0]->Cmd.chat;
+						view.timer = 60 * 5;
+					}
 				}
 				else
 				{
