@@ -172,11 +172,6 @@ void updatePlayerWithEvents(GLFWwindow* window, GameWindow& view, unsigned int T
 	{
 		play->Cmd.fire = true;
 	}
-
-	if (glfwWindowShouldClose(window))
-	{
-		play->Cmd.quit = true;
-	}
 }
 
 // Changes the player by changing where the pointer is pointing at

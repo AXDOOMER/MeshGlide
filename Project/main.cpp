@@ -266,6 +266,12 @@ int main(int argc, const char *argv[])
 				updatePlayerWithEvents(window, view, TicCount, CurrentLevel->play);
 			}
 
+			// Cause the game to quit if the player wants to
+			if (glfwWindowShouldClose(window))
+			{
+				CurrentLevel->play->Cmd.quit = true;
+			}
+
 			// Send commands over network and receive commands
 			if (network.enabled())
 			{
