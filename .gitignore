@@ -53,6 +53,7 @@ x64/
 build/
 [Bb]in/
 [Oo]bj/
+Project/MeshGlide
 
 # MSTest test Results
 [Tt]est[Rr]esult*/

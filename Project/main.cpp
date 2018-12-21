@@ -42,7 +42,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.49 (dev)";
+	const char* const VERSION = "0.50 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -227,6 +227,7 @@ int main(int argc, const char *argv[])
 	/****************************** SETUP PHASE ******************************/
 
 	CurrentLevel->play = CurrentLevel->players[network.myPlayer()];
+	CurrentLevel->play->Cmd.id = network.myPlayer();
 
 	if (DemoWrite.is_open())
 	{
@@ -265,24 +266,57 @@ int main(int argc, const char *argv[])
 				updatePlayerWithEvents(window, view, TicCount, CurrentLevel->play);
 			}
 
+			// Cause the game to quit if the player wants to
+			if (glfwWindowShouldClose(window))
+			{
+				CurrentLevel->play->Cmd.quit = true;
+			}
+
 			// Send commands over network and receive commands
 			if (network.enabled())
 			{
 				if (network.myPlayer() == 0)
 				{
+					if (view.send)
+					{
+						CurrentLevel->players[0]->Cmd.chat = view.chat;
+						view.send = false;
+						view.chat.clear();
+					}
+
 					// Receive network event from player 2
 					CurrentLevel->players[1]->WriteTicCmd(network.receive());
 
 					// Send network event to player 2
 					network.send(CurrentLevel->players[0]->ReadTicCmd());
+
+					if (CurrentLevel->players[1]->Cmd.chat.size() > 0)
+					{
+						view.message = CurrentLevel->players[1]->Cmd.chat;
+						view.timer = view.MESSAGE_TIME;
+					}
+
 				}
 				else if (network.myPlayer() == 1)
 				{
+					if (view.send)
+					{
+						CurrentLevel->players[1]->Cmd.chat = view.chat;
+						view.send = false;
+						view.chat.clear();
+					}
+
 					// Send network event to player 1
 					network.send(CurrentLevel->players[1]->ReadTicCmd());
 
 					// Receive network event from player 1
 					CurrentLevel->players[0]->WriteTicCmd(network.receive());
+
+					if (CurrentLevel->players[0]->Cmd.chat.size() > 0)
+					{
+						view.message = CurrentLevel->players[0]->Cmd.chat;
+						view.timer = view.MESSAGE_TIME;
+					}
 				}
 				else
 				{

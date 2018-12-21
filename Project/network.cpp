@@ -51,6 +51,7 @@ bool Network::enabled()
 
 unsigned int Network::myPlayer()
 {
+	// Should always return >= 0 and <= 63
 	return id_;
 }
 

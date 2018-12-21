@@ -44,8 +44,14 @@ struct GameWindow
 	bool mouseLook = false;
 	bool fullScreen = false;
 	int justChanged = 0;
+
 	bool chatMode = false;
 	string chat;
+	bool send = false;
+
+	string message;
+	unsigned int timer = 0;
+	const unsigned int MESSAGE_TIME = 60 * 5;
 
 	// Array for keypresses. The first 31 items are never changed because they have no corresponding key. This wastes a bit of memory.
 	// Use the key handling functions to manipulate.
