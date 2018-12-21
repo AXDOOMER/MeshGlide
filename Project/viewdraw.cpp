@@ -47,11 +47,8 @@ void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	if (view.chatMode && key == GLFW_KEY_ENTER && action == GLFW_PRESS)
 	{
-//		if (view.chatMode)
 		view.send = true;
-
 		view.chatMode = false;
-		//view.chat.clear();
 	}
 
 	if (!view.chatMode && key == GLFW_KEY_T && action == GLFW_RELEASE)

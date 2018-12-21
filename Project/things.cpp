@@ -27,9 +27,6 @@
 #include <string>		/* to_string() */
 #include <cstring>		/* memcpy */
 
-#include <iostream>
-#include <bitset>
-
 using namespace std;
 
 bool Thing::Update()
@@ -104,13 +101,12 @@ void Player::LateralMove(int Thrust)
 	pos_.y += ((float)Thrust / 64) * sin(LateralAngle);
 }
 
+// Encodes a player's data to a buffer for network usage
 vector<unsigned char> Player::ReadTicCmd() const
 {
-	// TODO: move serialization to object TicCmd
-
 	// Serialize the command
 	vector<unsigned char> c;
-	c.resize(8, 0);	// 7 bytes
+	c.resize(8, 0);	// It must be at least 8 bytes long
 
 	c[0] = Cmd.quit;
 	c[0] = c[0] << 1;
@@ -129,44 +125,30 @@ vector<unsigned char> Player::ReadTicCmd() const
 
 	c[5] = Cmd.vertical;
 	c[6] = Cmd.vertical >> 8;
-cout << "big" <<endl;
 #else
 	c[3] = Cmd.rotation >> 8;
 	c[4] = Cmd.rotation;
 
 	c[5] = Cmd.vertical >> 8;
 	c[6] = Cmd.vertical;
-cout << "little" <<endl;
 #endif
 
 	// Save the chat string's size
 	c[7] = Cmd.chat.size();
 
+	// Write chat string to buffer
 	for (unsigned int i = 0; i < Cmd.chat.size(); i++)
 	{
-		//c[7 + i] = Cmd.chat[i];
 		c.push_back(Cmd.chat[i]);
 	}
-
-	// DIIJ
-	cout << "bitset: " << bitset<8>(c[0]) << endl;
-	for (unsigned int i = 0; i < c.size(); i++)
-	{
-		cout << dec << i << ": " << dec << static_cast<unsigned int>(c[i]) << endl;
-	}
-	cout << dec;
-	cout << "^ read (created) =============================" << endl;
 
 	return c;
 }
 
+// Decodes a player's data from a buffer and write to command
 void Player::WriteTicCmd(vector<unsigned char> v)
 {
-	// TODO: move to contents to object TicCmd
-
-	cout << "SIZE: " << v.size() << endl;
-
-	// BUG: Handle the case where THE FUCKING VECTOR IS 0 IN SIZE. WTF.
+	// Safety check if not a least 8 bytes
 	if (v.size() < 8)
 		return;
 
@@ -174,10 +156,6 @@ void Player::WriteTicCmd(vector<unsigned char> v)
 	Cmd.quit = v[0] & 128;
 	Cmd.fire = v[0] & 64;
 	Cmd.id = v[0] & 63;
-
-//	Cmd.quit = v[0];
-//	Cmd.fire = v[7];
-//	Cmd.id = v[8];
 
 	Cmd.forward = v[1];
 	Cmd.lateral = v[2];
@@ -190,7 +168,6 @@ void Player::WriteTicCmd(vector<unsigned char> v)
 	Cmd.vertical = v[6];
 	Cmd.vertical <<= 8;
 	Cmd.vertical |= v[5];
-cout << "big 2" << endl;
 #else
 	Cmd.rotation = v[3];
 	Cmd.rotation <<= 8;
@@ -199,34 +176,16 @@ cout << "big 2" << endl;
 	Cmd.vertical = v[5];
 	Cmd.vertical <<= 8;
 	Cmd.vertical |= v[6];
-cout << "little 2" <<endl;
 #endif
 
-	//Cmd.chat. = v[7];
+	// Empty the chat sting inside the command
+	Cmd.chat.clear();
 
-	Cmd.chat = "";	// needed?
-
+	// Write the chat string to the command
 	for (unsigned int i = 0; i < v[7] && i < 36; i++)
 	{
 		Cmd.chat.push_back(v[i + 8]);
 	}
-
-cout << "GOT TIC CMD WITH CHAT: " << Cmd.chat << "   WITH SIZE " << Cmd.chat.size() << endl;
-
-	cout << "bitset: " << bitset<8>(v[0]) << endl;
-
-	cout << dec;
-	cout << static_cast<int>(Cmd.id) << endl;
-
-	cout << static_cast<int>(Cmd.forward) << endl;
-	cout << static_cast<int>(Cmd.lateral) << endl;
-
-	cout << static_cast<int>(Cmd.rotation) << endl;
-	cout << static_cast<int>(Cmd.vertical) << endl;
-
-	cout << static_cast<int>(Cmd.fire) << endl;
-	cout << static_cast<int>(Cmd.quit) << endl;	
-	cout << "^ write (decomposed) =============================" << endl;
 }
 
 void Player::ExecuteTicCmd()
