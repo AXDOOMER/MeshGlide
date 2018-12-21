@@ -42,7 +42,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.49 (dev)";
+	const char* const VERSION = "0.50 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -293,7 +293,7 @@ int main(int argc, const char *argv[])
 					if (CurrentLevel->players[1]->Cmd.chat.size() > 0)
 					{
 						view.message = CurrentLevel->players[1]->Cmd.chat;
-						view.timer = 60 * 5;
+						view.timer = view.MESSAGE_TIME;
 					}
 
 				}
@@ -315,7 +315,7 @@ int main(int argc, const char *argv[])
 					if (CurrentLevel->players[0]->Cmd.chat.size() > 0)
 					{
 						view.message = CurrentLevel->players[0]->Cmd.chat;
-						view.timer = 60 * 5;
+						view.timer = view.MESSAGE_TIME;
 					}
 				}
 				else
