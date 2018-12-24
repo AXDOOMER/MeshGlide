@@ -45,10 +45,12 @@ struct GameWindow
 	bool fullScreen = false;
 	int justChanged = 0;
 
+	// For chat
 	bool chatMode = false;
-	string chat;
-	bool send = false;
+	string chatStr;
+	bool chatSend = false;	// Must be true when the chat string is ready to be sent
 
+	// For on-screen messages
 	string message;
 	unsigned int timer = 0;
 	const unsigned int MESSAGE_TIME = 60 * 5;

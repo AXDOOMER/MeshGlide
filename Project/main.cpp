@@ -277,11 +277,11 @@ int main(int argc, const char *argv[])
 			{
 				if (network.myPlayer() == 0)
 				{
-					if (view.send)
+					if (view.chatSend)
 					{
-						CurrentLevel->players[0]->Cmd.chat = view.chat;
-						view.send = false;
-						view.chat.clear();
+						CurrentLevel->players[0]->Cmd.chat = view.chatStr;
+						view.chatSend = false;
+						view.chatStr.clear();
 					}
 
 					// Receive network event from player 2
@@ -299,11 +299,11 @@ int main(int argc, const char *argv[])
 				}
 				else if (network.myPlayer() == 1)
 				{
-					if (view.send)
+					if (view.chatSend)
 					{
-						CurrentLevel->players[1]->Cmd.chat = view.chat;
-						view.send = false;
-						view.chat.clear();
+						CurrentLevel->players[1]->Cmd.chat = view.chatStr;
+						view.chatSend = false;
+						view.chatStr.clear();
 					}
 
 					// Send network event to player 1
@@ -328,6 +328,15 @@ int main(int argc, const char *argv[])
 				if (network.error())
 				{
 					Quit = true;
+				}
+			}
+			else
+			{
+				// Cleanup the chat strings when in single player mode
+				if (view.chatSend)
+				{
+					view.chatSend = false;
+					view.chatStr.clear();
 				}
 			}
 

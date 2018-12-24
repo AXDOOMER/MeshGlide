@@ -42,12 +42,12 @@ void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
-	if (view.chatMode && view.chat.size() > 0 && key == GLFW_KEY_BACKSPACE && (action == GLFW_REPEAT || action == GLFW_PRESS))
-		view.chat.erase(view.chat.size() - 1);
+	if (view.chatMode && view.chatStr.size() > 0 && key == GLFW_KEY_BACKSPACE && (action == GLFW_REPEAT || action == GLFW_PRESS))
+		view.chatStr.erase(view.chatStr.size() - 1);
 
 	if (view.chatMode && key == GLFW_KEY_ENTER && action == GLFW_PRESS)
 	{
-		view.send = true;
+		view.chatSend = true;
 		view.chatMode = false;
 	}
 
@@ -137,8 +137,8 @@ bool KeyPressed(int key)
 
 void Char_Callback(GLFWwindow* window, unsigned int codepoint)
 {
-	if (view.chatMode && codepoint >= ' ' && codepoint <= '~' && view.chat.size() < 36)
-		view.chat += static_cast<unsigned char>(codepoint);
+	if (view.chatMode && codepoint >= ' ' && codepoint <= '~' && view.chatStr.size() < 36)
+		view.chatStr += static_cast<unsigned char>(codepoint);
 }
 
 void WindowResize_Callback(GLFWwindow* window, int width, int height)
@@ -505,7 +505,7 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int Frame
 	// Render text as the last thing because else it will break the rendering
 	RenderText(lvl, regex_replace(to_string((float)FrameDelay / 1000) + " ms", regex("0+(?=\\s)\\b"), ""), -0.9f, 0.8f, 0.05f, 0.15f);
 	if (view.chatMode)
-		RenderText(lvl, view.chat + '_', -0.9f, 0.6f, 0.05f, 0.15f);	// Chat text
+		RenderText(lvl, view.chatStr + '_', -0.9f, 0.6f, 0.05f, 0.15f);	// Chat text
 	if (view.message.size() > 0 && view.timer > 0)
 	{
 		RenderText(lvl, view.message, -0.9f, 0.3f, 0.05f, 0.15f);	// Message
