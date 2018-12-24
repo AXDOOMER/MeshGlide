@@ -244,7 +244,7 @@ int main(int argc, const char *argv[])
 		auto start = chrono::system_clock::now();
 
 		glfwPollEvents();
-		if (FindArgumentPosition(argc, argv, "-eventpoolfix") > 0)
+		if (!FindArgumentPosition(argc, argv, "-poolonce"))
 			glfwPollEvents();
 		RegisterKeyPresses(window);
 
