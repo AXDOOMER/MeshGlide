@@ -102,7 +102,7 @@ void Player::LateralMove(int Thrust)
 }
 
 // Encodes a player's data to a buffer for network usage
-vector<unsigned char> Player::ReadTicCmd() const
+vector<unsigned char> Player::CmdToNet() const
 {
 	// Serialize the command
 	vector<unsigned char> c;
@@ -146,7 +146,7 @@ vector<unsigned char> Player::ReadTicCmd() const
 }
 
 // Decodes a player's data from a buffer and write to command
-void Player::WriteTicCmd(vector<unsigned char> v)
+void Player::NetToCmd(vector<unsigned char> v)
 {
 	// Safety check if not a least 8 bytes
 	if (v.size() < 8)
