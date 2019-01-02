@@ -31,13 +31,13 @@ const string MOUSE_LOOK = "mouse_look";
 const string EMPTY = "";
 
 string disp[][2] = {
-	{FULLSCREEN, "false"},
+	{FULLSCREEN, "0"},
 	{WINDOW_WIDTH, "640"},
 	{WINDOW_HEIGHT, "480"},
-	{POOL_EVENTS_TWICE, "true"},
+	{POOL_EVENTS_TWICE, "1"},
 	{WINDOW_XPOS, "-1"},
 	{WINDOW_YPOS, "-1"},
-	{MOUSE_LOOK, "true"},
+	{MOUSE_LOOK, "1"},
 	{EMPTY, EMPTY}
 };
 
