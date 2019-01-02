@@ -19,12 +19,38 @@
 #include <string>
 using namespace std;
 
+// Using a constant will result in a config name
+const string FULLSCREEN = "fullscreen";
+const string WINDOW_WIDTH = "window_width";
+const string WINDOW_HEIGHT = "window_height";
+const string POOL_EVENTS_TWICE = "pool_events_twice";
+const string WINDOW_XPOS = "window_xpos";
+const string WINDOW_YPOS = "window_ypos";
+const string MOUSE_LOOK = "mouse_look";
+
+const string EMPTY = "";
+
 string disp[][2] = {
-	{"fullscreen", "1"},
-	{"window_width", "640"},
-	{"window_height", "480"},
-	{"pool_events_twice", "1"},
-	{"window_xpos", "-1"},
-	{"window_ypos", "-1"},
-	{"mouse_look", "1"}
+	{FULLSCREEN, "false"},
+	{WINDOW_WIDTH, "640"},
+	{WINDOW_HEIGHT, "480"},
+	{POOL_EVENTS_TWICE, "true"},
+	{WINDOW_XPOS, "-1"},
+	{WINDOW_YPOS, "-1"},
+	{MOUSE_LOOK, "true"},
+	{EMPTY, EMPTY}
 };
+
+string GetDefault(const string& name)
+{
+	int i = 0;
+	while (disp[i][0] != EMPTY)
+	{
+		if (disp[i][0] == name)
+			return disp[i][1];
+
+		i++;
+	}
+
+	return EMPTY;
+}
