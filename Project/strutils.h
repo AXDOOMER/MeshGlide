@@ -16,6 +16,9 @@
 // strutils.h
 // Functions to help with strings
 
+#ifndef STRUTILS_H
+#define STRUTILS_H
+
 #include <string>
 #include <vector>
 using namespace std;
@@ -23,3 +26,5 @@ using namespace std;
 vector<string> Split(string s, const char delimiter);
 
 bool EndsWith(const string& str, const string& value);
+
+#endif	// STRUTILS_H
