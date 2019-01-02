@@ -38,7 +38,9 @@ public:
 	bool Init(const string& file);
 	bool Save(const string& file);
 
-	bool Add(const string& key, const string& value);
+	bool Set(const string& key, const string& value);
+	bool SetInt(const string& key, const int value);
+	bool SetBool(const string& key, const bool value);
 	void Purge();
 	string Get(const string& key);
 	int GetInt(const string& key);

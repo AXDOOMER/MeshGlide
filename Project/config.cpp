@@ -87,15 +87,37 @@ bool Config::Save(const string& file)
 	return false;
 }
 
-bool Config::Add(const string& key, const string& value)
+bool Config::Set(const string& key, const string& value)
 {
 	if (settings_.find(key) == settings_.end())
 	{
+		// Inserting a key that already exists would just do nothing
+		settings_.insert(pair<const string&, const string&>(key, value));
+		return true;
+	}
+	else
+	{
+		settings_.erase(key);
 		settings_.insert(pair<const string&, const string&>(key, value));
 		return true;
 	}
 
 	return false;
+}
+
+bool Config::SetInt(const string& key, const int value)
+{
+	return Set(key, to_string(value));
+}
+
+bool Config::SetBool(const string& key, const bool value)
+{
+	if (value == true)
+		return Set(key, "1");
+	else if (value == false)
+		return Set(key, "0");
+	else
+		return false;
 }
 
 string Config::Get(const string& key)
