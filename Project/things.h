@@ -33,15 +33,6 @@ const float GRAVITY = 0.2f;
 //const float PI = atan(1) * 4;
 const int MAXOWNEDWEAPONS = 10;
 
-struct Edge
-{
-	Float3 a;	// First
-	Float3 b;	// Second
-	short sides;
-	vector<Float3> Vertices;
-	float angle;
-};
-
 class Plane
 {
 public:
@@ -49,6 +40,7 @@ public:
 	bool Impassable = true;
 	bool TwoSided = false;
 	vector<Float3> Vertices;
+	vector<Float2> UVs;
 	float Xscale = 0;
 	float Yscale = 0;
 	float Xoff = 0;
@@ -58,14 +50,17 @@ public:
 	Float3 normal;
 	Float3 centroid;
 	vector<Plane*> Neighbors;	// List of adjacent planes
-	vector<Edge> Edges;	// List of adjacent planes
+
+	float Angle() const;
+
+	float Max() const;
+	float Min() const;
 
 	void Process();		// Find centroid, find normal...
-	unsigned int CommonVertices(Plane* plane);
 
 	bool CanWalk() const
 	{
-		const float WALL_ANGLE = 0.4f;
+		const float WALL_ANGLE = 0.4f;	// '1' points up (floor) and '0' points to the side (wall)
 
 		if (Impassable && normal.z < WALL_ANGLE && normal.z > -WALL_ANGLE)
 			return false;
@@ -139,7 +134,7 @@ public:
 	char MoX = 0;		// Speed vector (momentum)
 	char MoY = 0;
 	char MoZ = 0;		// Used by gravity
-	const float MaxStep = 1.5f;
+	const float MaxStep = 1.0f;
 	const float Radius_ = 0.5f;
 	const float Height_ = 2.0f;
 

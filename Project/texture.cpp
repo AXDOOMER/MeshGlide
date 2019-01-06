@@ -25,6 +25,7 @@
 #include <string>
 #include <iostream>
 #include <utility>	/* swap */
+#include <algorithm>	/* transform */
 using namespace std;
 
 Texture::Texture(const string& Path, bool enableFiltering)
@@ -34,7 +35,7 @@ Texture::Texture(const string& Path, bool enableFiltering)
 
 	if (!Surface)
 	{
-		throw runtime_error("Error loading texture: " + Path);
+		throw runtime_error("Error loading texture: " + Path + "\nCause: " + IMG_GetError());
 	}
 
 	Name_ = Path;
@@ -113,7 +114,11 @@ string Texture::Name() const
 string Texture::Extension() const
 {
 	if (Name_.find_last_of(".") != string::npos)
-		return Name_.substr(Name_.find_last_of(".") + 1);
+	{
+		string ext = Name_.substr(Name_.find_last_of(".") + 1);
+		transform(ext.begin(), ext.end(), ext.begin(), ::tolower);	// :: because it's not defined in the global namespace
+		return ext;
+	}
 	return "";
 }
 

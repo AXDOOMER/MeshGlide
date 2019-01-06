@@ -119,7 +119,12 @@ void Level::AddTexture(const string& name, bool enableFiltering)
 
 void Level::UseTexture(const string& name)
 {
-	Cache::Instance()->Get(name)->Bind();
+	// Avoid rebinding the texture if it's already binded
+	if (name != lastTextureBind)
+	{
+		lastTextureBind = name;
+		Cache::Instance()->Get(name)->Bind();
+	}
 }
 
 // Detects the format and calls the right loading method
@@ -129,11 +134,17 @@ void Level::LoadLevel(const string& LevelName, unsigned int numOfPlayers)
 	{
 		LoadObj(LevelName);
 		AdjustPlayerToFloor(play, this);
+		useUVs_ = true;
 	}
 	else
 	{
 		LoadNative(LevelName, numOfPlayers);
 	}
+}
+
+bool Level::HasUVs() const
+{
+	return useUVs_;
 }
 
 // Loading method for native format
@@ -237,8 +248,7 @@ void Level::LoadNative(const string& LevelName, unsigned int numOfPlayers)
 		cout << "Read " << Count - 1 << " lines from file. " << endl;
 		LevelFile.close();
 
-		LinkPlanes(LevelName);
-		FinalPlaneProcessing();
+		BuildBlockmap();
 
 		// Check if no player was created
 		if (players.size() == 0)
@@ -277,6 +287,8 @@ void Level::LoadObj(const string& path)
 	vector<Float3> temp_normals;
 
 	string texture = "None";	// Current texture for plane
+	SkyTexture = "clouds.jpg";
+	AddTexture(SkyTexture, false);
 
 	if (model.is_open())
 	{
@@ -302,9 +314,10 @@ void Level::LoadObj(const string& path)
 				if (slices[0] == "v" && slices.size() == 4)	// Vertex
 				{
 					Float3 temp_vertex;
-					temp_vertex.x = atof(slices[1].c_str()) * scaling_;
-					temp_vertex.y = atof(slices[2].c_str()) * scaling_;
-					temp_vertex.z = atof(slices[3].c_str()) * scaling_;
+					// Puts Z X Y into X Y Z because most OBJ exporters use this format
+					temp_vertex.x = atof(slices[3].c_str()) * scaling_;
+					temp_vertex.y = atof(slices[1].c_str()) * scaling_;
+					temp_vertex.z = atof(slices[2].c_str()) * scaling_;
 					temp_vertices.push_back(temp_vertex);
 				}
 				else if (slices[0] == "vt" && slices.size() == 3)	// Texture coordinate of a vertex
@@ -332,10 +345,9 @@ void Level::LoadObj(const string& path)
 					p->Yscale = 1;
 					p->Light = 1;
 
-					// Use a default texture because materials and UVs are not implemented
-					if (texture != "None")
+					// Assign the last specified texture if the plane is not a DOOM sky or invisible (None)
+					if (texture != "None" && texture != "F_SKY1.PNG")
 					{
-						AddTexture(texture, false);
 						p->Texture = texture;
 					}
 
@@ -367,6 +379,7 @@ void Level::LoadObj(const string& path)
 				else if (slices[0] == "usemtl" && slices.size() == 2)
 				{
 					texture = slices[1];
+					AddTexture(texture, false);
 				}
 				else if (slices[0] == "p")
 				{
@@ -375,6 +388,10 @@ void Level::LoadObj(const string& path)
 					play->pos_.z = atof(slices[3].c_str()) * scaling_;
 					play->Angle = (short)atoi(slices[4].c_str()) * 91.0222222222f;
 				}
+				else if (slices[0] == "scale")
+				{
+					scaling_ = atof(slices[1].c_str());
+				}
 				else
 				{
 					cout << "Skipped line " << Count << endl;
@@ -382,110 +399,32 @@ void Level::LoadObj(const string& path)
 			}
 		} // end of while loop
 
-		LinkPlanes(path);
-		FinalPlaneProcessing();
+		BuildBlockmap();
+
+		if (uvs_.empty())
+		{
+			// This should help diagnostics
+			cerr << "WARNING: No UVs found. The program is expected to crash." << endl;
+		}
+
+		// Set UVs
+		unsigned int uv_count = 0;
+		for (unsigned int i = 0; i < planes.size(); i++)
+		{
+			for (unsigned int j = 0; j < planes[i]->Vertices.size(); j++)
+			{
+				// Distribute an UV to each vertice
+				planes[i]->UVs.push_back(uvs_[uv_count]);
+
+				uv_count++;
+			}
+		}
 	}
 
 	model.close();
 }
 
-void Level::CountCommonEdgesPlanes(Plane* p1, Plane* p2)
+void Level::BuildBlockmap()
 {
-	for (unsigned int i = 0; i < p1->Edges.size(); i++)
-	{
-		for (unsigned int j = 0; j < p2->Edges.size(); j++)
-		{
-			if ((p1->Edges[i].a == p2->Edges[j].a && p1->Edges[i].b == p2->Edges[j].b) ||
-				(p1->Edges[i].a == p2->Edges[j].b && p1->Edges[i].b == p2->Edges[j].a))
-			{
-				// Increment the edge count if it is considered an edge
-				if (!p2->CanWalk())
-					continue;
-				p1->Edges[i].sides++;
-			}
-		}
-	}
-}
-
-void Level::FinalPlaneProcessing()
-{
-	for (unsigned int i = 0; i < planes.size(); i++)
-	{
-		for (unsigned int j = 0; j < planes[i]->Neighbors.size(); j++)
-		{
-			// For each plane, we must update the edge count.
-			CountCommonEdgesPlanes(planes[i], planes[i]->Neighbors[j]);
-		}
-	}
-}
-
-void Level::LinkPlanes(const string& LevelName)
-{
-	ifstream ReadLinks;
-	ofstream WriteLinks;
-
-	ReadLinks.open(LevelName + ".lnb");
-
-	if (ReadLinks.is_open() && !reloaded_)
-	{
-		cout << "Found linked planes data file. Loading..." << endl;
-
-		string Line;
-		// Read the entire file until the end
-		while (!ReadLinks.eof())
-		{
-			getline(ReadLinks, Line);
-
-			vector<string> indices = Split(Line, ' ');
-
-			for (unsigned int i = 1; i < indices.size(); i++)
-			{
-				// TODO: Add range checks in case someone tinkered with the file
-				planes[atoi(indices[0].c_str())]->Neighbors.push_back(planes[atoi(indices[i].c_str())]);
-			}
-		}
-	}
-	else
-	{
-		WriteLinks.open(LevelName + ".lnb");
-
-		if (WriteLinks.is_open())
-		{
-			cout << "Linked planes data file not found. Generating..." << endl;
-
-			for (unsigned int i = 0; i < planes.size(); i++)
-			{
-				bool first = true;
-
-				// Find touching planes and add them
-				for (unsigned int j = 0; j < planes.size(); j++)
-				{
-					if (i != j)
-					{
-						// Find at least one common vertex
-						if (planes[i]->CommonVertices(planes[j]) >= 1)
-						{
-							if (first)
-							{
-								WriteLinks << i;
-								first = false;
-							}
-
-							planes[i]->Neighbors.push_back(planes[j]);
-
-							WriteLinks << " " << j;
-						}
-					}
-				}
-
-				if (!first)
-				{
-					WriteLinks << endl;
-				}
-			}
-		}
-	}
-
-	ReadLinks.close();
-	WriteLinks.close();
+	// TODO: The blockmap will be used as an optimization
 }

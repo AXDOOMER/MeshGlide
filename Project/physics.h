@@ -29,18 +29,13 @@ using namespace std;
 // Collision detection with floors
 bool AdjustPlayerToFloor(Player* play, Level* lvl);
 
-void ApplyGravity(Player* play);
-
 // Distance smaller than length (inside or touches)
 bool CompareDistanceToLength(const float DiffX, const float DiffY, const float Length);
 
 // Moves the player to a new position. Returns false if it failed.
-bool MovePlayerToNewPosition(const Float3& origin, Float3 target, Player* play);
+bool NewPositionIsValid(const Player* play, const Level* lvl);
 
-// Get the plane where the player is standing
-Plane* GetPlaneForPlayer(Player* play, Level* lvl);
-
-Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player* play);
+Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player* play, const Level* lvl);
 
 // Hitscan
 void Hitscan(Level* lvl, Player* play);
@@ -52,7 +47,6 @@ Float3 PlayerToPlayerCollisionReact(const Player* moved, const Player* other);
 bool PlayerToPlayerCollision(const Player* moved, const Player* other);
 bool PlayerToPlayersCollision(const Player* source, const vector<Player*> players);
 
-bool RadiusClearOfEdges(const Float3& target, const Player* play);
 vector<Player*> GetPlayersTouched(const Player* source, const vector<Player*> players);
 bool PlayerHeightCheck(const Player* moved, const Player* other);
 

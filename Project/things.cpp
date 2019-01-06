@@ -326,40 +326,47 @@ Texture* Player::GetSprite(Float3 CamPos) const
 	return Cache::Instance()->Get(sprites_[Quotient % 8]);
 }
 
-// Used to compare two planes by counting the amount of common vertices
-unsigned int Plane::CommonVertices(Plane* plane)
-{
-	unsigned int count = 0;
-
-	for (unsigned i = 0; i < Vertices.size(); i++)
-		for (unsigned j = 0; j < plane->Vertices.size(); j++)
-			if (Vertices[i] == plane->Vertices[j])
-				count++;
-
-	return count;
-}
-
 // Process a plane
 void Plane::Process()
 {
 	normal = ComputeNormal(Vertices);
 	centroid = ComputeAverage(Vertices);
+}
 
-	// Create edges
-	for (unsigned int i = 0, j = Vertices.size() - 1; i < Vertices.size(); j = i++)
+float Plane::Max() const
+{
+	float max = -numeric_limits<float>::max();
+
+	for (unsigned int i = 0; i < Vertices.size(); i++)
 	{
-		vector<Float3> Points;
-
-		float angle1ji = atan2(Vertices[i].y - Vertices[j].y, Vertices[i].x - Vertices[j].x);
-
-		float angle2ij = atan2(Vertices[j].y - Vertices[i].y, Vertices[j].x - Vertices[i].x);
-
-		// If an edge is completly vertical, then skip it.
-		if (angle1ji != angle2ij)
+		if (Vertices[i].z > max)
 		{
-			Edges.push_back({Vertices[i], Vertices[j], 0, Points, angle1ji});
+			max = Vertices[i].z;
 		}
 	}
+
+	return max;
+}
+
+float Plane::Min() const
+{
+	float min = numeric_limits<float>::max();
+
+	for (unsigned int i = 0; i < Vertices.size(); i++)
+	{
+		if (Vertices[i].z < min)
+		{
+			min = Vertices[i].z;
+		}
+	}
+
+	return min;
+}
+
+float Plane::Angle() const
+{
+	// Return an angle that can be used for sliding if this plane cannot be entered
+	return atan2(normal.y, normal.x) + M_PI / 2;
 }
 
 Weapon::Weapon(float x, float y, float z, string type)

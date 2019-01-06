@@ -55,6 +55,8 @@ public:
 	void SpawnPlayer(Player* play);
 	void UpdateThings();
 
+	bool HasUVs() const;
+
 private:
 	// OBJ and OpenGL stuff
 	vector<Float3> vertices_;
@@ -63,10 +65,10 @@ private:
 
 	float scaling_ = 1.0f;	// Level scaling that adjusts the size of the level proportionally
 	string levelname_;
+	string lastTextureBind = "";
 	bool reloaded_ = false;
-	void LinkPlanes(const string& LevelName);
-	void FinalPlaneProcessing();
-	void CountCommonEdgesPlanes(Plane* p1, Plane* p2);
+	void BuildBlockmap();
+	bool useUVs_ = false;
 };
 
 #endif // LEVEL_H

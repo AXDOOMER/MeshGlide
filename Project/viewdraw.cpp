@@ -419,35 +419,73 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int Frame
 					// Light: Could be made RGB tint later
 					glColor3f(lvl->planes[i]->Light, lvl->planes[i]->Light, lvl->planes[i]->Light);
 
-					if (lvl->planes[i]->Vertices.size() == 4)
+					if (lvl->HasUVs())
 					{
-						// Polygons that are square
-						glBegin(GL_QUADS);
+						// Notice: The Y axis on the texture coordinate is flipped (see: https://halfgeek.org/wiki/Vertically_invert_a_surface_in_SDL)
+
+						if (lvl->planes[i]->Vertices.size() == 4)
 						{
-							glTexCoord2f(0, 1 * lvl->planes[i]->Yscale);
-							glVertex3f(lvl->planes[i]->Vertices[0].y, lvl->planes[i]->Vertices[0].z, lvl->planes[i]->Vertices[0].x);
-							glTexCoord2f(1 * lvl->planes[i]->Xscale, 1 * lvl->planes[i]->Yscale);
-							glVertex3f(lvl->planes[i]->Vertices[1].y, lvl->planes[i]->Vertices[1].z, lvl->planes[i]->Vertices[1].x);
-							glTexCoord2f(1 * lvl->planes[i]->Xscale, 0);
-							glVertex3f(lvl->planes[i]->Vertices[2].y, lvl->planes[i]->Vertices[2].z, lvl->planes[i]->Vertices[2].x);
-							glTexCoord2f(0, 0);
-							glVertex3f(lvl->planes[i]->Vertices[3].y, lvl->planes[i]->Vertices[3].z, lvl->planes[i]->Vertices[3].x);
+							// Polygons that are square
+							glBegin(GL_QUADS);
+							{
+								glTexCoord2f(lvl->planes[i]->UVs[0].x, -lvl->planes[i]->UVs[0].y);
+								glVertex3f(lvl->planes[i]->Vertices[0].y, lvl->planes[i]->Vertices[0].z, lvl->planes[i]->Vertices[0].x);
+								glTexCoord2f(lvl->planes[i]->UVs[1].x, -lvl->planes[i]->UVs[1].y);
+								glVertex3f(lvl->planes[i]->Vertices[1].y, lvl->planes[i]->Vertices[1].z, lvl->planes[i]->Vertices[1].x);
+								glTexCoord2f(lvl->planes[i]->UVs[2].x, -lvl->planes[i]->UVs[2].y);
+								glVertex3f(lvl->planes[i]->Vertices[2].y, lvl->planes[i]->Vertices[2].z, lvl->planes[i]->Vertices[2].x);
+								glTexCoord2f(lvl->planes[i]->UVs[3].x, -lvl->planes[i]->UVs[3].y);
+								glVertex3f(lvl->planes[i]->Vertices[3].y, lvl->planes[i]->Vertices[3].z, lvl->planes[i]->Vertices[3].x);
+							}
+							glEnd();
 						}
-						glEnd();
+						else if (lvl->planes[i]->Vertices.size() == 3)
+						{
+							// Polygons that have a triangular shape
+							glBegin(GL_TRIANGLES);
+							{
+								glTexCoord2f(lvl->planes[i]->UVs[0].x, -lvl->planes[i]->UVs[0].y);
+								glVertex3f(lvl->planes[i]->Vertices[0].y, lvl->planes[i]->Vertices[0].z, lvl->planes[i]->Vertices[0].x);
+								glTexCoord2f(lvl->planes[i]->UVs[1].x, -lvl->planes[i]->UVs[1].y);
+								glVertex3f(lvl->planes[i]->Vertices[1].y, lvl->planes[i]->Vertices[1].z, lvl->planes[i]->Vertices[1].x);
+								glTexCoord2f(lvl->planes[i]->UVs[2].x, -lvl->planes[i]->UVs[2].y);
+								glVertex3f(lvl->planes[i]->Vertices[2].y, lvl->planes[i]->Vertices[2].z, lvl->planes[i]->Vertices[2].x);
+							}
+							glEnd();
+						}
 					}
-					else if (lvl->planes[i]->Vertices.size() == 3)
+					else	// No UVs
 					{
-						// Polygons that have a triangular shape
-						glBegin(GL_TRIANGLES);
+						if (lvl->planes[i]->Vertices.size() == 4)
 						{
-							glTexCoord2f(0, 1 * lvl->planes[i]->Yscale);
-							glVertex3f(lvl->planes[i]->Vertices[0].y, lvl->planes[i]->Vertices[0].z, lvl->planes[i]->Vertices[0].x);
-							glTexCoord2f(1 * lvl->planes[i]->Xscale, 1 * lvl->planes[i]->Yscale);
-							glVertex3f(lvl->planes[i]->Vertices[1].y, lvl->planes[i]->Vertices[1].z, lvl->planes[i]->Vertices[1].x);
-							glTexCoord2f(1 * lvl->planes[i]->Xscale, 0);
-							glVertex3f(lvl->planes[i]->Vertices[2].y, lvl->planes[i]->Vertices[2].z, lvl->planes[i]->Vertices[2].x);
+							// Polygons that are square
+							glBegin(GL_QUADS);
+							{
+								glTexCoord2f(0, 1 * lvl->planes[i]->Yscale);
+								glVertex3f(lvl->planes[i]->Vertices[0].y, lvl->planes[i]->Vertices[0].z, lvl->planes[i]->Vertices[0].x);
+								glTexCoord2f(1 * lvl->planes[i]->Xscale, 1 * lvl->planes[i]->Yscale);
+								glVertex3f(lvl->planes[i]->Vertices[1].y, lvl->planes[i]->Vertices[1].z, lvl->planes[i]->Vertices[1].x);
+								glTexCoord2f(1 * lvl->planes[i]->Xscale, 0);
+								glVertex3f(lvl->planes[i]->Vertices[2].y, lvl->planes[i]->Vertices[2].z, lvl->planes[i]->Vertices[2].x);
+								glTexCoord2f(0, 0);
+								glVertex3f(lvl->planes[i]->Vertices[3].y, lvl->planes[i]->Vertices[3].z, lvl->planes[i]->Vertices[3].x);
+							}
+							glEnd();
 						}
-						glEnd();
+						else if (lvl->planes[i]->Vertices.size() == 3)
+						{
+							// Polygons that have a triangular shape
+							glBegin(GL_TRIANGLES);
+							{
+								glTexCoord2f(0, 1 * lvl->planes[i]->Yscale);
+								glVertex3f(lvl->planes[i]->Vertices[0].y, lvl->planes[i]->Vertices[0].z, lvl->planes[i]->Vertices[0].x);
+								glTexCoord2f(1 * lvl->planes[i]->Xscale, 1 * lvl->planes[i]->Yscale);
+								glVertex3f(lvl->planes[i]->Vertices[1].y, lvl->planes[i]->Vertices[1].z, lvl->planes[i]->Vertices[1].x);
+								glTexCoord2f(1 * lvl->planes[i]->Xscale, 0);
+								glVertex3f(lvl->planes[i]->Vertices[2].y, lvl->planes[i]->Vertices[2].z, lvl->planes[i]->Vertices[2].x);
+							}
+							glEnd();
+						}
 					}
 				}
 				glPopMatrix();
