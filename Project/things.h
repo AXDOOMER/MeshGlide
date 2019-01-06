@@ -169,9 +169,13 @@ private:
 	int Deaths = 0;
 
 public:
+	// Executes the player's actions
 	void ExecuteTicCmd();
-	vector<unsigned char> ReadTicCmd() const;
-	void WriteTicCmd(vector<unsigned char> v);
+
+	// Command transfer
+	vector<unsigned char> CmdToNet() const;
+	void NetToCmd(vector<unsigned char> v);
+
 	float GetRadianAngle(short Angle) const;
 	float Radius() const;
 	float Height() const;
