@@ -345,13 +345,6 @@ int main(int argc, const char *argv[])
 			Float3 pt = CurrentLevel->players[i]->pos_;
 			CurrentLevel->players[i]->ExecuteTicCmd();
 
-			// Handle fire here to avoid circular inclusion/dependecy with 'Level' in the Player class
-			if (CurrentLevel->players[i]->ShouldFire)
-			{
-				Hitscan(CurrentLevel, CurrentLevel->players[i]);
-				CurrentLevel->players[i]->ShouldFire = false;
-			}
-
 			// Collision detection with floors and walls
 			if (!NewPositionIsValid(CurrentLevel->players[i], CurrentLevel))
 			{
@@ -400,6 +393,13 @@ int main(int argc, const char *argv[])
 
 			// Adjust height
 			AdjustPlayerToFloor(CurrentLevel->players[i], CurrentLevel);
+
+			// Handle fire here to avoid circular inclusion/dependecy with 'Level' in the Player class
+			if (CurrentLevel->players[i]->ShouldFire)
+			{
+				Hitscan(CurrentLevel, CurrentLevel->players[i]);
+				CurrentLevel->players[i]->ShouldFire = false;
+			}
 		}
 
 		CurrentLevel->UpdateThings();
