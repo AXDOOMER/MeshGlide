@@ -391,9 +391,13 @@ void Level::LoadObj(const string& path)
 
 					texture = folder + texture;
 
-					if (texture != "None")
+					if (!EndsWith(texture, "None"))
 					{
 						AddTexture(texture, false);
+					}
+					else	// Texture is "None"
+					{
+						texture = "None";
 					}
 				}
 				else if (slices[0] == "p")
