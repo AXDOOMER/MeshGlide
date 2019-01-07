@@ -22,6 +22,10 @@ Compile on Linux: `g++ *.cpp -std=c++11 -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -l
 
 It's preferable to compile and run the program using the `run.sh` script because it's tested, but this should work too.
 
+### Creating new levels
+
+MeshGlide has a native format, but also supports the OBJ format (with slight modifications). Refer to [this wiki page](https://github.com/AXDOOMER/MeshGlide/wiki/Creating-new-levels) for more details.
+
 ## Credits
 
 The following files were taken from the [Freedoom](https://github.com/freedoom/freedoom) project. See their [license](https://github.com/freedoom/freedoom/blob/master/COPYING.adoc).
