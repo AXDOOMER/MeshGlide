@@ -46,3 +46,15 @@ bool EndsWith(const string& str, const string& value)
 
 	return str.rfind(value) == str.size() - value.size();
 }
+
+// Extract the directory portion of the path and return it with the trailing slash
+string DirName(const string& path)
+{
+	string dir = "";
+	size_t found = path.rfind(DIR_SEPARATOR);
+
+	if (found != string::npos)
+		dir = path.substr(0, found + 1);
+
+	return dir;
+}

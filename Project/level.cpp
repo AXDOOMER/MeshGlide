@@ -381,15 +381,8 @@ void Level::LoadObj(const string& path)
 					texture = slices[1];
 					string folder = "";
 
-					// Logic that gets the path to the OBJ because the textures should be in the same folder
-					// TODO: Make it portable. Create a dedicated function.
-					size_t found = path.rfind("/");
-					if (found != string::npos)
-					{
-						folder = path.substr(0, found) + "/";
-					}
-
-					texture = folder + texture;
+					// Get the directory of the OBJ file because the textures should be in the same directory
+					texture = DirName(path) + texture;
 
 					if (!EndsWith(texture, "None"))
 					{

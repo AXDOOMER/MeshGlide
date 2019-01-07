@@ -16,10 +16,23 @@
 // strutils.h
 // Functions to help with strings
 
+#ifndef STRUTILS_H
+#define STRUTILS_H
+
 #include <string>
 #include <vector>
 using namespace std;
 
+#ifdef _WIN32
+#define DIR_SEPARATOR '\\'
+#else
+#define DIR_SEPARATOR '/'
+#endif
+
 vector<string> Split(string s, const char delimiter);
 
 bool EndsWith(const string& str, const string& value);
+
+string DirName(const string& path);
+
+#endif	// STRUTILS_H
