@@ -41,5 +41,8 @@ vector<string> Split(string s, const char delimiter)
 
 bool EndsWith(const string& str, const string& value)
 {
+	if (value.size() > str.size())
+		return false;
+
 	return str.rfind(value) == str.size() - value.size();
 }
