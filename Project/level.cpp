@@ -132,8 +132,7 @@ void Level::LoadLevel(const string& LevelName, unsigned int numOfPlayers)
 {
 	if (EndsWith(LevelName, ".obj"))
 	{
-		LoadObj(LevelName);
-		AdjustPlayerToFloor(play, this);
+		LoadObj(LevelName, numOfPlayers);
 		useUVs_ = true;
 	}
 	else
@@ -253,7 +252,7 @@ void Level::LoadNative(const string& LevelName, unsigned int numOfPlayers)
 		// Check if no player was created
 		if (players.size() == 0)
 		{
-			// Create an arbitrary number of players for testing purposes
+			// Create the required number of players and spawn them
 			for (unsigned int i = 0; i < numOfPlayers; i++)
 			{
 				players.emplace_back(new Player());
@@ -274,7 +273,7 @@ void Level::LoadNative(const string& LevelName, unsigned int numOfPlayers)
 }
 
 // Loading method for OBJ format
-void Level::LoadObj(const string& path)
+void Level::LoadObj(const string& path, unsigned int numOfPlayers)
 {
 	cout << "Loading 3D model: " << path << endl;
 
@@ -294,12 +293,6 @@ void Level::LoadObj(const string& path)
 	{
 		unsigned int Count = 0;
 		string Line;
-
-		// Create player for level
-		play = new Player();
-		play->pos_ = {0, 0, 0};
-		play->Angle = 0;
-		players.push_back(play);
 
 		while (!model.eof())
 		{
@@ -393,16 +386,37 @@ void Level::LoadObj(const string& path)
 						texture = "None";
 					}
 				}
-				else if (slices[0] == "p")
+				else if (slices[0] == "thing" && slices.size() == 6)
 				{
-					play->pos_.x = atof(slices[1].c_str()) * scaling_;
-					play->pos_.y = atof(slices[2].c_str()) * scaling_;
-					play->pos_.z = atof(slices[3].c_str()) * scaling_;
-					play->Angle = (short)atoi(slices[4].c_str()) * 91.0222222222f;
+					if (slices[1] == "spawn")
+					{
+						SpawnSpot spawn;
+						spawn.pos_.x = atof(slices[2].c_str()) * scaling_;
+						spawn.pos_.y = atof(slices[3].c_str()) * scaling_;
+						spawn.pos_.z = atof(slices[4].c_str()) * scaling_;
+						spawn.Angle = (short)atoi(slices[5].c_str()) * 91.0222222222f;
+						spawns.push_back(spawn);
+					}
+					else if (slices[1] == "player")
+					{
+						play = new Player();
+						play->pos_.x = atof(slices[2].c_str()) * scaling_;
+						play->pos_.y = atof(slices[3].c_str()) * scaling_;
+						play->pos_.z = atof(slices[4].c_str()) * scaling_;
+						play->Angle = (short)atoi(slices[5].c_str()) * 91.0222222222f;
+						players.push_back(play);
+					}
+					else if (slices[1] == "weapon")
+					{
+						weapons.push_back(new Weapon(atof(slices[2].c_str()) * scaling_, atof(slices[3].c_str()) * scaling_, atof(slices[4].c_str()) * scaling_, slices[5]));
+					}
 				}
-				else if (slices[0] == "scale")
+				else if (slices[0] == "setting" && slices.size() == 3)
 				{
-					scaling_ = atof(slices[1].c_str());
+					if (slices[1] == "scale")
+					{
+						scaling_ = atof(slices[2].c_str());
+					}
 				}
 				else
 				{
@@ -412,6 +426,24 @@ void Level::LoadObj(const string& path)
 		} // end of while loop
 
 		BuildBlockmap();
+
+		// Check if no player was created
+		if (players.size() == 0)
+		{
+			// Create the required number of players and spawn them
+			for (unsigned int i = 0; i < numOfPlayers; i++)
+			{
+				players.emplace_back(new Player());
+				SpawnPlayer(players[i]);
+				AdjustPlayerToFloor(players[i], this);
+			}
+			// Set the player to player #1
+			play = players[0];
+		}
+
+		// Populate the array of "things"
+		things.insert(things.end(), weapons.begin(), weapons.end());
+		things.insert(things.end(), players.begin(), players.end());
 
 		if (uvs_.empty())
 		{

@@ -1,18 +1,26 @@
 # MAP01.wad, map MAP01
 # Created by GZDoom Builder 2.3.0.3041
 
-scale 0.0313
-p -384 -384 -8 45
+# The level's scale factor. It affects everything that's loaded next to this line.
+setting scale 0.0313
+
+# Create a least one spawn spot
+thing spawn -384 -384 -10 45
 
 # 128 768  136 270
-p 768 -128 136 180
+thing spawn 768 -128 164 180
 
 # 896  640 128 225
-p 640 -896 128 135
+thing spawn 640 -896 152 135
 
 # 832  64  152 135
 #  Y    X   Z  -90
-p 64 -832 152 45
+thing spawn 64 -832 182 45
+
+# Weapons
+thing weapon 664 -352 204 mguna0
+thing weapon 288 -448 164 launa0
+thing weapon 384 128 0 shota0
 
 o MAP01
 v 256 0 384

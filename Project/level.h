@@ -50,7 +50,7 @@ public:
 
 	void LoadLevel(const string& LevelName, unsigned int numOfPlayers);
 	void LoadNative(const string& LevelName, unsigned int numOfPlayers);
-	void LoadObj(const string& path);
+	void LoadObj(const string& path, unsigned int numOfPlayers);
 
 	void SpawnPlayer(Player* play);
 	void UpdateThings();
