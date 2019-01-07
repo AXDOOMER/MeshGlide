@@ -288,7 +288,7 @@ void Level::LoadObj(const string& path)
 
 	string texture = "None";	// Current texture for plane
 	SkyTexture = "clouds.jpg";
-	AddTexture(SkyTexture, false);
+	AddTexture(SkyTexture, true);
 
 	if (model.is_open())
 	{
@@ -345,8 +345,8 @@ void Level::LoadObj(const string& path)
 					p->Yscale = 1;
 					p->Light = 1;
 
-					// Assign the last specified texture if the plane is not a DOOM sky or invisible (None)
-					if (texture != "None" && texture != "F_SKY1.PNG")
+					// Assign the last specified texture if the plane is not invisible
+					if (texture != "None")
 					{
 						p->Texture = texture;
 					}
@@ -379,7 +379,22 @@ void Level::LoadObj(const string& path)
 				else if (slices[0] == "usemtl" && slices.size() == 2)
 				{
 					texture = slices[1];
-					AddTexture(texture, false);
+					string folder = "";
+
+					// Logic that gets the path to the OBJ because the textures should be in the same folder
+					// TODO: Make it portable. Create a dedicated function.
+					size_t found = path.rfind("/");
+					if (found != string::npos)
+					{
+						folder = path.substr(0, found) + "/";
+					}
+
+					texture = folder + texture;
+
+					if (texture != "None")
+					{
+						AddTexture(texture, false);
+					}
 				}
 				else if (slices[0] == "p")
 				{
@@ -417,6 +432,16 @@ void Level::LoadObj(const string& path)
 				planes[i]->UVs.push_back(uvs_[uv_count]);
 
 				uv_count++;
+			}
+		}
+
+		// Remove polygons that don't have a texture
+		for (int i = planes.size() - 1; i >= 0; i--)
+		{
+			if (planes[i]->Texture == "")
+			{
+				delete planes[i];
+				planes.erase(planes.begin() + i);
 			}
 		}
 	}
