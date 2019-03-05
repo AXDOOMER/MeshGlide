@@ -68,6 +68,13 @@ vector<Plane*> TouchedPlanes(const Player* play, const Level* lvl)
 		if (TouchesPlane(play, fromblock[i]))		// Player touches the polygon
 			touched.push_back(fromblock[i]);
 
+
+	// XXX: Scan the entire map
+//	for (unsigned int i = 0; i < lvl->planes.size(); i++)
+//		if (TouchesPlane(play, lvl->planes[i]))		// Player touches the polygon
+//			touched.push_back(lvl->planes[i]);
+
+
 //	return lvl->bm->getPlanes(play->pos_.x, play->pos_.y);
 
 	return touched;
