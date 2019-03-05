@@ -57,6 +57,9 @@ public:
 
 	bool HasUVs() const;
 
+//	Blockmap bm;
+	Blockmap* bm;
+
 private:
 	// OBJ and OpenGL stuff
 	vector<Float3> vertices_;

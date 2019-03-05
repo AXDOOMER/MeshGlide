@@ -394,6 +394,8 @@ int main(int argc, const char *argv[])
 			// Adjust height
 			AdjustPlayerToFloor(CurrentLevel->players[i], CurrentLevel);
 
+//			CurrentLevel->bm->getPlanes(CurrentLevel->players[i]->pos_.x, CurrentLevel->players[i]->pos_.y);
+
 			// Handle fire here to avoid circular inclusion/dependecy with 'Level' in the Player class
 			if (CurrentLevel->players[i]->ShouldFire)
 			{

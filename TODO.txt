@@ -1,0 +1,22 @@
+
+
+
+~~ajouter les types de spawn manquant (spawn spot random, guns) pour les OBJ~~
+* ajouter des paramètres pour setter des textures qui peuvent être tirées à travers
+~~corriger bug que le joueur tire de travers quand il fonce dans de quoi~~
+* corriger joueur qui reste pris dans plafond   <--- NON
+* blockmap
+* améliorer textures sur map
+* faire un mode sans fenêtre OpenGL
+* bot avec miettes de pain
+
+
+~~test multiplayer for OBJ files~~
+
+
+~~bug GZDOOM BUILDER~~
+
+
+~~PHP Markdown truc, ajout template~~
+
+* jardiniot

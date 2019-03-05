@@ -331,6 +331,7 @@ void Plane::Process()
 {
 	normal = ComputeNormal(Vertices);
 	centroid = ComputeAverage(Vertices);
+	setbox();
 }
 
 float Plane::Max() const

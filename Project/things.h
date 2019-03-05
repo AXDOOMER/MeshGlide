@@ -27,6 +27,9 @@
 #include <cmath>
 #include <vector>
 
+#include <cfloat>
+#include <iostream>
+
 using namespace std;
 
 const float GRAVITY = 0.2f;
@@ -49,7 +52,7 @@ public:
 
 	Float3 normal;
 	Float3 centroid;
-	vector<Plane*> Neighbors;	// List of adjacent planes
+//	vector<Plane*> Neighbors;	// List of adjacent planes
 
 	float Angle() const;
 
@@ -57,6 +60,27 @@ public:
 	float Min() const;
 
 	void Process();		// Find centroid, find normal...
+
+    float    maxx = -FLT_MAX;    // right
+    float    maxy = -FLT_MAX;    // top
+    float    minx = FLT_MAX;     // left
+    float    miny = FLT_MAX;     // bottom
+
+	void setbox()
+	{
+        for (unsigned int i = 0; i < Vertices.size(); i++)
+        {
+            if (Vertices[i].x < minx)
+                minx = Vertices[i].x;
+            if (Vertices[i].x > maxx)
+                maxx = Vertices[i].x;
+            
+            if (Vertices[i].y < miny)
+                miny = Vertices[i].y;
+            if (Vertices[i].y > maxy)
+                maxy = Vertices[i].y;
+        }
+	}
 
 	bool CanWalk() const
 	{
@@ -66,6 +90,188 @@ public:
 			return false;
 		return true;
 	}
+};
+
+class Block
+{
+public:
+
+    int dimension;  // size (a square, so width and height is the same)
+    int x;
+    int y;
+
+    Block(int d, int cornerx, int cornery)
+    {
+        dimension = d;
+        x = cornerx;
+        y = cornery;
+//        cout << "Bloc de grosseur "<< d << " cree avec le coin (" << x << ", " << y <<")" << endl;
+    }
+    
+    bool touch(Plane* p)
+    {
+        if (x < p->maxx && x + dimension > p->minx && y > p->miny && y - dimension < p->maxy)
+            return true;
+        return false;
+    }
+    
+    void addPoly(Plane* p) {polys.push_back(p); }
+    
+    vector<Plane*> polys;
+    
+    // Nombre d'elements qui est dans le bloc
+    int Count() { return polys.size(); };
+};
+
+class Blockmap
+{
+public:
+
+    float maxx, maxy, minx, miny;
+    int columns = 0;
+    int rows = 0;
+    const int blocksize = 8;    // Pour changer la taille du bloc (peut etre change de 1 a 8 pour faire des tests)
+    vector<vector<Block>> blocks;
+
+    /* build a blockmap from polys */
+    Blockmap(vector<Plane*> polys)
+    {
+        // block
+        maxx = -FLT_MAX;    // right
+        maxy = -FLT_MAX;    // top
+        minx = FLT_MAX;     // left
+        miny = FLT_MAX;     // bottom
+        
+        for (unsigned int i = 0; i < polys.size(); i++)
+        {
+            if (polys[i]->minx < minx)
+                minx = polys[i]->minx;
+            if (polys[i]->maxx > maxx)
+                maxx = polys[i]->maxx;
+            
+            if (polys[i]->miny < miny)
+                miny = polys[i]->miny;
+            if (polys[i]->maxy > maxy)
+                maxy = polys[i]->maxy;
+        }
+        
+        cout << "Largeur du blockmap: " << maxx - minx << endl;
+        cout << "Hauteur du blockmap: " << maxy - miny << endl;
+        columns = ceil((maxx - minx) / blocksize);
+        rows = ceil((maxy - miny) / blocksize);
+        cout << "Colonnes du blockmap: " << columns << endl;
+        cout << "Lignes du blockmap: " << rows << endl;
+        
+        // Creer les blocs. 
+        for (int r = 0; r < rows; r++)
+        {
+            vector<Block> rowOfBlocks;
+            for (int c = 0; c < columns; c++)
+            {
+                Block b = Block(blocksize, floor(minx + c*blocksize), floor(maxy - r*blocksize));
+                for (unsigned int p = 0; p < polys.size(); p++)
+                {
+                    if (b.touch(polys[p]))
+                    {
+                        b.addPoly(polys[p]);
+                    }
+                }
+                
+                rowOfBlocks.push_back(b);
+            }
+            
+            blocks.push_back(rowOfBlocks);
+        }
+    }
+
+	vector<Plane*> getPlanes(float x, float y)
+	{
+		// use the player's position and return the planes touched
+		int i = abs(x - minx) / blocksize;
+		int j = abs(y - miny) / blocksize;
+
+		j = rows-j-2;
+
+		if (i < 0 || j < 0 || j >= blocks.size() || i >= blocks[0].size())
+		{
+			vector<Plane*> empty;
+			cout << "Player is out of the map!" << endl;
+			return empty;
+		}
+
+		cout << blocks[j][i].Count() << " polys in current block.   i:" << i << "   j:" << j << endl;
+
+		vector<Plane*> myplanes;
+
+		for(int m = -1; m < 2; m++) {
+			for(int n = -1; n < 2; n++) {
+				if (!(i+m < 0 || j+n < 0 || j+n >= blocks.size() || i+m >= blocks[0].size())) {
+
+					for (int k = 0; k <  blocks[j+n][i+m].Count(); k++) {
+						myplanes.push_back( blocks[j+n][i+m].polys[k] );
+					}
+
+				}
+			}
+		}
+
+/*
+		for (int k = 0; k <  blocks[j][i].Count(); k++)
+		{
+			if (blocks[j][i].polys[k]->Light > 0.5f)
+				blocks[j][i].polys[k]->Light = 0.0f;
+			else
+				blocks[j][i].polys[k]->Light = 1.0f;
+		}
+*/
+		//return blocks[j][i].polys;
+		return myplanes;
+	}
+
+	string moyenne()
+	{
+		// count non empty planes only
+		int totalcount = 0;
+		int totalplanes = 0;
+
+cout <<  "i blocks	" << blocks.size() << endl; 
+cout <<  "j blocks[i]	" << blocks[0].size() << endl; 
+
+        for (unsigned int i = 0; i < blocks.size(); i++)
+        {
+            for (unsigned int j = 0; j < blocks[i].size(); j++)
+            {
+                if ( blocks[i][j].Count() > 0)
+				{
+					totalcount += blocks[i][j].Count();
+					totalplanes++;
+				}
+
+            }
+        }
+
+		return to_string(totalcount / (float)totalplanes);
+	}
+    
+    string toString()
+    {
+        string s = "";
+        
+        for (unsigned int i = 0; i < blocks.size(); i++)
+        {
+            for (unsigned int j = 0; j < blocks[i].size(); j++)
+            {
+                string n = to_string( blocks[i][j].Count() );
+                //cout << s << endl;
+                //s += c;
+
+				s += n += string(5 - n.size(), ' ');
+            }
+            s += '\n';
+        }
+        
+        return s;
+    }
 };
 
 class TicCmd

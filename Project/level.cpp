@@ -473,6 +473,8 @@ void Level::LoadObj(const string& path, unsigned int numOfPlayers)
 				planes.erase(planes.begin() + i);
 			}
 		}
+
+		BuildBlockmap();
 	}
 
 	model.close();
@@ -481,4 +483,9 @@ void Level::LoadObj(const string& path, unsigned int numOfPlayers)
 void Level::BuildBlockmap()
 {
 	// TODO: The blockmap will be used as an optimization
+	/*Blockmap*/ bm = new Blockmap(planes);
+	cout << "There is " << planes.size() << " planes." << endl;
+	cout << "Average planes per block is " << bm->moyenne() << endl;
+	cout << bm->toString() << endl;
+//	delete bm;
 }

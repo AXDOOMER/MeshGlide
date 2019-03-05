@@ -27,6 +27,8 @@
 #include <utility>		/* pair */
 #include <algorithm>	/* find, sort */
 
+#include <iostream>
+
 using namespace std;
 
 // Cap a value between a min and a max
@@ -59,10 +61,14 @@ vector<Plane*> TouchedPlanes(const Player* play, const Level* lvl)
 {
 	vector<Plane*> touched;
 
+	vector<Plane*> fromblock = lvl->bm->getPlanes(play->pos_.x, play->pos_.y);
+
 	// TODO: Use a blockmap instead of checking the planes of the entire level
-	for (unsigned int i = 0; i < lvl->planes.size(); i++)
-		if (TouchesPlane(play, lvl->planes[i]))		// Player touches the polygon
-			touched.push_back(lvl->planes[i]);
+	for (unsigned int i = 0; i < fromblock.size() /*lvl->planes*/; i++)
+		if (TouchesPlane(play, fromblock[i]))		// Player touches the polygon
+			touched.push_back(fromblock[i]);
+
+//	return lvl->bm->getPlanes(play->pos_.x, play->pos_.y);
 
 	return touched;
 }
@@ -74,26 +80,29 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 	bool ChangeHeight = false;	// Note: Making this true will allow the player to fall in the void
 
 	vector<Plane*> touched = TouchedPlanes(play, lvl);
-
+//cout << "1" << endl;
 	for (unsigned int i = 0; i < touched.size(); i++)
 	{
+//cout << "1.1" << endl;
 		float FloorHeight = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), touched[i]->normal, touched[i]->centroid);
-
+//cout << "1.2" << endl;
 		if (!isnan(FloorHeight))
 		{
+//cout << "1.3" << endl;
 			FloorHeight = CapHeight(FloorHeight, touched[i]->Min(), touched[i]->Max());	// Used to better handle slopes
-
+//cout << "1.4" << endl;
 			if (FloorHeight > NewHeight)
 			{
 				if (FloorHeight <= play->PosZ() + play->MaxStep)
 				{
+//cout << "1.5" << endl;
 					NewHeight = FloorHeight;
 					ChangeHeight = true;
 				}
 			}
 		}
 	}
-
+//cout << "1.6" << endl;
 	// Applies the gravity
 	if (ChangeHeight)
 	{
@@ -108,7 +117,7 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 			play->AirTime++;
 		}
 	}
-
+//cout << "1.7" << endl;
 	return ChangeHeight;
 }
 
@@ -124,9 +133,15 @@ bool BlocksPlayer(const Player* play, float min, float max)
 // Returns true of the player touches obstructing walls
 bool PlayerTouchesWalls(const Player* play, const vector<Plane*> touched)
 {
+//cout << "8.1         "<< touched.size() <<endl;
 	for (unsigned int i = 0; i < touched.size(); i++)
+	{
+//		cout << "8.2         "<< i <<endl;
+//		cout << "8.3         "<< &touched[i] <<endl;
+
 		if (!touched[i]->CanWalk() && BlocksPlayer(play, touched[i]->Min(), touched[i]->Max()))
 			return true;
+	}
 
 	return false;
 }
@@ -177,7 +192,10 @@ Float2 MoveAlongAngle(const Float3& origin, const Float3& target, const float th
 // The position is invalid if the player touches a wall
 bool NewPositionIsValid(const Player* play, const Level* lvl)
 {
-	return !PlayerTouchesWalls(play, TouchedPlanes(play, lvl));
+//cout << "9" <<endl;
+vector<Plane*>  vp = TouchedPlanes(play, lvl);
+//cout << "9.1" <<endl;
+	return !PlayerTouchesWalls(play, vp);
 }
 
 // Distance smaller than length (inside or touches)
@@ -222,10 +240,10 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 {
 	// Check if the player is stuck
 	if (PlayerTouchesWalls(play, TouchedPlanes(play, lvl)))
-	{
+	{cout << "2" << endl;
 		// Get the list of touched walls
 		vector<Plane*> touched = PlayerTouchedWallsList(play, TouchedPlanes(play, lvl));
-
+cout << "3" << endl;
 		Player* dummy = new Player();	// Used for simulations
 		dummy->pos_.z = play->pos_.z;	// The "dummy" must be at the same height as the player
 
@@ -238,7 +256,7 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 			dummy->pos_.y = myNewPos.y;
 
 			if (PlayerTouchesWalls(dummy, TouchedPlanes(dummy, lvl)))
-			{
+			{cout << "4" << endl;
 				// Didn't work, try again...
 				continue;
 			}
