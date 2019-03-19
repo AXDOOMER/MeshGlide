@@ -62,6 +62,7 @@ vector<Plane*> TouchedPlanes(const Player* play, const Level* lvl)
 	vector<Plane*> touched;
 
 	vector<Plane*> fromblock = lvl->bm->getPlanes(play->pos_.x, play->pos_.y);
+	//vector<Plane*> fromblock = lvl->planes;
 
 	// TODO: Use a blockmap instead of checking the planes of the entire level
 	for (unsigned int i = 0; i < fromblock.size() /*lvl->planes*/; i++)

@@ -110,7 +110,7 @@ public:
     
     bool touch(Plane* p)
     {
-        if (x < p->maxx && x + dimension > p->minx && y > p->miny && y - dimension < p->maxy)
+        if (x <= p->maxx && x + dimension >= p->minx && y >= p->miny && y - dimension <= p->maxy)
             return true;
         return false;
     }
@@ -190,7 +190,7 @@ public:
 		int i = abs(x - minx) / blocksize;
 		int j = abs(y - miny) / blocksize;
 
-		j = rows-j-2;
+		j = rows-j-1;
 
 		if (i < 0 || j < 0 || j >= blocks.size() || i >= blocks[0].size())
 		{
@@ -214,6 +214,8 @@ public:
 				}
 			}
 		}
+
+		cout << myplanes.size() << " polys in donut block and timbits.   i:" << i << "   j:" << j << endl;
 
 /*
 		for (int k = 0; k <  blocks[j][i].Count(); k++)

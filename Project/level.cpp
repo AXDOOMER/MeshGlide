@@ -425,26 +425,6 @@ void Level::LoadObj(const string& path, unsigned int numOfPlayers)
 			}
 		} // end of while loop
 
-		BuildBlockmap();
-
-		// Check if no player was created
-		if (players.size() == 0)
-		{
-			// Create the required number of players and spawn them
-			for (unsigned int i = 0; i < numOfPlayers; i++)
-			{
-				players.emplace_back(new Player());
-				SpawnPlayer(players[i]);
-				AdjustPlayerToFloor(players[i], this);
-			}
-			// Set the player to player #1
-			play = players[0];
-		}
-
-		// Populate the array of "things"
-		things.insert(things.end(), weapons.begin(), weapons.end());
-		things.insert(things.end(), players.begin(), players.end());
-
 		if (uvs_.empty())
 		{
 			// This should help diagnostics
@@ -475,6 +455,24 @@ void Level::LoadObj(const string& path, unsigned int numOfPlayers)
 		}
 
 		BuildBlockmap();
+
+		// Check if no player was created
+		if (players.size() == 0)
+		{
+			// Create the required number of players and spawn them
+			for (unsigned int i = 0; i < numOfPlayers; i++)
+			{
+				players.emplace_back(new Player());
+				SpawnPlayer(players[i]);
+				AdjustPlayerToFloor(players[i], this);
+			}
+			// Set the player to player #1
+			play = players[0];
+		}
+
+		// Populate the array of "things"
+		things.insert(things.end(), weapons.begin(), weapons.end());
+		things.insert(things.end(), players.begin(), players.end());
 	}
 
 	model.close();
