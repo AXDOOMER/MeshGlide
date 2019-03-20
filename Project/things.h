@@ -139,6 +139,7 @@ public:
     void addPoly(Plane* p) {polys.push_back(p); }
     
     vector<Plane*> polys;
+	vector<Plane*> rechable;
     
     // Nombre d'elements qui est dans le bloc
     int Count() { return polys.size(); };
@@ -182,14 +183,18 @@ public:
         rows = ceil((maxy - miny) / blocksize);
         cout << "Colonnes du blockmap: " << columns << endl;
         cout << "Lignes du blockmap: " << rows << endl;
+
+        cout << "MaxX, MaxY: " << maxx << ", " << maxy << endl;
+        cout << "MinX, MinY: " << minx << ", " << miny << endl;
+		cout << "Blocksize: " << blocksize << endl;
         
         // Creer les blocs. 
-        for (int r = 0; r < rows; r++)
+        for (int r = 0; r < rows + 1; r++)
         {
             vector<Block> rowOfBlocks;
             for (int c = 0; c < columns; c++)
             {
-                Block b = Block(blocksize, floor(minx + c*blocksize), floor(maxy - r*blocksize));
+                Block b = Block(blocksize, /*ceil*/(minx + c*blocksize), /*ceil*/(maxy - r*blocksize));
                 for (unsigned int p = 0; p < polys.size(); p++)
                 {
                     if (b.touch(polys[p]))
@@ -211,9 +216,10 @@ public:
 		int i = abs(x - minx) / blocksize;
 		int j = abs(y - miny) / blocksize;
 
+		// XXX: Why -1 ???
 		j = rows-j-1;
 
-		if (i < 0 || j < 0 || j >= (signed int)blocks.size() || i >= (signed int)blocks[0].size())
+		if (i < 0 || j < 0 || j >= (int)blocks.size() || i >= (int)blocks[0].size())
 		{
 			vector<Plane*> empty;
 			cout << "Player is out of the map!" << endl;
@@ -224,9 +230,10 @@ public:
 
 		vector<Plane*> myplanes;
 
+		// Get all planes around that bloc
 		for(int m = -1; m < 2; m++) {
 			for(int n = -1; n < 2; n++) {
-				if (!(i+m < 0 || j+n < 0 || j+n >= (signed int)blocks.size() || i+m >= (signed int)blocks[0].size())) {
+				if (!(i+m < 0 || j+n < 0 || j+n >= (int)blocks.size() || i+m >= (int)blocks[0].size())) {
 
 					for (int k = 0; k <  blocks[j+n][i+m].Count(); k++) {
 						myplanes.push_back( blocks[j+n][i+m].polys[k] );
