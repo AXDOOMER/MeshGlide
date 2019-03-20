@@ -487,3 +487,19 @@ void Level::BuildBlockmap()
 	cout << bm->toString() << endl;
 //	delete bm;
 }
+
+vector<Plane*> Level::getTouchPlanes(float x, float y, float radius) const
+{
+	vector<Plane*> myplanes;
+
+	for (int k = 0; k < (signed int)planes.size(); k++)
+	{
+		if (planes[k]->inbox(x, y, radius))
+		{
+			myplanes.push_back(planes[k]);
+		}
+	}
+
+	return myplanes;
+}
+

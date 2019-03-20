@@ -55,6 +55,8 @@ public:
 	void SpawnPlayer(Player* play);
 	void UpdateThings();
 
+	vector<Plane*> getTouchPlanes(float x, float y, float radius) const;
+
 	bool HasUVs() const;
 
 //	Blockmap bm;

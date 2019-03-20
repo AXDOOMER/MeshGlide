@@ -30,6 +30,13 @@
 #include <cfloat>
 #include <iostream>
 
+
+// XXX DELET TIS
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+
 using namespace std;
 
 const float GRAVITY = 0.2f;
@@ -82,6 +89,20 @@ public:
         }
 	}
 
+	bool inbox(float x, float y, float radius) const
+	{
+		if (x < minx - radius)
+			return false;
+		if (x > maxx + radius)
+			return false;
+		if (y < miny - radius)
+			return false;
+		if (y > maxy + radius)
+			return false;
+
+		return true;
+	}
+
 	bool CanWalk() const
 	{
 		const float WALL_ANGLE = 0.4f;	// '1' points up (floor) and '0' points to the side (wall)
@@ -130,7 +151,7 @@ public:
     float maxx, maxy, minx, miny;
     int columns = 0;
     int rows = 0;
-    const int blocksize = 8;    // Pour changer la taille du bloc (peut etre change de 1 a 8 pour faire des tests)
+    const int blocksize = 2;    // Pour changer la taille du bloc (peut etre change de 1 a 8 pour faire des tests)
     vector<vector<Block>> blocks;
 
     /* build a blockmap from polys */
@@ -192,7 +213,7 @@ public:
 
 		j = rows-j-1;
 
-		if (i < 0 || j < 0 || j >= blocks.size() || i >= blocks[0].size())
+		if (i < 0 || j < 0 || j >= (signed int)blocks.size() || i >= (signed int)blocks[0].size())
 		{
 			vector<Plane*> empty;
 			cout << "Player is out of the map!" << endl;
@@ -205,7 +226,7 @@ public:
 
 		for(int m = -1; m < 2; m++) {
 			for(int n = -1; n < 2; n++) {
-				if (!(i+m < 0 || j+n < 0 || j+n >= blocks.size() || i+m >= blocks[0].size())) {
+				if (!(i+m < 0 || j+n < 0 || j+n >= (signed int)blocks.size() || i+m >= (signed int)blocks[0].size())) {
 
 					for (int k = 0; k <  blocks[j+n][i+m].Count(); k++) {
 						myplanes.push_back( blocks[j+n][i+m].polys[k] );
@@ -217,15 +238,18 @@ public:
 
 		cout << myplanes.size() << " polys in donut block and timbits.   i:" << i << "   j:" << j << endl;
 
-/*
-		for (int k = 0; k <  blocks[j][i].Count(); k++)
-		{
-			if (blocks[j][i].polys[k]->Light > 0.5f)
+		float scale = rand() / (float) RAND_MAX;
+
+		for (int k = 0; k <  (signed int)/*blocks[j][i].polys.size()*/ myplanes.size(); k++)
+		{			
+			/*blocks[j][i].polys[k]*/myplanes[k]->Light = scale;
+
+			/*if (blocks[j][i].polys[k]->Light > 0.5f)
 				blocks[j][i].polys[k]->Light = 0.0f;
 			else
-				blocks[j][i].polys[k]->Light = 1.0f;
+				blocks[j][i].polys[k]->Light = 1.0f;*/
 		}
-*/
+
 		//return blocks[j][i].polys;
 		return myplanes;
 	}
