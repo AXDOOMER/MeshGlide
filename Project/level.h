@@ -57,6 +57,8 @@ public:
 
 	bool HasUVs() const;
 
+	vector<Plane*> getPlanesForBox(float x, float y, float radius) const;
+
 private:
 	// OBJ and OpenGL stuff
 	vector<Float3> vertices_;

@@ -247,8 +247,6 @@ void Level::LoadNative(const string& LevelName, unsigned int numOfPlayers)
 		cout << "Read " << Count - 1 << " lines from file. " << endl;
 		LevelFile.close();
 
-		BuildBlockmap();
-
 		// Check if no player was created
 		if (players.size() == 0)
 		{
@@ -425,8 +423,6 @@ void Level::LoadObj(const string& path, unsigned int numOfPlayers)
 			}
 		} // end of while loop
 
-		BuildBlockmap();
-
 		// Check if no player was created
 		if (players.size() == 0)
 		{
@@ -478,7 +474,18 @@ void Level::LoadObj(const string& path, unsigned int numOfPlayers)
 	model.close();
 }
 
-void Level::BuildBlockmap()
+vector<Plane*> Level::getPlanesForBox(float x, float y, float radius) const
 {
-	// TODO: The blockmap will be used as an optimization
+	vector<Plane*> boxplanes;
+
+	for (unsigned int k = 0; k < planes.size(); k++)
+	{
+		// Check if the player could be in the box (2D check)
+		if (planes[k]->InBox2D(x, y, radius))
+		{
+			boxplanes.push_back(planes[k]);
+		}
+	}
+
+	return boxplanes;
 }

@@ -331,36 +331,75 @@ void Plane::Process()
 {
 	normal = ComputeNormal(Vertices);
 	centroid = ComputeAverage(Vertices);
+	SetBox();
+}
+
+void Plane::SetBox()
+{
+	max.x = -numeric_limits<float>::max();
+	max.y = -numeric_limits<float>::max();
+	max.z = -numeric_limits<float>::max();
+
+	min.x = numeric_limits<float>::max();
+	min.y = numeric_limits<float>::max();
+	min.z = numeric_limits<float>::max();
+
+	for (unsigned int i = 0; i < Vertices.size(); i++)
+	{
+		// x
+		if (Vertices[i].x < min.x)
+			min.x = Vertices[i].x;
+		if (Vertices[i].x > max.x)
+			max.x = Vertices[i].x;
+
+		// y
+		if (Vertices[i].y < min.y)
+			min.y = Vertices[i].y;
+		if (Vertices[i].y > max.y)
+			max.y = Vertices[i].y;
+
+		// z
+		if (Vertices[i].z < min.z)
+			min.z = Vertices[i].z;
+		if (Vertices[i].z > max.z)
+			max.z = Vertices[i].z;
+	}
+}
+
+bool Plane::InBox2D(float x, float y, float radius) const
+{
+	// x
+	if (x < min.x - radius)
+		return false;
+	if (x > max.x + radius)
+		return false;
+
+	// y
+	if (y < min.y - radius)
+		return false;
+	if (y > max.y + radius)
+		return false;
+
+	return true;
+}
+
+bool Plane::CanWalk() const
+{
+	const float WALL_ANGLE = 0.4f;	// '1' points up (floor) and '0' points to the side (wall)
+
+	if (Impassable && normal.z < WALL_ANGLE && normal.z > -WALL_ANGLE)
+		return false;
+	return true;
 }
 
 float Plane::Max() const
 {
-	float max = -numeric_limits<float>::max();
-
-	for (unsigned int i = 0; i < Vertices.size(); i++)
-	{
-		if (Vertices[i].z > max)
-		{
-			max = Vertices[i].z;
-		}
-	}
-
-	return max;
+	return max.z;
 }
 
 float Plane::Min() const
 {
-	float min = numeric_limits<float>::max();
-
-	for (unsigned int i = 0; i < Vertices.size(); i++)
-	{
-		if (Vertices[i].z < min)
-		{
-			min = Vertices[i].z;
-		}
-	}
-
-	return min;
+	return min.z;
 }
 
 float Plane::Angle() const

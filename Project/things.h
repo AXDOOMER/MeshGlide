@@ -51,21 +51,22 @@ public:
 	Float3 centroid;
 	vector<Plane*> Neighbors;	// List of adjacent planes
 
-	float Angle() const;
+private:
+	Float3 max;		// Maximal coordinates
+	Float3 min;		// Minimal coordinates
 
+public:
 	float Max() const;
 	float Min() const;
 
+	float Angle() const;
+
 	void Process();		// Find centroid, find normal...
 
-	bool CanWalk() const
-	{
-		const float WALL_ANGLE = 0.4f;	// '1' points up (floor) and '0' points to the side (wall)
+	void SetBox();
+	bool InBox2D(float x, float y, float radius) const;
 
-		if (Impassable && normal.z < WALL_ANGLE && normal.z > -WALL_ANGLE)
-			return false;
-		return true;
-	}
+	bool CanWalk() const;
 };
 
 class TicCmd

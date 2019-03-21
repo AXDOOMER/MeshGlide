@@ -59,10 +59,13 @@ vector<Plane*> TouchedPlanes(const Player* play, const Level* lvl)
 {
 	vector<Plane*> touched;
 
-	// TODO: Use a blockmap instead of checking the planes of the entire level
-	for (unsigned int i = 0; i < lvl->planes.size(); i++)
-		if (TouchesPlane(play, lvl->planes[i]))		// Player touches the polygon
-			touched.push_back(lvl->planes[i]);
+	// List of potential planes that can be touched. Others were discarded.
+	vector<Plane*> potential = lvl->getPlanesForBox(play->pos_.x, play->pos_.y, play->Radius());
+
+	// Make a the list of planes that were toucehd
+	for (unsigned int i = 0; i < potential.size(); i++)
+		if (TouchesPlane(play, potential[i]))		// Player touches the polygon
+			touched.push_back(potential[i]);
 
 	return touched;
 }
