@@ -24,7 +24,7 @@
 #include <string>
 using namespace std;
 
-#include "things.h"
+#include "entity.h"
 #include "level.h"
 
 /****************************** Constants ******************************/

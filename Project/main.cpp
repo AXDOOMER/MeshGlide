@@ -18,7 +18,7 @@
 
 #include "viewdraw.h"
 #include "command.h"
-#include "things.h"
+#include "entity.h"
 #include "level.h"
 #include "vecmath.h"	/* Float3 */
 #include "physics.h"
@@ -42,7 +42,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.52 (dev)";
+	const char* const VERSION = "0.53 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;

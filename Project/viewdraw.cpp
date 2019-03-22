@@ -17,7 +17,7 @@
 // OpenGL camera functions for screen drawing
 
 #include "viewdraw.h"
-#include "things.h"
+#include "entity.h"
 #include "level.h"
 #include "vecmath.h" // Float3
 

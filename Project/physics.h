@@ -19,7 +19,7 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
-#include "things.h"	/* Player */
+#include "entity.h"	/* Player */
 #include "vecmath.h"	/* Float3 */
 #include "level.h"	/* Level */
 

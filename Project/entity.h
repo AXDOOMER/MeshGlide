@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2018 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2019 Alexandre-Xavier LabontÃ©-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,15 +13,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// things.h
-// Data structures (player, polygons A.K.A. "planes", etc. ) used in the World
+// entity.h
+// Data structures for game entities (player, things, etc. ) used in the game world
 
-#ifndef THINGS_H
-#define THINGS_H
+#ifndef ENTITY_H
+#define ENTITY_H
 
 #include "texture.h"
-#include "cache.h"
 #include "vecmath.h"	// Custom library for vector math, collision with planes, etc.
+#include "plane.h"
 
 #include <string>
 #include <cmath>
@@ -32,42 +32,6 @@ using namespace std;
 const float GRAVITY = 0.2f;
 //const float PI = atan(1) * 4;
 const int MAXOWNEDWEAPONS = 10;
-
-class Plane
-{
-public:
-	string Texture;
-	bool Impassable = true;
-	bool TwoSided = false;
-	vector<Float3> Vertices;
-	vector<Float2> UVs;
-	float Xscale = 0;
-	float Yscale = 0;
-	float Xoff = 0;
-	float Yoff = 0;
-	float Light = 1;	// Must be between 0 (dark) and 1 (full bright)
-
-	Float3 normal;
-	Float3 centroid;
-	vector<Plane*> Neighbors;	// List of adjacent planes
-
-private:
-	Float3 max;		// Maximal coordinates
-	Float3 min;		// Minimal coordinates
-
-public:
-	float Max() const;
-	float Min() const;
-
-	float Angle() const;
-
-	void Process();		// Find centroid, find normal...
-
-	void SetBox();
-	bool InBox2D(float x, float y, float radius) const;
-
-	bool CanWalk() const;
-};
 
 class TicCmd
 {
@@ -85,7 +49,7 @@ public:
 	string chat;
 };
 
-class Thing
+class Entity
 {
 public:
 	// Camera position
@@ -111,7 +75,7 @@ public:
 
 	// So the compiler doesn't warn on deleting an object of polymorphic class type
 	// https://stackoverflow.com/questions/353817/should-every-class-have-a-virtual-destructor
-	virtual ~Thing() = default;
+	virtual ~Entity() = default;
 
 //protected:
 //	Texture* sprite;
@@ -121,7 +85,7 @@ public:
 	Plane* plane;
 };
 
-class Player: public Thing
+class Player: public Entity
 {
 public:
 	TicCmd Cmd = TicCmd();
@@ -199,7 +163,7 @@ public:
 	// TODO: Add Pos() and Aim(). Aim is a normalized vector.
 };
 
-class Weapon: public Thing
+class Weapon: public Entity
 {
 public:
 	Weapon(float x, float y, float z, string type);
@@ -219,7 +183,7 @@ public:
 	Texture* GetSprite(Float3 CamPos) const;
 };
 
-class Puff: public Thing
+class Puff: public Entity
 {
 public:
 	Puff(float x, float y, float z);
@@ -241,18 +205,10 @@ public:
 	bool Update();
 };
 
-class Critter: public Thing
-{
-private:
-	float Direction = 0;
-public:
-	void Move();
-};
-
 struct SpawnSpot
 {
 	Float3 pos_;
 	short Angle;
 };
 
-#endif /* THINGS_H */
+#endif /* ENTITY_H */

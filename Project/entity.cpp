@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2018 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2019 Alexandre-Xavier LabontÃ©-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,14 +13,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// things.cpp
-// Data structures (player, walls, etc. ) used in the World
+// entity.cpp
+// Data structures for game entities (player, things, etc. ) used in the game world
 
-#include "things.h"
+#include "entity.h"
 #include "texture.h"
 #include "cache.h"
 
-#include <SDL2/SDL_endian.h>
+#include <SDL2/SDL_endian.h>	/* SDL_BYTEORDER, SDL_BIG_ENDIAN */
 
 #include <cmath>
 #include <limits>		/* numeric_limits */
@@ -29,7 +29,7 @@
 
 using namespace std;
 
-bool Thing::Update()
+bool Entity::Update()
 {
 	return true;
 }
@@ -324,88 +324,6 @@ Texture* Player::GetSprite(Float3 CamPos) const
 	int Quotient = (Theta * 8) / (M_PI * 2);
 
 	return Cache::Instance()->Get(sprites_[Quotient % 8]);
-}
-
-// Process a plane
-void Plane::Process()
-{
-	normal = ComputeNormal(Vertices);
-	centroid = ComputeAverage(Vertices);
-	SetBox();
-}
-
-void Plane::SetBox()
-{
-	max.x = -numeric_limits<float>::max();
-	max.y = -numeric_limits<float>::max();
-	max.z = -numeric_limits<float>::max();
-
-	min.x = numeric_limits<float>::max();
-	min.y = numeric_limits<float>::max();
-	min.z = numeric_limits<float>::max();
-
-	for (unsigned int i = 0; i < Vertices.size(); i++)
-	{
-		// x
-		if (Vertices[i].x < min.x)
-			min.x = Vertices[i].x;
-		if (Vertices[i].x > max.x)
-			max.x = Vertices[i].x;
-
-		// y
-		if (Vertices[i].y < min.y)
-			min.y = Vertices[i].y;
-		if (Vertices[i].y > max.y)
-			max.y = Vertices[i].y;
-
-		// z
-		if (Vertices[i].z < min.z)
-			min.z = Vertices[i].z;
-		if (Vertices[i].z > max.z)
-			max.z = Vertices[i].z;
-	}
-}
-
-bool Plane::InBox2D(float x, float y, float radius) const
-{
-	// x
-	if (x < min.x - radius)
-		return false;
-	if (x > max.x + radius)
-		return false;
-
-	// y
-	if (y < min.y - radius)
-		return false;
-	if (y > max.y + radius)
-		return false;
-
-	return true;
-}
-
-bool Plane::CanWalk() const
-{
-	const float WALL_ANGLE = 0.4f;	// '1' points up (floor) and '0' points to the side (wall)
-
-	if (Impassable && normal.z < WALL_ANGLE && normal.z > -WALL_ANGLE)
-		return false;
-	return true;
-}
-
-float Plane::Max() const
-{
-	return max.z;
-}
-
-float Plane::Min() const
-{
-	return min.z;
-}
-
-float Plane::Angle() const
-{
-	// Return an angle that can be used for sliding if this plane cannot be entered
-	return atan2(normal.y, normal.x) + M_PI / 2;
 }
 
 Weapon::Weapon(float x, float y, float z, string type)
