@@ -29,16 +29,19 @@ using namespace std;
 // Write each player's tic in the demo file
 void writeCmdToDemo(ofstream& demo, const vector<Player*> players)
 {
-	//if (demo.is_open())
+	vector<unsigned char> command;
+
+	for (unsigned int i = 0; i < players.size(); i++)
 	{
-		for (unsigned int i = 0; i < players.size(); i++)
-		{
-			demo << static_cast<int>(players[i]->Cmd.forward) << endl;
-			demo << static_cast<int>(players[i]->Cmd.lateral) << endl;
-			demo << static_cast<int>(players[i]->Cmd.rotation) << endl;
-			demo << static_cast<int>(players[i]->Cmd.vertical) << endl;
-			demo << static_cast<int>(players[i]->Cmd.fire) << endl;
-		}
+		command = players[i]->CmdToNet();
+
+		demo << command[0];	// quit, fire, id
+		demo << command[1];	// forward
+		demo << command[2];	// lateral
+		demo << command[3];	// rotation
+		demo << command[4];	// ^
+		demo << command[5];	// vertical
+		demo << command[6];	// ^
 	}
 }
 
@@ -46,38 +49,22 @@ void writeCmdToDemo(ofstream& demo, const vector<Player*> players)
 // Returns false if demo must be ended
 bool readCmdFromDemo(ifstream& demo, vector<Player*> players)
 {
-	try
+	vector<unsigned char> command;
+	command.resize(8, 0);	// '8' because the chat string size is '0'
+
+	// Demo Play is True
+	for (unsigned int i = 0; i < players.size(); i++)
 	{
-		string line;
-		// Demo Play is True
-		for (unsigned int i = 0; i < players.size(); i++)
+		// Read 7 bytes from the demo file and write them to the command vector
+		demo.read(reinterpret_cast<char*>(command.data()), 7);
+
+		if (!demo)
 		{
-			if (!getline(demo, line))
-				return false;
-			if (!line.empty())
-				players[i]->Cmd.forward = stoi(line);
-			if (!getline(demo, line))
-				return false;
-			if (!line.empty())
-				players[i]->Cmd.lateral = stoi(line);
-			if (!getline(demo, line))
-				return false;
-			if (!line.empty())
-				players[i]->Cmd.rotation = stoi(line);
-			if (!getline(demo, line))
-				return false;
-			if (!line.empty())
-				players[i]->Cmd.vertical = stoi(line);
-			if (!getline(demo, line))
-				return false;
-			if (!line.empty())
-				players[i]->Cmd.fire = static_cast<bool>(stoi(line));
+			cerr << "WARNING: demo ended prematurely" << endl;
+			return false;
 		}
-	}
-	catch (...)
-	{
-		cerr << "Demo file contains invalid data." << endl;
-		return false;
+
+		players[i]->NetToCmd(command);
 	}
 
 	return true;
