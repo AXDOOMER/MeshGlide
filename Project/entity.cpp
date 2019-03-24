@@ -78,9 +78,9 @@ void Player::Reset()
 	VerticalAim = 0;
 
 	// Reset momentum
-	MoX = 0;
-	MoY = 0;
-	MoZ = 0;
+	mom_.x = 0;
+	mom_.y = 0;
+	mom_.z = 0;
 
 	// Reset any falls
 	AirTime = 0;
@@ -89,16 +89,16 @@ void Player::Reset()
 // TODO: Improve the movement system so the division by 64 can be avoided
 void Player::ForwardMove(int Thrust)
 {
-	pos_.x += ((float)Thrust / 64) * cos(GetRadianAngle(Angle));
-	pos_.y += ((float)Thrust / 64) * sin(GetRadianAngle(Angle));
+	mom_.x += ((float)Thrust / 64) * cos(GetRadianAngle(Angle));
+	mom_.y += ((float)Thrust / 64) * sin(GetRadianAngle(Angle));
 }
 
 void Player::LateralMove(int Thrust)
 {
 	float LateralAngle = GetRadianAngle(Angle) - M_PI / 2;
 
-	pos_.x += ((float)Thrust / 64) * cos(LateralAngle);
-	pos_.y += ((float)Thrust / 64) * sin(LateralAngle);
+	mom_.x += ((float)Thrust / 64) * cos(LateralAngle);
+	mom_.y += ((float)Thrust / 64) * sin(LateralAngle);
 }
 
 // Encodes a player's data to a buffer for network usage
@@ -190,8 +190,23 @@ void Player::NetToCmd(vector<unsigned char> v)
 
 void Player::ExecuteTicCmd()
 {
-	ForwardMove(Cmd.forward);
-	LateralMove(Cmd.lateral);
+	if (AirTime == 0)
+	{
+		mom_.x = 0;
+		mom_.y = 0;
+
+		ForwardMove(Cmd.forward);
+		LateralMove(Cmd.lateral);
+
+		pos_.x += mom_.x;
+		pos_.y += mom_.y;
+	}
+	else
+	{
+		pos_.x += mom_.x;
+		pos_.y += mom_.y;
+	}
+
 	AngleTurn(Cmd.rotation);
 	AngleLook(Cmd.vertical);
 	if (Cmd.fire)

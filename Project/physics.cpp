@@ -75,7 +75,7 @@ vector<Plane*> TouchedPlanes(const Player* play, const Level* lvl)
 bool AdjustPlayerToFloor(Player* play, Level* lvl)
 {
 	float NewHeight = numeric_limits<float>::lowest();
-	bool ChangeHeight = false;	// Note: Making this true will allow the player to fall in the void
+	bool ChangeHeight = true;	// Note: Making this true will allow the player to fall in the void
 
 	vector<Plane*> touched = TouchedPlanes(play, lvl);
 

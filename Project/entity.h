@@ -96,9 +96,7 @@ public:
 
 //	Float3 pos_;		// Position of player's feet
 	const float ViewZ = 1.8f;
-	char MoX = 0;		// Speed vector (momentum)
-	char MoY = 0;
-	char MoZ = 0;		// Used by gravity
+
 	const float MaxStep = 1.0f;
 	const float Radius_ = 0.5f;
 	const float Height_ = 2.0f;
