@@ -53,7 +53,7 @@ public:
 	void LoadNative(const string& LevelName, unsigned int numOfPlayers);
 	void LoadObj(const string& path, unsigned int numOfPlayers);
 
-	void SpawnPlayer(Player* play);
+	void SpawnPlayer(Player* play, const vector<Player*> players);
 	void UpdateThings();
 
 	bool HasUVs() const;

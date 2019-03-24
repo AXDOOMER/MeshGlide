@@ -21,7 +21,7 @@
 #include "entity.h"	/* Player */
 #include "plane.h"	/* Plane */
 #include "cache.h"	/* Cache */
-#include "physics.h"	/* AdjustPlayerToFloor */
+#include "physics.h"	/* AdjustPlayerToFloor, PlayerToPlayersCollision */
 #include "random.h"	/* Rand() */
 #include "strutils.h"
 
@@ -93,15 +93,22 @@ void Level::UpdateThings()
 	}
 }
 
-void Level::SpawnPlayer(Player* play)
+void Level::SpawnPlayer(Player* play, const vector<Player*> players)
 {
 	play->Reset();
+	int tries = 0;
 
 	if (spawns.size() != 0)
 	{
-		SpawnSpot spawn = spawns[Rand() % spawns.size()];
-		play->pos_ = spawn.pos_;
-		play->Angle = spawn.Angle;
+		do
+		{
+			if (tries++ > 20)
+				throw runtime_error("Could not spawn player after trying several times.");
+
+			SpawnSpot spawn = spawns[Rand() % spawns.size()];
+			play->pos_ = spawn.pos_;
+			play->Angle = spawn.Angle;
+		} while (PlayerToPlayersCollision(play, players));
 	}
 	else
 	{
@@ -255,7 +262,7 @@ void Level::LoadNative(const string& LevelName, unsigned int numOfPlayers)
 			for (unsigned int i = 0; i < numOfPlayers; i++)
 			{
 				players.emplace_back(new Player());
-				SpawnPlayer(players[i]);
+				SpawnPlayer(players[i], players);
 			}
 			// Set the player to player #1
 			play = players[0];
@@ -431,7 +438,7 @@ void Level::LoadObj(const string& path, unsigned int numOfPlayers)
 			for (unsigned int i = 0; i < numOfPlayers; i++)
 			{
 				players.emplace_back(new Player());
-				SpawnPlayer(players[i]);
+				SpawnPlayer(players[i], players);
 				AdjustPlayerToFloor(players[i], this);
 			}
 			// Set the player to player #1
