@@ -93,13 +93,15 @@ void Level::UpdateThings()
 	}
 }
 
-void Level::SpawnPlayer(Player* play, const vector<Player*> players)
+void Level::SpawnPlayer(Player* play, const vector<Player*>& players)
 {
 	play->Reset();
-	int tries = 0;
 
 	if (spawns.size() != 0)
 	{
+		// Count of the number of attempts to spawn the player
+		int tries = 0;
+
 		do
 		{
 			if (tries++ > 20)

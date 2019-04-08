@@ -126,7 +126,7 @@ bool BlocksPlayer(const Player* play, float min, float max)
 }
 
 // Returns true of the player touches obstructing walls
-bool PlayerTouchesWalls(const Player* play, const vector<Plane*> touched)
+bool PlayerTouchesWalls(const Player* play, const vector<Plane*>& touched)
 {
 	for (unsigned int i = 0; i < touched.size(); i++)
 		if (!touched[i]->CanWalk() && BlocksPlayer(play, touched[i]->Min(), touched[i]->Max()))
@@ -136,7 +136,7 @@ bool PlayerTouchesWalls(const Player* play, const vector<Plane*> touched)
 }
 
 // Returns a list of obstructing walls
-vector<Plane*> PlayerTouchedWallsList(const Player* play, const vector<Plane*> touched)
+vector<Plane*> PlayerTouchedWallsList(const Player* play, const vector<Plane*>& touched)
 {
 	vector<Plane*> obstructors;
 
@@ -363,7 +363,7 @@ bool PlayerToPlayerCollision(const Player* moved, const Player* other)
 	return false;
 }
 
-bool PlayerToPlayersCollision(const Player* source, const vector<Player*> players)
+bool PlayerToPlayersCollision(const Player* source, const vector<Player*>& players)
 {
 	for (unsigned int i = 0; i < players.size(); i++)
 	{
@@ -388,7 +388,7 @@ bool PlayerHeightCheck(const Player* moved, const Player* other)
 	return false;
 }
 
-vector<Player*> GetPlayersTouched(const Player* source, const vector<Player*> players)
+vector<Player*> GetPlayersTouched(const Player* source, const vector<Player*>& players)
 {
 	vector<Player*> list;
 

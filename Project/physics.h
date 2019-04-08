@@ -45,9 +45,9 @@ Float3 PushTargetOutOfPoint(const Float3& target, const Float3& point, const flo
 
 Float3 PlayerToPlayerCollisionReact(const Player* moved, const Player* other);
 bool PlayerToPlayerCollision(const Player* moved, const Player* other);
-bool PlayerToPlayersCollision(const Player* source, const vector<Player*> players);
+bool PlayerToPlayersCollision(const Player* source, const vector<Player*>& players);
 
-vector<Player*> GetPlayersTouched(const Player* source, const vector<Player*> players);
+vector<Player*> GetPlayersTouched(const Player* source, const vector<Player*>& players);
 bool PlayerHeightCheck(const Player* moved, const Player* other);
 
 // Add a function that checks player height touches another (but based on occupied plane area)
