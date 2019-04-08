@@ -166,7 +166,7 @@ public:
 class Weapon: public Entity
 {
 public:
-	Weapon(float x, float y, float z, string type);
+	Weapon(float x, float y, float z, const string& type);
 	~Weapon();	// Deletes the sprite
 
 	float PosX() const;

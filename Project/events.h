@@ -25,7 +25,7 @@
 using namespace std;
 
 // Write each player's tic in the demo file
-void writeCmdToDemo(ofstream& demo, const vector<Player*> players);
+void writeCmdToDemo(ofstream& demo, const vector<Player*>& players);
 
 // Read a tic from the demo and updates each player
 bool readCmdFromDemo(ifstream& demo, vector<Player*> players);
@@ -34,4 +34,4 @@ bool readCmdFromDemo(ifstream& demo, vector<Player*> players);
 void updatePlayerWithEvents(GLFWwindow* window, GameWindow& view, unsigned int TicCount, Player* play);
 
 // Special updates like the spy key
-void updateSpecials(Player*& play, const vector<Player*> players);
+void updateSpecials(Player*& play, const vector<Player*>& players);

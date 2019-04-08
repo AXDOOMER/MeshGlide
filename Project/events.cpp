@@ -27,7 +27,7 @@
 using namespace std;
 
 // Write each player's tic in the demo file
-void writeCmdToDemo(ofstream& demo, const vector<Player*> players)
+void writeCmdToDemo(ofstream& demo, const vector<Player*>& players)
 {
 	vector<unsigned char> command;
 
@@ -162,7 +162,7 @@ void updatePlayerWithEvents(GLFWwindow* window, GameWindow& view, unsigned int T
 }
 
 // Changes the player by changing where the pointer is pointing at
-void updateSpecials(Player*& play, const vector<Player*> players)
+void updateSpecials(Player*& play, const vector<Player*>& players)
 {
 	// Spy cam. Take control of another player.
 	if (GetKeyPressCount(GLFW_KEY_F12) == 1)

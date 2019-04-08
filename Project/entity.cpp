@@ -326,7 +326,7 @@ Texture* Player::GetSprite(Float3 CamPos) const
 	return Cache::Instance()->Get(sprites_[Quotient % 8]);
 }
 
-Weapon::Weapon(float x, float y, float z, string type)
+Weapon::Weapon(float x, float y, float z, const string& type)
 {
 	pos_.x = x;
 	pos_.y = y;
