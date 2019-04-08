@@ -3,6 +3,7 @@
 ![Top Language](https://img.shields.io/github/languages/top/axdoomer/meshglide.svg?style=flat)
 ![Code Size](https://img.shields.io/github/languages/code-size/axdoomer/meshglide.svg?style=flat)
 ![License](https://img.shields.io/github/license/axdoomer/meshglide.svg?style=flat&logo=gnu)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c33bd70b79904cbe8fec5f1cae998b3b)](https://app.codacy.com/app/alexandrexavier/MeshGlide?utm_source=github.com&utm_medium=referral&utm_content=AXDOOMER/MeshGlide&utm_campaign=Badge_Grade_Dashboard)
 
 A simple FPS engine that uses GLFW 3 for the graphics and input. It's distributed under the [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
