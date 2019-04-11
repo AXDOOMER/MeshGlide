@@ -56,6 +56,7 @@ int main(int argc, const char *argv[])
 	extern GameWindow view;
 	Network network;
 	int numOfPlayers = 1;
+	int frameSkip = 0;
 
 	cout << "                MESHGLIDE ENGINE -- " << VERSION << "\n\n";
 
@@ -71,6 +72,12 @@ int main(int argc, const char *argv[])
 	{
 		// Makes the game run as fast as possible and output the time that it took to play the demo at full speed
 		Fast = true;
+	}
+
+	if (FindArgumentPosition(argc, argv, "-frameskip") > 0)
+	{
+		// How many frames to skip before drawing one.
+		frameSkip = stoi(FindArgumentParameter(argc, argv, "-frameskip"));
 	}
 
 	/****************************** DEMO FILES ******************************/
@@ -405,7 +412,10 @@ int main(int argc, const char *argv[])
 		CurrentLevel->UpdateThings();
 
 		// Draw Screen
-		DrawScreen(window, CurrentLevel->play, CurrentLevel, FrameDelay);
+		if (frameSkip == 0 || TicCount % frameSkip == 0)
+		{
+			DrawScreen(window, CurrentLevel->play, CurrentLevel, FrameDelay);
+		}
 
 		// Play sound
 
