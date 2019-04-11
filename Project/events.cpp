@@ -18,6 +18,7 @@
 
 #include "viewdraw.h"
 #include "entity.h"
+#include "events.h"
 
 #include <GLFW/glfw3.h>
 
@@ -35,13 +36,15 @@ void writeCmdToDemo(ofstream& demo, const vector<Player*>& players)
 	{
 		command = players[i]->CmdToNet();
 
-		demo << command[0];	// quit, fire, id
-		demo << command[1];	// forward
-		demo << command[2];	// lateral
-		demo << command[3];	// rotation
-		demo << command[4];	// ^
-		demo << command[5];	// vertical
-		demo << command[6];	// ^
+		if (command.size() >= BYTES_TO_READ)
+		{
+			// Write everything except the chat string and its lenght
+			demo.write(reinterpret_cast<char*>(command.data()), BYTES_TO_READ);
+		}
+		else
+		{
+			cerr << string(__FUNCTION__) << ": Tried to read more bytes than the command size." << endl;
+		}
 	}
 }
 
@@ -55,8 +58,8 @@ bool readCmdFromDemo(ifstream& demo, vector<Player*> players)
 	// Demo Play is True
 	for (unsigned int i = 0; i < players.size(); i++)
 	{
-		// Read 7 bytes from the demo file and write them to the command vector
-		demo.read(reinterpret_cast<char*>(command.data()), 7);
+		// Read 7 bytes (BYTES_TO_READ) from the demo file and write them to the command vector
+		demo.read(reinterpret_cast<char*>(command.data()), BYTES_TO_READ);
 
 		if (!demo)
 		{

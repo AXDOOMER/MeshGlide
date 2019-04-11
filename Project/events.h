@@ -24,6 +24,9 @@
 #include <fstream>
 using namespace std;
 
+// Number of bytes from the beginning of a tic command that are important for a demo
+const unsigned int BYTES_TO_READ = 7;
+
 // Write each player's tic in the demo file
 void writeCmdToDemo(ofstream& demo, const vector<Player*>& players);
 
