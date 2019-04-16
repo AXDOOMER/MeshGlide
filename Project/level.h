@@ -19,7 +19,8 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
-#include "entity.h"	/* Player */
+#include "entity.h"
+#include "player.h"
 #include "plane.h"	/* Plane */
 #include "cache.h"	/* Cache */
 #include "vecmath.h"	/* Float3 */

@@ -18,6 +18,7 @@
 
 #include "viewdraw.h"
 #include "entity.h"
+#include "player.h"
 
 #include <GLFW/glfw3.h>
 

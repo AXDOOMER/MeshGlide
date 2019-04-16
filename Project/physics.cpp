@@ -16,7 +16,7 @@
 // physics.cpp
 // What affects a thing's movement in space (collision detection and response)
 
-#include "entity.h"
+#include "player.h"
 #include "plane.h"
 #include "vecmath.h"	/* Float3 */
 #include "physics.h"

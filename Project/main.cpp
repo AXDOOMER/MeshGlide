@@ -19,6 +19,7 @@
 #include "viewdraw.h"
 #include "command.h"
 #include "entity.h"
+#include "player.h"
 #include "level.h"
 #include "vecmath.h"	/* Float3 */
 #include "physics.h"

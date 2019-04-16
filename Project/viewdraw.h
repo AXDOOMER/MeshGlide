@@ -25,6 +25,7 @@
 using namespace std;
 
 #include "entity.h"
+#include "player.h"
 #include "level.h"
 
 /****************************** Constants ******************************/

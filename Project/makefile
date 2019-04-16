@@ -1,5 +1,6 @@
 # Makefile for MeshGlide
 # https://www3.ntu.edu.sg/home/ehchua/programming/cpp/gcc_make.html
+# http://nuclear.mutantstargoat.com/articles/make/
 
 SRC = $(wildcard *.cpp)
 OBJ = $(SRC:.cpp=.o)

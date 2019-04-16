@@ -18,7 +18,8 @@
 
 #include "level.h"
 #include "vecmath.h"	/* Float3, ComputeNormal */
-#include "entity.h"	/* Player */
+#include "entity.h"
+#include "player.h"
 #include "plane.h"	/* Plane */
 #include "cache.h"	/* Cache */
 #include "physics.h"	/* AdjustPlayerToFloor, PlayerToPlayersCollision */
