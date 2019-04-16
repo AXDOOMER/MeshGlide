@@ -19,7 +19,7 @@
 #include "player.h"
 #include "texture.h"
 #include "cache.h"
-#include "entity.h"
+#include "actor.h"
 
 #include <SDL2/SDL_endian.h>	/* SDL_BYTEORDER, SDL_BIG_ENDIAN */
 

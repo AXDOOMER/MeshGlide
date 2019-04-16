@@ -13,11 +13,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// entity.h
-// Data structures for game entities (things, etc. ) used in the game world
+// actor.h
+// Data structures for game actors ("things") used in the game world
 
-#ifndef ENTITY_H
-#define ENTITY_H
+#ifndef ACTOR_H
+#define ACTOR_H
 
 #include "texture.h"
 #include "vecmath.h"	// Custom library for vector math, collision with planes, etc.
@@ -33,7 +33,7 @@ const float GRAVITY = 0.2f;
 //const float PI = atan(1) * 4;
 const int MAXOWNEDWEAPONS = 10;
 
-class Entity
+class Actor
 {
 public:
 	// Camera position
@@ -59,7 +59,7 @@ public:
 
 	// So the compiler doesn't warn on deleting an object of polymorphic class type
 	// https://stackoverflow.com/questions/353817/should-every-class-have-a-virtual-destructor
-	virtual ~Entity() = default;
+	virtual ~Actor() = default;
 
 //protected:
 //	Texture* sprite;
@@ -69,7 +69,7 @@ public:
 	Plane* plane;
 };
 
-class Weapon: public Entity
+class Weapon: public Actor
 {
 public:
 	Weapon(float x, float y, float z, const string& type);
@@ -89,7 +89,7 @@ public:
 	Texture* GetSprite(Float3 CamPos) const;
 };
 
-class Puff: public Entity
+class Puff: public Actor
 {
 public:
 	Puff(float x, float y, float z);
@@ -111,4 +111,4 @@ public:
 	bool Update();
 };
 
-#endif /* ENTITY_H */
+#endif /* ACTOR_H */

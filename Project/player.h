@@ -22,7 +22,7 @@
 #include "texture.h"
 #include "vecmath.h"	// Custom library for vector math, collision with planes, etc.
 #include "plane.h"
-#include "entity.h"
+#include "actor.h"
 
 #include <string>
 #include <cmath>
@@ -47,7 +47,7 @@ public:
 };
 
 
-class Player: public Entity
+class Player: public Actor
 {
 public:
 	TicCmd Cmd = TicCmd();

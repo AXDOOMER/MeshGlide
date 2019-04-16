@@ -18,7 +18,7 @@
 
 #include "level.h"
 #include "vecmath.h"	/* Float3, ComputeNormal */
-#include "entity.h"
+#include "actor.h"
 #include "player.h"
 #include "plane.h"	/* Plane */
 #include "cache.h"	/* Cache */

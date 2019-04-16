@@ -19,7 +19,7 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
-#include "entity.h"
+#include "actor.h"
 #include "player.h"
 #include "plane.h"	/* Plane */
 #include "cache.h"	/* Cache */
@@ -41,7 +41,7 @@ public:
 	vector<Player*> players;	// Pointers to every player
 	vector<SpawnSpot> spawns;
 	vector<Weapon*> weapons;
-	vector<Entity*> things;	// In order to draw everything easily, everything is put in the same array. TODO: Use a deque?
+	vector<Actor*> things;	// In order to draw everything easily, everything is put in the same array. TODO: Use a deque?
 
 	void AddTexture(const string& name, bool enableFiltering);	// Add texture to cache if missing
 	void UseTexture(const string& name);	// Bind texture

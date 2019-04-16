@@ -13,10 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// entity.cpp
-// Data structures for game entities (things, etc. ) used in the game world
+// actor.cpp
+// Data structures for game actors ("things") used in the game world
 
-#include "entity.h"
+#include "actor.h"
 #include "texture.h"
 #include "cache.h"
 
@@ -29,7 +29,7 @@
 
 using namespace std;
 
-bool Entity::Update()
+bool Actor::Update()
 {
 	return true;
 }

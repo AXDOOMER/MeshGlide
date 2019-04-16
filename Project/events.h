@@ -17,7 +17,6 @@
 // Handles keyboard and mouse events, tic processing (demo and network).
 
 #include "viewdraw.h"
-#include "entity.h"
 #include "player.h"
 
 #include <GLFW/glfw3.h>

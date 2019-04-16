@@ -24,7 +24,7 @@
 #include <string>
 using namespace std;
 
-#include "entity.h"
+#include "actor.h"
 #include "player.h"
 #include "level.h"
 
