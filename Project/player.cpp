@@ -13,13 +13,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// entity.cpp
+// player.cpp
 // Data structures for game entities (player, things, etc. ) used in the game world
 
 #include "player.h"
 #include "texture.h"
 #include "cache.h"
 #include "actor.h"
+#include "tick.h"
 
 #include <SDL2/SDL_endian.h>	/* SDL_BYTEORDER, SDL_BIG_ENDIAN */
 
@@ -29,23 +30,6 @@
 #include <cstring>		/* memcpy */
 
 using namespace std;
-
-TicCmd::TicCmd()
-{
-	Reset();
-	quit = false;
-}
-
-void TicCmd::Reset()
-{
-	// Init to default values
-	forward = 0;
-	lateral = 0;
-	rotation = 0;
-	vertical = 0;
-	fire = false;
-	chat = "";
-}
 
 Player::Player()
 {

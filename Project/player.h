@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// entity.h
+// player.h
 // Data structures for game entities (player, things, etc. ) used in the game world
 
 #ifndef PLAYER_H
@@ -23,29 +23,13 @@
 #include "vecmath.h"	// Custom library for vector math, collision with planes, etc.
 #include "plane.h"
 #include "actor.h"
+#include "tick.h"
 
 #include <string>
 #include <cmath>
 #include <vector>
 
 using namespace std;
-
-class TicCmd
-{
-public:
-	TicCmd();
-	void Reset();
-
-	unsigned char id;
-	signed char forward;
-	signed char lateral;
-	short rotation;
-	short vertical;
-	bool fire;
-	bool quit;
-	string chat;
-};
-
 
 class Player: public Actor
 {
