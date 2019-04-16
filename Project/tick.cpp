@@ -15,6 +15,7 @@
 //
 // tick.cpp
 // Single instance of a game action sampled per tick for a player
+// Sometimes called a "tic command"
 
 #include "tick.h"
 
@@ -22,13 +23,13 @@
 
 using namespace std;
 
-TicCmd::TicCmd()
+Tick::Tick()
 {
 	Reset();
 	quit = false;
 }
 
-void TicCmd::Reset()
+void Tick::Reset()
 {
 	// Init to default values
 	forward = 0;

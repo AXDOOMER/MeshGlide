@@ -168,7 +168,7 @@ void Player::NetToCmd(vector<unsigned char> v)
 	}
 }
 
-void Player::ExecuteTicCmd()
+void Player::ExecuteTick()
 {
 	ForwardMove(Cmd.forward);
 	LateralMove(Cmd.lateral);

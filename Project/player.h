@@ -34,7 +34,7 @@ using namespace std;
 class Player: public Actor
 {
 public:
-	TicCmd Cmd = TicCmd();
+	Tick Cmd = Tick();
 
 	// Object-oriented programming is a pain. Made it public so it's easily accessible.
 	short Angle = 8192;	// Yaw
@@ -81,7 +81,7 @@ private:
 
 public:
 	// Executes the player's actions
-	void ExecuteTicCmd();
+	void ExecuteTick();
 
 	// Command transfer
 	vector<unsigned char> CmdToNet() const;

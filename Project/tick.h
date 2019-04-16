@@ -15,6 +15,7 @@
 //
 // tick.h
 // Single instance of a game action sampled per tick for a player
+// Sometimes called a "tic command"
 
 #ifndef TICK_H
 #define TICK_H
@@ -23,10 +24,10 @@
 
 using namespace std;
 
-class TicCmd
+class Tick
 {
 public:
-	TicCmd();
+	Tick();
 	void Reset();
 
 	unsigned char id;

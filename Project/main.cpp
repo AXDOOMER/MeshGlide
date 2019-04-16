@@ -351,7 +351,7 @@ int main(int argc, const char *argv[])
 		{
 			// Save player's position and the execute the tic command
 			Float3 pt = CurrentLevel->players[i]->pos_;
-			CurrentLevel->players[i]->ExecuteTicCmd();
+			CurrentLevel->players[i]->ExecuteTick();
 
 			// Collision detection with floors and walls
 			if (!NewPositionIsValid(CurrentLevel->players[i], CurrentLevel))
