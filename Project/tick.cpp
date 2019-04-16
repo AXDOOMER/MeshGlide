@@ -30,6 +30,7 @@ Tick::Tick()
 {
 	Reset();
 	quit = false;
+	id = 0;	// Must be changed when playing multiplayer
 }
 
 void Tick::Reset()

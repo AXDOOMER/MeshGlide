@@ -381,7 +381,7 @@ void Level::LoadObj(const string& path, unsigned int numOfPlayers)
 				else if (slices[0] == "usemtl" && slices.size() == 2)
 				{
 					texture = slices[1];
-					string folder = "";
+					string folder;
 
 					// Get the directory of the OBJ file because the textures should be in the same directory
 					texture = DirName(path) + texture;
