@@ -22,8 +22,6 @@
 #include "actor.h"
 #include "tick.h"
 
-#include <SDL2/SDL_endian.h>	/* SDL_BYTEORDER, SDL_BIG_ENDIAN */
-
 #include <cmath>
 #include <limits>		/* numeric_limits */
 #include <string>		/* to_string() */
@@ -85,87 +83,14 @@ void Player::LateralMove(int Thrust)
 vector<unsigned char> Player::CmdToNet() const
 {
 	// Serialize the command
-	vector<unsigned char> c;
-	c.resize(8, 0);	// It must be at least 8 bytes long
-
-	c[0] = Cmd.quit;
-	c[0] = c[0] << 1;
-
-	c[0] = c[0] | Cmd.fire;
-	c[0] = c[0] << 6;
-
-	c[0] = c[0] | Cmd.id;
-
-	c[1] = Cmd.forward;
-	c[2] = Cmd.lateral;
-
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-	c[3] = Cmd.rotation;
-	c[4] = Cmd.rotation >> 8;
-
-	c[5] = Cmd.vertical;
-	c[6] = Cmd.vertical >> 8;
-#else
-	c[3] = Cmd.rotation >> 8;
-	c[4] = Cmd.rotation;
-
-	c[5] = Cmd.vertical >> 8;
-	c[6] = Cmd.vertical;
-#endif
-
-	// Save the chat string's size
-	c[7] = Cmd.chat.size();
-
-	// Write chat string to buffer
-	for (unsigned int i = 0; i < Cmd.chat.size(); i++)
-	{
-		c.push_back(Cmd.chat[i]);
-	}
-
-	return c;
+	return Cmd.Serialize();
 }
 
 // Decodes a player's data from a buffer and write to command
 void Player::NetToCmd(vector<unsigned char> v)
 {
-	// Safety check if not a least 8 bytes
-	if (v.size() < 8)
-		return;
-
 	// Deserialize the command
-	Cmd.quit = v[0] & 128;
-	Cmd.fire = v[0] & 64;
-	Cmd.id = v[0] & 63;
-
-	Cmd.forward = v[1];
-	Cmd.lateral = v[2];
-
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-	Cmd.rotation = v[4];
-	Cmd.rotation <<= 8;
-	Cmd.rotation |= v[3];
-
-	Cmd.vertical = v[6];
-	Cmd.vertical <<= 8;
-	Cmd.vertical |= v[5];
-#else
-	Cmd.rotation = v[3];
-	Cmd.rotation <<= 8;
-	Cmd.rotation |= v[4];
-
-	Cmd.vertical = v[5];
-	Cmd.vertical <<= 8;
-	Cmd.vertical |= v[6];
-#endif
-
-	// Empty the chat sting inside the command
-	Cmd.chat.clear();
-
-	// Write the chat string to the command
-	for (unsigned int i = 0; i < v[7] && i < 36; i++)
-	{
-		Cmd.chat.push_back(v[i + 8]);
-	}
+	Cmd.Deserialize(v);
 }
 
 void Player::ExecuteTick()

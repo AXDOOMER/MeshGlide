@@ -21,15 +21,13 @@
 #define TICK_H
 
 #include <string>
+#include <vector>
 
 using namespace std;
 
 class Tick
 {
 public:
-	Tick();
-	void Reset();
-
 	unsigned char id;
 	signed char forward;
 	signed char lateral;
@@ -38,6 +36,12 @@ public:
 	bool fire;
 	bool quit;
 	string chat;
+
+	Tick();
+	void Reset();
+
+	vector<unsigned char> Serialize() const;
+	void Deserialize(vector<unsigned char> v);
 };
 
 #endif /* TICK_H */
