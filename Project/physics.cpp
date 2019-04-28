@@ -316,12 +316,12 @@ void Hitscan(Level* lvl, Player* play, const vector<Player*>& players)
 	{
 		if (play != players[i])
 		{
-			// Compute distance to where the player should be if hit
+			// Compute a target point using the distance at which the player should be in order to be hit
 			float distance = sqrt(pow(play->PosX() - players[i]->PosX(), 2) + pow(play->PosY() - players[i]->PosY(), 2));
 			float targetX = play->PosX() + distance * cos(play->GetRadianAngle(play->Angle));
 			float targetY = play->PosY() + distance * sin(play->GetRadianAngle(play->Angle));
 
-			// Distance to the point where the player should be to be hit
+			// Is the target point within the player's radius?
 			float distanceHit = sqrt(pow(targetX - players[i]->PosX(), 2) + pow(targetY - players[i]->PosY(), 2));
 
 			if (distanceHit < players[i]->Radius())
