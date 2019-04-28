@@ -56,7 +56,7 @@ int main(int argc, const char *argv[])
 	auto GameStartTime = chrono::system_clock::now();
 	extern GameWindow view;
 	Network network;
-	int numOfPlayers = 1;
+	int numOfPlayers = 3;
 	int frameSkip = 0;
 
 	cout << "                MESHGLIDE ENGINE -- " << VERSION << "\n\n";

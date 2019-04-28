@@ -28,6 +28,8 @@
 #include <utility>		/* pair */
 #include <algorithm>	/* find, sort */
 
+#include <iostream>
+
 using namespace std;
 
 // Cap a value between a min and a max
@@ -264,6 +266,7 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 	}
 }
 
+// NOTE: Function is huge and ugly. Could be improved.
 void Hitscan(Level* lvl, Player* play, const vector<Player*>& players)
 {
 	vector<pair<Float3, Plane*>> points;
@@ -273,7 +276,7 @@ void Hitscan(Level* lvl, Player* play, const vector<Player*>& players)
 		// Get the point where the player is looking at and throw a ray
 		//http://www.opengl-tutorial.org/beginners-tutorials/tutorial-6-keyboard-and-mouse/
 		Float3 aim = {play->AimX(), play->AimY(), play->AimZ()};
-		Float3 f = RayIntersect(aim, {play->PosX(), play->PosY(), play->PosZ() + play->ViewZ}, lvl->planes[i]->normal, lvl->planes[i]->centroid);
+		Float3 f = RayIntersect(aim, {play->PosX(), play->PosY(), play->CamZ()}, lvl->planes[i]->normal, lvl->planes[i]->centroid);
 
 		if (f.z != numeric_limits<float>::quiet_NaN())
 		{
@@ -298,14 +301,19 @@ void Hitscan(Level* lvl, Player* play, const vector<Player*>& players)
 		return pow(play->PosX() - a.first.x, 2) + pow(play->PosY() - a.first.y, 2) < pow(play->PosX() - b.first.x, 2) + pow(play->PosY() - b.first.y, 2);
 	});
 
+	float wallDist = numeric_limits<float>::max();
+
 	if (points.size() > 0)
 	{
-		Float3 dir = {points[0].first.x - play->PosX(), points[0].first.y - play->PosY(), points[0].first.z - play->CamZ()};
-		dir = subVectors(dir, scaleVector(0.1f, normalize(dir)));	// The puff must not touch the wall
-		//dir = addVectors(dir, scaleVector(0.1f, points[0].second->normal));	// TODO: Use this later when every normal will point inside the level
-//		lvl->things.push_back(new Puff({play->PosX() + dir.x, play->PosY() + dir.y, play->CamZ() + dir.z}));
+		// A wall is hit. Set how far it is.
+		wallDist = sqrt(pow(points[0].first.x - play->PosX(), 2) + pow(points[0].first.y - play->PosY(), 2) + pow(points[0].first.z - play->PosZ(), 2));
 	}
 
+	Player* hit = nullptr;
+	float hitDist = 0;
+	Float3 target;
+
+	// Check for players that are hit.
 	for (unsigned int i = 0; i < players.size(); i++)
 	{
 		if (play != players[i])
@@ -320,19 +328,48 @@ void Hitscan(Level* lvl, Player* play, const vector<Player*>& players)
 
 			if (distanceHit < players[i]->Radius())
 			{
-				float distance3D = sqrt(pow(play->PosX() - players[i]->PosX(), 2) + pow(play->PosY() - players[i]->PosY(), 2) + pow(play->PosZ() - players[i]->PosZ(), 2));
-				float targetZ = play->CamZ() + distance3D * play->AimZ();
+				float targetZ = play->CamZ() + distance * tan(play->VerticalAim);
 
-//				if (targetZ >= players[i]->PosZ() && targetZ <= players[i]->PosZ() + players[i]->Height())
+				if (targetZ >= players[i]->PosZ() && targetZ <= players[i]->PosZ() + players[i]->Height())
 				{
-					lvl->things.push_back(new Puff(
-						targetX /*+ players[i]->Radius() * cos(play->GetRadianAngle(play->Angle))*/,
-						targetY /*+ players[i]->Radius() * sin(play->GetRadianAngle(play->Angle))*/,
-						targetZ/*,
-						players[i]->PosZ()*/));
+					if (hit == nullptr)
+					{
+						// The first time a hit is found
+						hit = players[i];
+						hitDist = sqrt(pow(play->PosX() - hit->PosX(), 2) + pow(play->PosY() - hit->PosY(), 2));
+						target = {targetX, targetY, targetZ};
+					}
+					else
+					{
+						// Check if the current hit is closer than the new possible one
+						if (sqrt(pow(play->PosX() - hit->PosX(), 2) + pow(play->PosY() - hit->PosY(), 2)) > distance)
+						{
+							// Found a closer hit
+							hit = players[i];
+							hitDist = sqrt(pow(play->PosX() - hit->PosX(), 2) + pow(play->PosY() - hit->PosY(), 2));
+							target = {targetX, targetY, targetZ};
+						}
+					}
 				}
 			}
 		}
+	}
+
+	if (points.size() > 0 && (hit == nullptr || wallDist < hitDist))
+	{
+		Float3 dir = {points[0].first.x - play->PosX(), points[0].first.y - play->PosY(), points[0].first.z - play->CamZ()};
+		dir = subVectors(dir, scaleVector(0.1f, normalize(dir)));	// The puff must not touch the wall
+		//dir = addVectors(dir, scaleVector(0.1f, points[0].second->normal));	// TODO: Use this later when every normal will point inside the level
+		lvl->things.push_back(new Puff(play->PosX() + dir.x, play->PosY() + dir.y, play->CamZ() + dir.z));
+	}
+	else if (hit)
+	{
+		// Spawn blood. Move it a bit forward so it always appears in front of the sprite when the target is still.
+		lvl->things.push_back(new Blood(
+			target.x + 0.1f * cos(play->GetRadianAngle(play->Angle) + M_PI),
+			target.y + 0.1f * sin(play->GetRadianAngle(play->Angle) + M_PI),
+			target.z,
+			hit->PosZ()));
 	}
 }
 

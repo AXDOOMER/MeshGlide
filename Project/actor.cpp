@@ -191,13 +191,13 @@ float Blood::PosY() const
 
 float Blood::PosZ() const
 {
-	if (Age_ < 10)
-		return pos_.z/* - 0.10f*/;
+	if (Age_ < 8)
+		return pos_.z - 0.10f;
 
-	if (Age_ < 20)
-		return pos_.z /*- 0.05f*/;
+	if (Age_ < 14)
+		return pos_.z - 0.17f;
 
-	return pos_.z /*- 0.05f*/;// - 0.10f + ((float)(Age_ - 8) * 0.02f);
+	return pos_.z - 0.21;
 }
 
 float Blood::Radius() const
@@ -212,10 +212,10 @@ float Blood::Height() const
 
 Texture* Blood::GetSprite(Float3 /*CamPos*/) const
 {
-	if (Age_ < 10)
+	if (Age_ < 8)
 		return Cache::Instance()->Get(sprites_[0]);
 
-	if (Age_ < 20)
+	if (Age_ < 14)
 		return Cache::Instance()->Get(sprites_[1]);
 
 	return Cache::Instance()->Get(sprites_[2]);
@@ -223,13 +223,10 @@ Texture* Blood::GetSprite(Float3 /*CamPos*/) const
 
 bool Blood::Update()
 {
-	MomZ_++;
+	MomZ_ += GRAVITY * 0.05f;
 	Age_++;
 
-	//pos_.z -= MomZ_;
-
-	if (Age_ > 30)
-		return false;
+	pos_.z -= MomZ_;
 
 	if (pos_.z >= GroundZ_)
 		return true;
