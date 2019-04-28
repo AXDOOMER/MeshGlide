@@ -43,7 +43,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.54 (dev)";
+	const char* const VERSION = "0.55 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -56,7 +56,7 @@ int main(int argc, const char *argv[])
 	auto GameStartTime = chrono::system_clock::now();
 	extern GameWindow view;
 	Network network;
-	int numOfPlayers = 3;
+	int numOfPlayers = 1;
 	int frameSkip = 0;
 
 	cout << "                MESHGLIDE ENGINE -- " << VERSION << "\n\n";

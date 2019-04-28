@@ -323,7 +323,7 @@ void Hitscan(Level* lvl, Player* play, const vector<Player*>& players)
 			float targetX = play->PosX() + distance * cos(play->GetRadianAngle(play->Angle));
 			float targetY = play->PosY() + distance * sin(play->GetRadianAngle(play->Angle));
 
-			// Distance to point where the player should be to be hit
+			// Distance to the point where the player should be to be hit
 			float distanceHit = sqrt(pow(targetX - players[i]->PosX(), 2) + pow(targetY - players[i]->PosY(), 2));
 
 			if (distanceHit < players[i]->Radius())
@@ -332,23 +332,14 @@ void Hitscan(Level* lvl, Player* play, const vector<Player*>& players)
 
 				if (targetZ >= players[i]->PosZ() && targetZ <= players[i]->PosZ() + players[i]->Height())
 				{
-					if (hit == nullptr)
+					// If there's no previous hit, set it right away.
+					// Else, check if the new hit is closer than the previous one.
+					if (hit == nullptr || distance < sqrt(pow(play->PosX() - hit->PosX(), 2) + pow(play->PosY() - hit->PosY(), 2)))
 					{
-						// The first time a hit is found
+						// Found a closer hit
 						hit = players[i];
 						hitDist = sqrt(pow(play->PosX() - hit->PosX(), 2) + pow(play->PosY() - hit->PosY(), 2));
 						target = {targetX, targetY, targetZ};
-					}
-					else
-					{
-						// Check if the current hit is closer than the new possible one
-						if (sqrt(pow(play->PosX() - hit->PosX(), 2) + pow(play->PosY() - hit->PosY(), 2)) > distance)
-						{
-							// Found a closer hit
-							hit = players[i];
-							hitDist = sqrt(pow(play->PosX() - hit->PosX(), 2) + pow(play->PosY() - hit->PosY(), 2));
-							target = {targetX, targetY, targetZ};
-						}
 					}
 				}
 			}
@@ -364,7 +355,7 @@ void Hitscan(Level* lvl, Player* play, const vector<Player*>& players)
 	}
 	else if (hit)
 	{
-		// Spawn blood. Move it a bit forward so it always appears in front of the sprite when the target is still.
+		// Spawn blood on the targeted player. Move the blood a bit forward so it always appears in front of the sprite when the target is still.
 		lvl->things.push_back(new Blood(
 			target.x + 0.1f * cos(play->GetRadianAngle(play->Angle) + M_PI),
 			target.y + 0.1f * sin(play->GetRadianAngle(play->Angle) + M_PI),
