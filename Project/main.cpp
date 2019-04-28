@@ -43,7 +43,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.54 (dev)";
+	const char* const VERSION = "0.55 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -405,7 +405,7 @@ int main(int argc, const char *argv[])
 			// Handle fire here to avoid circular inclusion/dependecy with 'Level' in the Player class
 			if (CurrentLevel->players[i]->ShouldFire)
 			{
-				Hitscan(CurrentLevel, CurrentLevel->players[i]);
+				Hitscan(CurrentLevel, CurrentLevel->players[i], CurrentLevel->players);
 				CurrentLevel->players[i]->ShouldFire = false;
 			}
 		}

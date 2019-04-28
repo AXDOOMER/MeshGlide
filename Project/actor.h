@@ -93,7 +93,7 @@ class Puff: public Actor
 {
 public:
 	Puff(float x, float y, float z);
-	~Puff();	// Deletes the sprite
+	~Puff();
 
 	float PosX() const;
 	float PosY() const;
@@ -110,5 +110,29 @@ public:
 	Texture* GetSprite(Float3 CamPos) const;
 	bool Update();
 };
+
+class Blood: public Actor
+{
+public:
+	Blood(float x, float y, float z, float groundz);
+	~Blood();
+
+	float PosX() const;
+	float PosY() const;
+	float PosZ() const;
+	float Radius() const;
+	float Height() const;
+
+	string Type;
+	int Age_;
+	float GroundZ_;
+	float MomZ_;
+
+	// Sprite names
+	const vector<string> sprites_ = {"bluda0.png", "bludb0.png", "bludc0.png"};
+	Texture* GetSprite(Float3 CamPos) const;
+	bool Update();
+};
+
 
 #endif /* ACTOR_H */

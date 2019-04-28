@@ -38,7 +38,7 @@ bool NewPositionIsValid(const Player* play, const Level* lvl);
 Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player* play, const Level* lvl);
 
 // Hitscan
-void Hitscan(Level* lvl, Player* play);
+void Hitscan(Level* lvl, Player* play, const vector<Player*>& players);
 
 // Collision detection with player radius and collision response
 Float3 PushTargetOutOfPoint(const Float3& target, const Float3& point, const float p_rad);
