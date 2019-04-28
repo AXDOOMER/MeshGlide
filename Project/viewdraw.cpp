@@ -38,7 +38,7 @@ using namespace std;
 
 GameWindow view;
 
-void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void Key_Callback(GLFWwindow* window, int key, int /*scancode*/, int action, int /*mods*/)
 {
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
@@ -136,13 +136,13 @@ bool KeyPressed(int key)
 	return 0;
 }
 
-void Char_Callback(GLFWwindow* window, unsigned int codepoint)
+void Char_Callback(GLFWwindow* /*window*/, unsigned int codepoint)
 {
 	if (view.chatMode && codepoint >= ' ' && codepoint <= '~' && view.chatStr.size() < 36)
 		view.chatStr += static_cast<unsigned char>(codepoint);
 }
 
-void WindowResize_Callback(GLFWwindow* window, int width, int height)
+void WindowResize_Callback(GLFWwindow* /*window*/, int width, int height)
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -171,7 +171,7 @@ void WindowResize_Callback(GLFWwindow* window, int width, int height)
 	}
 }
 
-void Error_Callback(int error, const char* description)
+void Error_Callback(int /*error*/, const char* description)
 {
 	cerr << description << endl;
 }
