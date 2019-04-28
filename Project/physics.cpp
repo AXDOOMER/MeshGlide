@@ -264,7 +264,7 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 	}
 }
 
-void Hitscan(Level* lvl, Player* play)
+void Hitscan(Level* lvl, Player* play, const vector<Player*>& players)
 {
 	vector<pair<Float3, Plane*>> points;
 
@@ -303,7 +303,36 @@ void Hitscan(Level* lvl, Player* play)
 		Float3 dir = {points[0].first.x - play->PosX(), points[0].first.y - play->PosY(), points[0].first.z - play->CamZ()};
 		dir = subVectors(dir, scaleVector(0.1f, normalize(dir)));	// The puff must not touch the wall
 		//dir = addVectors(dir, scaleVector(0.1f, points[0].second->normal));	// TODO: Use this later when every normal will point inside the level
-		lvl->things.push_back(new Puff({play->PosX() + dir.x, play->PosY() + dir.y, play->CamZ() + dir.z}));
+//		lvl->things.push_back(new Puff({play->PosX() + dir.x, play->PosY() + dir.y, play->CamZ() + dir.z}));
+	}
+
+	for (unsigned int i = 0; i < players.size(); i++)
+	{
+		if (play != players[i])
+		{
+			// Compute distance to where the player should be if hit
+			float distance = sqrt(pow(play->PosX() - players[i]->PosX(), 2) + pow(play->PosY() - players[i]->PosY(), 2));
+			float targetX = play->PosX() + distance * cos(play->GetRadianAngle(play->Angle));
+			float targetY = play->PosY() + distance * sin(play->GetRadianAngle(play->Angle));
+
+			// Distance to point where the player should be to be hit
+			float distanceHit = sqrt(pow(targetX - players[i]->PosX(), 2) + pow(targetY - players[i]->PosY(), 2));
+
+			if (distanceHit < players[i]->Radius())
+			{
+				float distance3D = sqrt(pow(play->PosX() - players[i]->PosX(), 2) + pow(play->PosY() - players[i]->PosY(), 2) + pow(play->PosZ() - players[i]->PosZ(), 2));
+				float targetZ = play->CamZ() + distance3D * play->AimZ();
+
+//				if (targetZ >= players[i]->PosZ() && targetZ <= players[i]->PosZ() + players[i]->Height())
+				{
+					lvl->things.push_back(new Puff(
+						targetX /*+ players[i]->Radius() * cos(play->GetRadianAngle(play->Angle))*/,
+						targetY /*+ players[i]->Radius() * sin(play->GetRadianAngle(play->Angle))*/,
+						targetZ/*,
+						players[i]->PosZ()*/));
+				}
+			}
+		}
 	}
 }
 

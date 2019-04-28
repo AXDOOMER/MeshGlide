@@ -156,3 +156,83 @@ bool Puff::Update()
 
 	return false;
 }
+
+// Blood
+Blood::Blood(float x, float y, float z, float groundz)
+{
+	pos_.x = x;
+	pos_.y = y;
+	pos_.z = z;
+	GroundZ_ = groundz;
+
+	for (unsigned int i = 0; i < sprites_.size(); i++)
+	{
+		Cache::Instance()->Add(sprites_[i], false);
+	}
+
+	Age_ = 0;
+	MomZ_ = 0;
+}
+
+Blood::~Blood()
+{
+	// Empty
+}
+
+float Blood::PosX() const
+{
+	return pos_.x;
+}
+
+float Blood::PosY() const
+{
+	return pos_.y;
+}
+
+float Blood::PosZ() const
+{
+	if (Age_ < 10)
+		return pos_.z/* - 0.10f*/;
+
+	if (Age_ < 20)
+		return pos_.z /*- 0.05f*/;
+
+	return pos_.z /*- 0.05f*/;// - 0.10f + ((float)(Age_ - 8) * 0.02f);
+}
+
+float Blood::Radius() const
+{
+	return GetSprite({0,0,0})->Width() / 64.0f;
+}
+
+float Blood::Height() const
+{
+	return GetSprite({0,0,0})->Height() * 2.0f / 64.0f;
+}
+
+Texture* Blood::GetSprite(Float3 /*CamPos*/) const
+{
+	if (Age_ < 10)
+		return Cache::Instance()->Get(sprites_[0]);
+
+	if (Age_ < 20)
+		return Cache::Instance()->Get(sprites_[1]);
+
+	return Cache::Instance()->Get(sprites_[2]);
+}
+
+bool Blood::Update()
+{
+	MomZ_++;
+	Age_++;
+
+	//pos_.z -= MomZ_;
+
+	if (Age_ > 30)
+		return false;
+
+	if (pos_.z >= GroundZ_)
+		return true;
+
+	return false;
+}
