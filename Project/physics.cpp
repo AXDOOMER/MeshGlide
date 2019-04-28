@@ -28,8 +28,6 @@
 #include <utility>		/* pair */
 #include <algorithm>	/* find, sort */
 
-#include <iostream>
-
 using namespace std;
 
 // Cap a value between a min and a max
