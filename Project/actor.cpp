@@ -192,7 +192,7 @@ float Blood::PosY() const
 float Blood::PosZ() const
 {
 	if (Age_ < 8)
-		return pos_.z - 0.10f;
+		return pos_.z - 0.10f;	// NOTE: Devide the sprite's height by 64 and it should give the same result
 
 	if (Age_ < 14)
 		return pos_.z - 0.17f;
