@@ -280,9 +280,16 @@ void RenderText(Level* lvl, string text, float x, float y, float sx, float sy)
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);	// Reset the texture colorization to be neutral
 
-	for (unsigned int p = 0; p < text.size(); p++)
+	for (unsigned int p = 0, pl = 0; p < text.size(); p++, pl++)
 	{
 		unsigned char letter = text[p];
+
+		if (letter == '\n')
+		{
+			y -= 0.10f;
+			pl = -1;		// Restart the rendering of text at the left margin of the screen
+			continue;
+		}
 
 		if (letter >= '!' && letter <= '~')
 		{
@@ -291,7 +298,7 @@ void RenderText(Level* lvl, string text, float x, float y, float sx, float sy)
 			// Shift the texture coordinates over the texture to show different letters
 			const float dim = 1056.0f / 96.0f / 1036.0f;	// ~ 0.0106235521236f
 			float shift = dim * letter;
-			float pos = p * sx;
+			float pos = pl * sx;
 
 			glPushMatrix();
 				glBegin(GL_QUADS);

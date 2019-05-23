@@ -54,7 +54,7 @@ struct GameWindow
 	// For on-screen messages
 	string message;
 	unsigned int timer = 0;
-	const unsigned int MESSAGE_TIME = 60 * 5;
+	const unsigned int MESSAGE_TIME = 5 * 60;	// ticks
 
 	// Array for keypresses. The first 31 items are never changed because they have no corresponding key. This wastes a bit of memory.
 	// Use the key handling functions to manipulate.
