@@ -32,7 +32,7 @@ Network::Network()
 	id_ = 0;
 	sock_ = nullptr;
 	context_ = nullptr;
-	error_ = false;
+	error_ = 0;
 }
 
 Network::~Network()
@@ -57,7 +57,8 @@ unsigned int Network::myPlayer()
 
 bool Network::error() const
 {
-	return error_;
+	// error_ is a count. If there are errors, this number is positive and non-zero.
+	return error_ > 0;
 }
 
 string Network::errmsg() const
@@ -73,12 +74,19 @@ void Network::send(const vector<unsigned char>& message)
 	try
 	{
 		sock_->send(request);
+
+		// Decrease error count
+		error_--;
 	}
 	catch (zmq::error_t const& err)
 	{
-		cerr << "Network send error. Timed out while waiting for peer." << endl;
+		if (!error())
+		{
+			// Only print the error a single time
+			cerr << "Network send error. Timed out while waiting for peer." << endl;
+		}
 		errmsg_ = "Waiting for network connection...";
-		error_ = true;
+		error_ = 2;
 	}
 }
 
@@ -89,12 +97,19 @@ vector<unsigned char> Network::receive()
 	try
 	{
 		sock_->recv(&message);
+
+		// Decrease error count
+		error_--;
 	}
 	catch (zmq::error_t const& err)
 	{
-		cerr << "Network receive error. Timed out while waiting for peer." << endl;
+		if (!error())
+		{
+			// Only print the error a single time
+			cerr << "Network receive error. Timed out while waiting for peer." << endl;
+		}
 		errmsg_ = "Waiting for network connection...";
-		error_ = true;
+		error_ = 2;
 	}
 
 	vector<unsigned char> v(message.size());

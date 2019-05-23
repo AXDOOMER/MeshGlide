@@ -29,7 +29,7 @@ private:
 	socket_t* sock_;
 	context_t* context_;
 	unsigned int id_;		// For 2 players, 0-1
-	bool error_;
+	int error_;
 	string errmsg_;
 
 public:
