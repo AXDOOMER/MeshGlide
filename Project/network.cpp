@@ -60,6 +60,11 @@ bool Network::error() const
 	return error_;
 }
 
+string Network::errmsg() const
+{
+	return errmsg_;
+}
+
 void Network::send(const vector<unsigned char>& message)
 {
 	message_t request(message.size());
@@ -72,6 +77,7 @@ void Network::send(const vector<unsigned char>& message)
 	catch (zmq::error_t const& err)
 	{
 		cerr << "Network send error. Timed out while waiting for peer." << endl;
+		errmsg_ = "Waiting for network connection...";
 		error_ = true;
 	}
 }
@@ -87,6 +93,7 @@ vector<unsigned char> Network::receive()
 	catch (zmq::error_t const& err)
 	{
 		cerr << "Network receive error. Timed out while waiting for peer." << endl;
+		errmsg_ = "Waiting for network connection...";
 		error_ = true;
 	}
 

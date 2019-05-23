@@ -272,6 +272,13 @@ int main(int argc, const char *argv[])
 			// Send commands over network and receive commands
 			if (network.enabled())
 			{
+				// Show network error message (except if another message is already shown)
+				if (network.error() && view.timer <= 0)
+				{
+					view.message = network.errmsg();
+					view.timer = 1;
+				}
+
 				if (network.myPlayer() == 0)
 				{
 					if (view.chatSend)
@@ -318,12 +325,6 @@ int main(int argc, const char *argv[])
 				else
 				{
 					cerr << "Something is wrong: Player ID is not 0 or 1." << endl;
-					Quit = true;
-				}
-
-				// Quit on errors
-				if (network.error())
-				{
 					Quit = true;
 				}
 			}
