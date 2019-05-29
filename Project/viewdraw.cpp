@@ -552,10 +552,9 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int Frame
 	RenderText(lvl, regex_replace(to_string((float)FrameDelay / 1000) + " ms", regex("0+(?=\\s)\\b"), ""), -0.9f, 0.8f, 0.05f, 0.15f);
 	if (view.chatMode)
 		RenderText(lvl, view.chatStr + '_', -0.9f, 0.6f, 0.05f, 0.15f);	// Chat text
-	if (view.message.size() > 0 && view.timer > 0)
+	if (view.message.size() > 0 && view.timer > SDL_GetTicks())
 	{
 		RenderText(lvl, view.message, -0.9f, 0.3f, 0.05f, 0.15f);	// Message
-		view.timer--;
 	}
 
 	DrawCursor(lvl);
@@ -567,6 +566,12 @@ void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int Frame
 
 	// Swap the front and back buffers
 	glfwSwapBuffers(window);
+}
+
+void ShowMessage(GameWindow& view, const string& message, const int time)
+{
+	view.message = message;
+	view.timer = SDL_GetTicks() + time;
 }
 
 void Close_OpenGL(GLFWwindow* window)

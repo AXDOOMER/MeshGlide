@@ -43,7 +43,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.56 (dev)";
+	const char* const VERSION = "0.57 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -272,13 +272,6 @@ int main(int argc, const char *argv[])
 			// Send commands over network and receive commands
 			if (network.enabled())
 			{
-				// Show network error message (except if another message is already shown)
-				if (network.error() && view.timer <= 0)
-				{
-					view.message = network.errmsg();
-					view.timer = 1;
-				}
-
 				if (network.myPlayer() == 0)
 				{
 					if (view.chatSend)
@@ -296,8 +289,7 @@ int main(int argc, const char *argv[])
 
 					if (CurrentLevel->players[1]->Cmd.chat.size() > 0)
 					{
-						view.message = CurrentLevel->players[1]->Cmd.chat;
-						view.timer = view.MESSAGE_TIME;
+						ShowMessage(view, CurrentLevel->players[1]->Cmd.chat);
 					}
 
 				}
@@ -318,13 +310,18 @@ int main(int argc, const char *argv[])
 
 					if (CurrentLevel->players[0]->Cmd.chat.size() > 0)
 					{
-						view.message = CurrentLevel->players[0]->Cmd.chat;
-						view.timer = view.MESSAGE_TIME;
+						ShowMessage(view, CurrentLevel->players[0]->Cmd.chat);
 					}
 				}
 				else
 				{
 					cerr << "Something is wrong: Player ID is not 0 or 1." << endl;
+					Quit = true;
+				}
+
+				// Quit on errors
+				if (network.error())
+				{
 					Quit = true;
 				}
 			}
@@ -347,75 +344,71 @@ int main(int argc, const char *argv[])
 
 		updateSpecials(CurrentLevel->play, CurrentLevel->players);
 
-		// The entities in the game must not be updated in the network is stalling
-		if (!network.error())
+		// Update game logic
+		for (unsigned int i = 0; i < CurrentLevel->players.size(); i++)
 		{
-			// Update game logic
-			for (unsigned int i = 0; i < CurrentLevel->players.size(); i++)
+			// Save player's position and the execute the tic command
+			Float3 pt = CurrentLevel->players[i]->pos_;
+			CurrentLevel->players[i]->ExecuteTick();
+
+			// Collision detection with floors and walls
+			if (!NewPositionIsValid(CurrentLevel->players[i], CurrentLevel))
 			{
-				// Save player's position and the execute the tic command
-				Float3 pt = CurrentLevel->players[i]->pos_;
-				CurrentLevel->players[i]->ExecuteTick();
+				// Compute the position where the player would be if he slide against the wall
+				Float2 pos = MoveOnCollision(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i], CurrentLevel);
 
-				// Collision detection with floors and walls
-				if (!NewPositionIsValid(CurrentLevel->players[i], CurrentLevel))
+				// Move the player back to its original position
+				CurrentLevel->players[i]->pos_ = pt;
+
+				// Try to slide the player against the walls to a valid position
+				if (NewPositionIsValid(CurrentLevel->players[i], CurrentLevel))
 				{
-					// Compute the position where the player would be if he slide against the wall
-					Float2 pos = MoveOnCollision(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i], CurrentLevel);
-
-					// Move the player back to its original position
-					CurrentLevel->players[i]->pos_ = pt;
-
-					// Try to slide the player against the walls to a valid position
-					if (NewPositionIsValid(CurrentLevel->players[i], CurrentLevel))
+					// Make sure the walls didn't push the player inside other players
+					if (!PlayerToPlayersCollision(CurrentLevel->players[i], CurrentLevel->players))
 					{
-						// Make sure the walls didn't push the player inside other players
-						if (!PlayerToPlayersCollision(CurrentLevel->players[i], CurrentLevel->players))
+						// Set the new position
+						CurrentLevel->players[i]->pos_.x = pos.x;
+						CurrentLevel->players[i]->pos_.y = pos.y;
+					}
+					else
+					{
+						CurrentLevel->players[i]->pos_ = pt;
+					}
+				}
+			}
+
+			// Player to player collision check
+			if (PlayerToPlayersCollision(CurrentLevel->players[i], CurrentLevel->players))
+			{
+				for (unsigned int j = 0; j < CurrentLevel->players.size(); j++)
+				{
+					if (CurrentLevel->players[i] != CurrentLevel->players[j])
+					{
+						// Execute Player to player collision
+						CurrentLevel->players[i]->pos_ = PlayerToPlayerCollisionReact(CurrentLevel->players[i], CurrentLevel->players[j]);
+						// Check if there's a collision between players
+						if (PlayerToPlayerCollision(CurrentLevel->players[i], CurrentLevel->players[j]) ||
+							!NewPositionIsValid(CurrentLevel->players[i], CurrentLevel))
 						{
-							// Set the new position
-							CurrentLevel->players[i]->pos_.x = pos.x;
-							CurrentLevel->players[i]->pos_.y = pos.y;
-						}
-						else
-						{
+							// Restore original position
 							CurrentLevel->players[i]->pos_ = pt;
 						}
 					}
 				}
-
-				// Player to player collision check
-				if (PlayerToPlayersCollision(CurrentLevel->players[i], CurrentLevel->players))
-				{
-					for (unsigned int j = 0; j < CurrentLevel->players.size(); j++)
-					{
-						if (CurrentLevel->players[i] != CurrentLevel->players[j])
-						{
-							// Execute Player to player collision
-							CurrentLevel->players[i]->pos_ = PlayerToPlayerCollisionReact(CurrentLevel->players[i], CurrentLevel->players[j]);
-							// Check if there's a collision between players
-							if (PlayerToPlayerCollision(CurrentLevel->players[i], CurrentLevel->players[j]) ||
-								!NewPositionIsValid(CurrentLevel->players[i], CurrentLevel))
-							{
-								// Restore original position
-								CurrentLevel->players[i]->pos_ = pt;
-							}
-						}
-					}
-				}
-
-				// Adjust height
-				AdjustPlayerToFloor(CurrentLevel->players[i], CurrentLevel);
-
-				// Handle fire here to avoid circular inclusion/dependecy with 'Level' in the Player class
-				if (CurrentLevel->players[i]->ShouldFire)
-				{
-					Hitscan(CurrentLevel, CurrentLevel->players[i], CurrentLevel->players);
-					CurrentLevel->players[i]->ShouldFire = false;
-				}
 			}
 
-			CurrentLevel->UpdateThings();
+			// Adjust height
+			AdjustPlayerToFloor(CurrentLevel->players[i], CurrentLevel);
+
+			// Handle fire here to avoid circular inclusion/dependecy with 'Level' in the Player class
+			if (CurrentLevel->players[i]->ShouldFire)
+			{
+				Hitscan(CurrentLevel, CurrentLevel->players[i], CurrentLevel->players);
+				CurrentLevel->players[i]->ShouldFire = false;
+			}
 		}
+
+		CurrentLevel->UpdateThings();
 
 		// Draw Screen
 		if (frameSkip == 0 || TicCount % frameSkip == 0)

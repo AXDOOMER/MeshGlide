@@ -29,19 +29,17 @@ private:
 	socket_t* sock_;
 	context_t* context_;
 	unsigned int id_;		// For 2 players, 0-1
-	int error_;
-	string errmsg_;
+	bool error_;
 
 public:
 	Network();
 	~Network();
 
-	const int TIMEOUT = 0.2 * 1000;	// ms
+	const int TIMEOUT = 10 * 1000;	// ms
 
 	bool enabled();
 	unsigned int myPlayer();
 	bool error() const;
-	string errmsg() const;
 
 	// Used when sharing tic commands
 	void send(const vector<unsigned char>& message);

@@ -54,7 +54,7 @@ struct GameWindow
 	// For on-screen messages
 	string message;
 	unsigned int timer = 0;
-	const unsigned int MESSAGE_TIME = 5 * 60;	// ticks
+	static const unsigned int MESSAGE_TIME = 5 * 1000;	// ms
 
 	// Array for keypresses. The first 31 items are never changed because they have no corresponding key. This wastes a bit of memory.
 	// Use the key handling functions to manipulate.
@@ -78,6 +78,8 @@ void InitProjection(GLFWwindow* window);
 void DrawScreen(GLFWwindow* window, Player* play, Level* lvl, unsigned int FrameDelay);
 
 void Close_OpenGL(GLFWwindow* window);
+
+void ShowMessage(GameWindow& view, const string& message, const int time = GameWindow::MESSAGE_TIME);
 
 #endif /* VIEWDRAW_H */
 
