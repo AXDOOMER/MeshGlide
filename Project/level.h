@@ -71,8 +71,11 @@ private:
 	string levelname_;
 	string lastTextureBind = "";
 	bool reloaded_ = false;
-	void BuildBlockmap();
 	bool useUVs_ = false;
+
+	void LinkPlanes(const string& LevelName);
+	void FinalPlaneProcessing();
+	void CountCommonEdgesPlanes(Plane* p1, Plane* p2);
 };
 
 #endif // LEVEL_H

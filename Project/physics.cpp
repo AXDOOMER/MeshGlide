@@ -16,8 +16,7 @@
 // physics.cpp
 // What affects a thing's movement in space (collision detection and response)
 
-#include "player.h"
-#include "plane.h"
+#include "actor.h"
 #include "vecmath.h"	/* Float3 */
 #include "physics.h"
 #include "line.h"
@@ -30,75 +29,28 @@
 
 using namespace std;
 
-// Cap a value between a min and a max
-float CapHeight(float point, float min, float max)
-{
-	if (point > max)
-		return max;
-	if (point < min)
-		return min;
-	return point;
-}
-
-// Test if the player is inside the polygon or touching one of its edges
-bool TouchesPlane(const Player* play, const Plane* p)
-{
-	// Is the player inside the polygon?
-	if (pointInPolyXY(play->PosX(), play->PosY(), p->Vertices))
-		return true;
-
-	// Is the player touching one of the polygon's edges?
-	for (unsigned int i = 0, j = p->Vertices.size() - 1; i < p->Vertices.size(); j = i++)
-		if (lineCircle(p->Vertices[i].x, p->Vertices[i].y, p->Vertices[j].x, p->Vertices[j].y,play->PosX(), play->PosY(), play->Radius()))
-			return true;
-
-	return false;
-}
-
-// Get every plane toucehd by a player
-vector<Plane*> TouchedPlanes(const Player* play, const Level* lvl)
-{
-	vector<Plane*> touched;
-
-	// List of potential planes that can be touched. Others were discarded.
-	vector<Plane*> potential = lvl->getPlanesForBox(play->pos_.x, play->pos_.y, play->Radius());
-
-	// Make a the list of planes that were toucehd
-	for (unsigned int i = 0; i < potential.size(); i++)
-		if (TouchesPlane(play, potential[i]))		// Player touches the polygon
-			touched.push_back(potential[i]);
-
-	return touched;
-}
+const float WALL_ANGLE = 0.4f;	// '1' points up (floor) and '0' points to the side (wall)
 
 // Collision detection with floors
 bool AdjustPlayerToFloor(Player* play, Level* lvl)
 {
 	float NewHeight = numeric_limits<float>::lowest();
-	bool ChangeHeight = false;	// Note: Making this true will allow the player to fall in the void
-
-	vector<Plane*> touched = TouchedPlanes(play, lvl);
-
-	for (unsigned int i = 0; i < touched.size(); i++)
+	bool ChangeHeight = false;
+	for (unsigned int i = 0; i < lvl->planes.size(); i++)
 	{
-		float FloorHeight = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), touched[i]->normal, touched[i]->centroid);
-
-		if (!isnan(FloorHeight))
+		if (pointInPolyXY(play->PosX(), play->PosY(), lvl->planes[i]->Vertices))
 		{
-			FloorHeight = CapHeight(FloorHeight, touched[i]->Min(), touched[i]->Max());	// Used to better handle slopes
-
-			if (FloorHeight > NewHeight)
+			float collision_point_z = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), lvl->planes[i]->normal, lvl->planes[i]->centroid);
+			if (!isnan(collision_point_z) && collision_point_z > NewHeight)
 			{
-				if (FloorHeight <= play->PosZ() + play->MaxStep)
+				if (collision_point_z <= play->PosZ() + play->MaxStep)
 				{
-					NewHeight = FloorHeight;
+					NewHeight = collision_point_z;
 					ChangeHeight = true;
 				}
 			}
 		}
 	}
-
-	// Applies the gravity
 	if (ChangeHeight)
 	{
 		if (play->PosZ() <= NewHeight + GRAVITY)
@@ -116,35 +68,143 @@ bool AdjustPlayerToFloor(Player* play, Level* lvl)
 	return ChangeHeight;
 }
 
-// Must be used for wall segments (planes that block the player's movement) above or below the player
-bool BlocksPlayer(const Player* play, float min, float max)
+void ApplyGravity(Player* play)
 {
-	if (play->PosZ() + play->MaxStep >= max || play->PosZ() + play->Height() <= min)
-		return false;
-
-	return true;
+	float FloorHeight = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), play->plane->normal, play->plane->centroid);
+	if (!isnan(FloorHeight))
+	{
+		if (play->PosZ() <= FloorHeight + GRAVITY)
+		{
+			play->pos_.z = FloorHeight;
+			play->AirTime = 0;
+		}
+		else
+		{
+			play->pos_.z -= GRAVITY * 0.1f * play->AirTime;
+			play->AirTime++;
+		}
+	}
 }
 
-// Returns true of the player touches obstructing walls
-bool PlayerTouchesWalls(const Player* play, const vector<Plane*>& touched)
+vector<Plane*> FindPlanesForPlayer(Player* play, Level* lvl)
 {
-	for (unsigned int i = 0; i < touched.size(); i++)
-		if (!touched[i]->CanWalk() && BlocksPlayer(play, touched[i]->Min(), touched[i]->Max()))
+	vector<Plane*> planes;
+
+	for (unsigned int i = 0; i < lvl->planes.size(); i++)
+	{
+		if (pointInPolyXY(play->PosX(), play->PosY(), lvl->planes[i]->Vertices))
+		{
+			planes.push_back(lvl->planes[i]);
+		}
+	}
+
+	return planes;
+}
+
+Plane* GetPlaneForPlayer(Player* play, Level* lvl)
+{
+	vector<Plane*> planes = FindPlanesForPlayer(play, lvl);
+	vector<pair<Plane*, float>> HeightOnPlanes;
+	float HighestUnderPlayer = numeric_limits<float>::lowest();
+
+	// Find the height of the player on every planes
+	for (unsigned int i = 0; i < planes.size(); i++)
+	{
+		float Height = PointHeightOnPoly(play->PosX(), play->PosY(), play->PosZ(), planes[i]->normal, planes[i]->centroid);
+		HeightOnPlanes.push_back(make_pair(planes[i], Height));
+
+		// This results in the player being put on the highest floor
+		if (Height > HighestUnderPlayer && Height <= play->PosZ())
+		{
+			HighestUnderPlayer = Height;
+		}
+	}
+
+	// Return the plane where the player is
+	for (unsigned int i = 0; i < HeightOnPlanes.size(); i++)
+	{
+		if (HeightOnPlanes[i].second == HighestUnderPlayer)
+			return HeightOnPlanes[i].first;
+	}
+
+	return nullptr;	// Need to return something
+}
+
+// Travel through planes which were intersected until it finds the one where the point is inside.
+// The last parameter determines if it's going to return the last touched polygon or
+// if it returns 'null' when the target point ends up in the void (is an invalid position).
+Plane* TraceOnPolygons(const Float3& origin, const Float3& target, Plane* plane, bool last)
+{
+	vector<Plane*> tested = {plane};		// List of polys that are already checked
+
+	for (unsigned int i = 0; i < tested[tested.size() - 1]->Neighbors.size(); i++)
+	{
+		Plane* p = tested[tested.size() - 1]->Neighbors[i];
+
+		// Skip to the next adjacent plane if this one was already checked
+		if (find(tested.rbegin(), tested.rend(), p) != tested.rend())
+			continue;
+
+		// Do not walk on walls
+		if (!p->CanWalk())
+			continue;
+
+		if (pointInPolyXY(target.x, target.y, p->Vertices))
+			return p;
+
+		// Scan each polygon edge to see if the vector is crossing
+		for (unsigned int j = 0; j < p->Vertices.size(); j++)
+		{
+			if (CheckVectorIntersection(origin, target, p->Vertices[j], p->Vertices[(j+1) % p->Vertices.size()]))
+			{
+				tested.push_back(p);
+				i = -1;		// Reset outer loop
+				break;
+			}
+		}
+	}
+
+	// Return the last touched polygon instead of the "void" if requested.
+	if (last)
+		return tested[tested.size() - 1];
+
+	return nullptr;
+}
+
+// Test if the player is inside the polygon or touching one of its edges
+bool TouchPlane(const Player* play, const Plane* p)
+{
+	// Is the player inside the polygon?
+	if (pointInPolyXY(play->PosX(), play->PosY(), p->Vertices))
+		return true;
+
+	// Is the player touching an edge of the polygon?
+	for (unsigned int i = 0; i < p->Edges.size(); i++)
+		if (lineCircle(p->Edges[i].a.x, p->Edges[i].a.y, p->Edges[i].b.x, p->Edges[i].b.y,play->PosX(), play->PosY(), play->Radius()))
 			return true;
 
 	return false;
 }
 
-// Returns a list of obstructing walls
-vector<Plane*> PlayerTouchedWallsList(const Player* play, const vector<Plane*>& touched)
+// Test if the player is touching a plane and find the neighbors to that plane
+void TouchingPlanes(const Player* play, Plane* p, vector<Plane*>& Tested)
 {
-	vector<Plane*> obstructors;
+	// Player touches the polygon
+	if (TouchPlane(play, p))
+	{
+		if (p->CanWalk())
+			Tested.push_back(p);
+		else
+			return;
 
-	for (unsigned int i = 0; i < touched.size(); i++)
-		if (!touched[i]->CanWalk() && BlocksPlayer(play, touched[i]->Min(), touched[i]->Max()))
-			obstructors.push_back(touched[i]);
-
-	return obstructors;
+		// Try its neighbors
+		for (unsigned int i = 0; i < p->Neighbors.size(); i++)
+		{
+			// Only test if not previously tested
+			if (find(Tested.begin(), Tested.end(), p->Neighbors[i]) == Tested.end())
+				TouchingPlanes(play, p->Neighbors[i], Tested);
+		}
+	}
 }
 
 Float2 MoveAlongAngle(const Float3& origin, const Float3& target, const float theAngle)
@@ -152,7 +212,7 @@ Float2 MoveAlongAngle(const Float3& origin, const Float3& target, const float th
 	// Get the angle that represents the direction of the player's movement
 	float moveAngle = atan2(origin.y - target.y, origin.x - target.x);
 
-	// Get the angle of the blocking wall
+	// Get the angle of the blocking wall (blocking edge of the polygon) of the target plane
 	float wallAngle = theAngle;
 
 	// Compute the difference between both angles
@@ -178,10 +238,77 @@ Float2 MoveAlongAngle(const Float3& origin, const Float3& target, const float th
 	return {Return.x, Return.y};
 }
 
-// The position is invalid if the player touches a wall
-bool NewPositionIsValid(const Player* play, const Level* lvl)
+// Check if the player (including his radius) is touching edges that may block him
+bool RadiusClearOfEdges(const Float3& target, const Player* play)
 {
-	return !PlayerTouchesWalls(play, TouchedPlanes(play, lvl));
+	// Check the planes that are touched
+	vector<Plane*> pTouched;
+	TouchingPlanes(play, play->plane, pTouched);
+
+	// Check for the edges that are touched
+	vector<Edge> edges;
+	for (unsigned int j = 0; j < pTouched.size(); j++)
+	{
+		for (unsigned int i = 0; i < pTouched[j]->Edges.size(); i++)
+		{
+			bool touch = lineCircle(pTouched[j]->Edges[i].a.x, pTouched[j]->Edges[i].a.y, 
+				pTouched[j]->Edges[i].b.x, pTouched[j]->Edges[i].b.y, target.x, target.y, play->Radius());
+
+			if (touch)
+			{
+				edges.push_back(pTouched[j]->Edges[i]);
+			}
+		}
+	}
+
+	for (int i = edges.size() - 1; i >= 0; i--)
+	{
+		// If the is not blocking, remove it.
+		if (edges[i].sides > 0)
+		{
+			edges.erase(edges.begin() + i);
+		}
+	}
+
+	// The player scrossed the edge of the polygon
+	if (edges.size() > 0)
+	{
+		// Intersection. Can't pass over there.
+		return true;
+	}
+
+	// No intersection
+	return false;
+}
+
+// TODO: Player should not be able to step on impassable planes.
+// Moves the player to a new position. Returns false if it failed.
+bool MovePlayerToNewPosition(const Float3& origin, Float3 target, Player* play)
+{
+	if (RadiusClearOfEdges(target, play))
+	{
+		return false;
+	}
+
+	if (pointInPolyXY(target.x, target.y, play->plane->Vertices))
+	{
+		// Player is in the same polygon
+		return true;
+	}
+	else // Player has moved to another polygon
+	{
+		Plane* p = TraceOnPolygons(origin, target, play->plane, false);
+
+		// Handle this case where the player could be standing in the void
+		if (p == nullptr)
+			return false;	// Player may still get stuck, but we avoid a crash.
+
+		play->plane = p;
+
+		return true;
+	}
+
+	return false;	// When "true", allows the player to move off the edge of a polygon that has no adjacing polygon
 }
 
 // Distance smaller than length (inside or touches)
@@ -190,78 +317,156 @@ bool CompareDistanceToLength(const float DiffX, const float DiffY, const float L
 	return pow(DiffX, 2) + pow(DiffY, 2) <= Length * Length;
 }
 
-Float2 SlideOnCollision(const Float3& origin, const Float3& target, const Plane* obstruction)
+float AngleOfFarthestIntersectedEdge(const Float3& origin, const Float3& target, Plane* plane)
 {
-	// Get the angle that represents the direction of the player's movement
-	float moveAngle = atan2(origin.y - target.y, origin.x - target.x);
+	// Used to find out the farthest collision point
+	float distance = 0.0f;
+	unsigned int index = numeric_limits<unsigned int>::max();
 
-	// Get the angle of the blocking wall
-	float wallAngle = obstruction->Angle();
+	// For each edge that has an intersection, get the distance from the origin to the intersection point
+	for (unsigned int i = 0; i < plane->Vertices.size(); i++)
+	{
+		if (CheckVectorIntersection(origin, target, plane->Vertices[i], plane->Vertices[(i+1) % plane->Vertices.size()]))
+		{
+			Float2 impact_point = CollisionPoint(origin, target, plane->Vertices[i], plane->Vertices[(i+1) % plane->Vertices.size()]);
+			float origin_to_impact = sqrt(pow(origin.x - impact_point.x, 2) + pow(origin.y - impact_point.y, 2));
+			if (origin_to_impact > distance)
+			{
+				distance = origin_to_impact;
+				index = i;
+			}
+		}
+	}
 
-	// Compute the difference between both angles
-	float newAngle = wallAngle - moveAngle;
+	if (index >= plane->Vertices.size())
+	{
+		// This will happen if this function is used with a vector (origin-->target) that doesn't touch the plane.
+		return numeric_limits<float>::quiet_NaN();
+	}
 
-	// Make the angle positive. This is to constrain the possible angle values between 0 and PI * 2.
-	if (newAngle < 0)
-		newAngle += M_PI * 2;
+	// Compute the angle for this edge of the polygon
+	float edgeAngle = atan2(plane->Vertices[index].y - plane->Vertices[(index+1) % plane->Vertices.size()].y,
+							plane->Vertices[index].x - plane->Vertices[(index+1) % plane->Vertices.size()].x);
 
-	// Check at which direction the player is going against the wall
-	if (newAngle < M_PI / 2 || newAngle > 3 * M_PI / 2)
-		wallAngle += M_PI;
-
-	// Compute the movement speed at that angle
-	float moveSpeed = sqrt(pow(origin.x - target.x, 2) + pow(origin.y - target.y, 2));
-	moveSpeed = moveSpeed * abs(cos(newAngle));
-
-	// Apply that new computer position so that the player appears to be moving along that wall
-	Float3 Return = origin;
-	Return.x += moveSpeed * cos(wallAngle);
-	Return.y += moveSpeed * sin(wallAngle);
-
-	return {Return.x, Return.y};
+	return edgeAngle;
 }
 
-// Push player out of walls if it's stuck
-Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player* play, const Level* lvl)
+// Push player out of point (extremity of a line)
+// TODO: Deduplicate code that's also found in "RadiusClearOfEdges()"
+// TODO: Reduce size. Function is big and complicated.
+Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player* play)
 {
-	// Check if the player is stuck
-	if (PlayerTouchesWalls(play, TouchedPlanes(play, lvl)))
+	// Get planes that are touched by the player
+	vector<Plane*> pTouched;
+	TouchingPlanes(play, play->plane, pTouched);
+
+	// Check the edges of polygons that are touched
+	vector<Edge> edges;
+	for (unsigned int j = 0; j < pTouched.size(); j++)
 	{
-		// Get the list of touched walls
-		vector<Plane*> touched = PlayerTouchedWallsList(play, TouchedPlanes(play, lvl));
-
-		Player* dummy = new Player();	// Used for simulations
-		dummy->pos_.z = play->pos_.z;	// The "dummy" must be at the same height as the player
-
-		// Try to move slide the player at least three times
-		for (unsigned int i = 0; i < touched.size() && i < 3; i++)
+		for (unsigned int i = 0; i < pTouched[j]->Edges.size(); i++)
 		{
-			Float2 myNewPos = SlideOnCollision(origin, target, touched[i]);
+			bool touch = lineCircle(pTouched[j]->Edges[i].a.x, pTouched[j]->Edges[i].a.y, 
+				pTouched[j]->Edges[i].b.x, pTouched[j]->Edges[i].b.y, target.x, target.y, play->Radius());
 
-			dummy->pos_.x = myNewPos.x;
-			dummy->pos_.y = myNewPos.y;
-
-			if (PlayerTouchesWalls(dummy, TouchedPlanes(dummy, lvl)))
+			if (touch)
 			{
-				// Didn't work, try again...
-				continue;
+				edges.push_back(pTouched[j]->Edges[i]);
 			}
-			else
+		}
+	}
+
+	// Erase edges that are not at least one-sided
+	for (int i = edges.size() - 1; i >= 0; i--)
+	{
+		if (edges[i].sides > 0)
+		{
+			edges.erase(edges.begin() + i);
+		}
+	}
+
+	// TODO: For list of possible edges, get the distance from them
+	// (perpendicular and from the start point and end point)
+	// Then find the closest edge and slide against it.
+
+	// The player crossed the edge of the polygon
+	if (edges.size() > 0)
+	{
+		vector<Edge> touching;
+		vector<Float2> points;
+		vector<Float2> pointsintersection;
+		Float3 newpoint = origin;
+
+		for (unsigned int i = 0; i < edges.size(); i++)
+		{
+			// Check for extremities
+			if (CompareDistanceToLength(edges[i].a.x - target.x, edges[i].a.y - target.y, play->Radius()))
 			{
-				// It worked. Return this new valid position.
-				return myNewPos;
+				points.push_back({edges[i].a.x, edges[i].a.y});
 			}
 
+			if (CompareDistanceToLength(edges[i].b.x - target.x, edges[i].b.y - target.y, play->Radius()))
+			{
+				points.push_back({edges[i].b.x, edges[i].b.y});
+			}
+
+			// Check along the line
+			float angle = (float)atan2(edges[i].a.y - edges[i].b.y, edges[i].a.x - edges[i].b.x);
+
+			// Get the orthogonal vector by adding 90 degrees to the angle.
+			float OrthPlayerStartX = target.x + (float) cos(angle + M_PI_2) * play->Radius();
+			float OrthPlayerStartY = target.y + (float) sin(angle + M_PI_2) * play->Radius();
+			float OrthPlayerEndX = target.x - (float) cos(angle + M_PI_2) * play->Radius();
+			float OrthPlayerEndY = target.y - (float) sin(angle + M_PI_2) * play->Radius();
+
+			if (CheckVectorIntersection(edges[i].a, edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}))
+			{
+				// Intersection
+				pointsintersection.push_back(CollisionPoint(edges[i].a, edges[i].b,
+					{OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}));
+				touching.push_back(edges[i]);
+			}
 		}
 
-		// It never worked. Return the original position.
-		return {origin.x, origin.y};
+		bool isWall = false;
+		float distance = numeric_limits<float>::max();
+
+		const float EPSILON = 0.05f;
+
+		for (unsigned int k = 0; k < points.size(); k++)
+		{
+			if (distance > sqrt( pow(points[k].x, 2) + pow(points[k].y, 2) ))
+			{
+				newpoint = PushTargetOutOfPoint(target, {points[k].x, points[k].y, 0}, play->Radius() + EPSILON);
+			}
+		}
+
+		Edge closest;
+
+		for (unsigned int k = 0; k < touching.size(); k++)
+		{
+			if (distance > sqrt( pow(pointsintersection[k].x, 2) + pow(pointsintersection[k].y, 2) ))
+			{
+				newpoint = PushTargetOutOfPoint(target, {pointsintersection[k].x, pointsintersection[k].y, 0}, play->Radius());
+				isWall = true;
+				closest = touching[k];
+			}
+		}
+
+		if (isWall)
+		{
+			float theAngle = (float)atan2(closest.a.y - closest.b.y, closest.a.x - closest.b.x);
+			return MoveAlongAngle(origin, target, theAngle);
+		}
+		else
+		{
+			// Intersection. Can't pass over there.
+			return {newpoint.x, newpoint.y};
+		}
 	}
-	else
-	{
-		// Nothing is blocking the player from moving to its target position
-		return {target.x, target.y};
-	}
+
+	// No intersection
+	return {origin.x, origin.y};
 }
 
 // NOTE: Function is huge and ugly. Could be improved.
@@ -418,7 +623,7 @@ bool PlayerToPlayerCollision(const Player* moved, const Player* other)
 	return false;
 }
 
-bool PlayerToPlayersCollision(const Player* source, const vector<Player*>& players)
+bool PlayerToPlayersCollision(const Player* source, const vector<Player*> players)
 {
 	for (unsigned int i = 0; i < players.size(); i++)
 	{
@@ -443,7 +648,7 @@ bool PlayerHeightCheck(const Player* moved, const Player* other)
 	return false;
 }
 
-vector<Player*> GetPlayersTouched(const Player* source, const vector<Player*>& players)
+vector<Player*> GetPlayersTouched(const Player* source, const vector<Player*> players)
 {
 	vector<Player*> list;
 

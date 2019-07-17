@@ -19,7 +19,7 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
-#include "player.h"	/* Player */
+#include "actor.h"	/* Player */
 #include "vecmath.h"	/* Float3 */
 #include "level.h"	/* Level */
 
@@ -29,13 +29,18 @@ using namespace std;
 // Collision detection with floors
 bool AdjustPlayerToFloor(Player* play, Level* lvl);
 
+void ApplyGravity(Player* play);
+
 // Distance smaller than length (inside or touches)
 bool CompareDistanceToLength(const float DiffX, const float DiffY, const float Length);
 
 // Moves the player to a new position. Returns false if it failed.
-bool NewPositionIsValid(const Player* play, const Level* lvl);
+bool MovePlayerToNewPosition(const Float3& origin, Float3 target, Player* play);
 
-Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player* play, const Level* lvl);
+// Get the plane where the player is standing
+Plane* GetPlaneForPlayer(Player* play, Level* lvl);
+
+Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player* play);
 
 // Hitscan
 void Hitscan(Level* lvl, Player* play, const vector<Player*>& players);
@@ -45,9 +50,10 @@ Float3 PushTargetOutOfPoint(const Float3& target, const Float3& point, const flo
 
 Float3 PlayerToPlayerCollisionReact(const Player* moved, const Player* other);
 bool PlayerToPlayerCollision(const Player* moved, const Player* other);
-bool PlayerToPlayersCollision(const Player* source, const vector<Player*>& players);
+bool PlayerToPlayersCollision(const Player* source, const vector<Player*> players);
 
-vector<Player*> GetPlayersTouched(const Player* source, const vector<Player*>& players);
+bool RadiusClearOfEdges(const Float3& target, const Player* play);
+vector<Player*> GetPlayersTouched(const Player* source, const vector<Player*> players);
 bool PlayerHeightCheck(const Player* moved, const Player* other);
 
 // Add a function that checks player height touches another (but based on occupied plane area)

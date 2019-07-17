@@ -43,7 +43,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-	const char* const VERSION = "0.57 (dev)";
+	const char* const VERSION = "0.58 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -221,6 +221,17 @@ int main(int argc, const char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	// Set the players to the floor's height and also set the plane where they are
+	for (unsigned int i = 0; i < CurrentLevel->players.size(); i++)
+	{
+		CurrentLevel->players[i]->plane = GetPlaneForPlayer(CurrentLevel->players[i], CurrentLevel);
+		if (CurrentLevel->players[i]->plane == nullptr)
+		{
+			cerr << "Player's spawn spot is outside of map." << endl;
+			exit(EXIT_FAILURE);
+		}
+	}
+
 	/****************************** SETUP PHASE ******************************/
 
 	CurrentLevel->play = CurrentLevel->players[network.myPlayer()];
@@ -352,16 +363,16 @@ int main(int argc, const char *argv[])
 			CurrentLevel->players[i]->ExecuteTick();
 
 			// Collision detection with floors and walls
-			if (!NewPositionIsValid(CurrentLevel->players[i], CurrentLevel))
+			if (!MovePlayerToNewPosition(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i]))
 			{
 				// Compute the position where the player would be if he slide against the wall
-				Float2 pos = MoveOnCollision(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i], CurrentLevel);
+				Float2 pos = MoveOnCollision(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i]);
 
 				// Move the player back to its original position
 				CurrentLevel->players[i]->pos_ = pt;
 
 				// Try to slide the player against the walls to a valid position
-				if (NewPositionIsValid(CurrentLevel->players[i], CurrentLevel))
+				if (MovePlayerToNewPosition(pt, {pos.x, pos.y, 0}, CurrentLevel->players[i]))
 				{
 					// Make sure the walls didn't push the player inside other players
 					if (!PlayerToPlayersCollision(CurrentLevel->players[i], CurrentLevel->players))
@@ -388,7 +399,7 @@ int main(int argc, const char *argv[])
 						CurrentLevel->players[i]->pos_ = PlayerToPlayerCollisionReact(CurrentLevel->players[i], CurrentLevel->players[j]);
 						// Check if there's a collision between players
 						if (PlayerToPlayerCollision(CurrentLevel->players[i], CurrentLevel->players[j]) ||
-							!NewPositionIsValid(CurrentLevel->players[i], CurrentLevel))
+							RadiusClearOfEdges(CurrentLevel->players[i]->pos_, CurrentLevel->players[i]))
 						{
 							// Restore original position
 							CurrentLevel->players[i]->pos_ = pt;
@@ -398,7 +409,8 @@ int main(int argc, const char *argv[])
 			}
 
 			// Adjust height
-			AdjustPlayerToFloor(CurrentLevel->players[i], CurrentLevel);
+			//AdjustPlayerToFloor(CurrentLevel->players[i], CurrentLevel);
+			ApplyGravity(CurrentLevel->players[i]);
 
 			// Handle fire here to avoid circular inclusion/dependecy with 'Level' in the Player class
 			if (CurrentLevel->players[i]->ShouldFire)

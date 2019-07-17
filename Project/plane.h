@@ -27,6 +27,15 @@
 
 using namespace std;
 
+struct Edge
+{
+	Float3 a;	// First
+	Float3 b;	// Second
+	short sides;
+	vector<Float3> Vertices;
+	float angle;
+};
+
 class Plane
 {
 public:
@@ -44,6 +53,7 @@ public:
 	Float3 normal;
 	Float3 centroid;
 	vector<Plane*> Neighbors;	// List of adjacent planes
+	vector<Edge> Edges;	// List of adjacent planes
 
 private:
 	Float3 max;		// Maximal coordinates
@@ -56,6 +66,7 @@ public:
 	float Angle() const;
 
 	void Process();		// Find centroid, find normal...
+	unsigned int CommonVertices(Plane* plane);
 
 	void SetBox();
 	bool InBox2D(float x, float y, float radius) const;

@@ -258,6 +258,9 @@ void Level::LoadNative(const string& LevelName, unsigned int numOfPlayers)
 		cout << "Read " << Count - 1 << " lines from file. " << endl;
 		LevelFile.close();
 
+		LinkPlanes(LevelName);
+		FinalPlaneProcessing();
+
 		// Check if no player was created
 		if (players.size() == 0)
 		{
@@ -434,6 +437,9 @@ void Level::LoadObj(const string& path, unsigned int numOfPlayers)
 			}
 		} // end of while loop
 
+		LinkPlanes(path);
+		FinalPlaneProcessing();
+
 		// Check if no player was created
 		if (players.size() == 0)
 		{
@@ -499,4 +505,105 @@ vector<Plane*> Level::getPlanesForBox(float x, float y, float radius) const
 	}
 
 	return boxplanes;
+}
+
+void Level::CountCommonEdgesPlanes(Plane* p1, Plane* p2)
+{
+	for (unsigned int i = 0; i < p1->Edges.size(); i++)
+	{
+		for (unsigned int j = 0; j < p2->Edges.size(); j++)
+		{
+			if ((p1->Edges[i].a == p2->Edges[j].a && p1->Edges[i].b == p2->Edges[j].b) ||
+				(p1->Edges[i].a == p2->Edges[j].b && p1->Edges[i].b == p2->Edges[j].a))
+			{
+				// Increment the edge count if it is considered an edge
+				if (!p2->CanWalk())
+					continue;
+				p1->Edges[i].sides++;
+			}
+		}
+	}
+}
+
+void Level::FinalPlaneProcessing()
+{
+	for (unsigned int i = 0; i < planes.size(); i++)
+	{
+		for (unsigned int j = 0; j < planes[i]->Neighbors.size(); j++)
+		{
+			// For each plane, we must update the edge count.
+			CountCommonEdgesPlanes(planes[i], planes[i]->Neighbors[j]);
+		}
+	}
+}
+
+void Level::LinkPlanes(const string& LevelName)
+{
+	ifstream ReadLinks;
+	ofstream WriteLinks;
+
+	ReadLinks.open(LevelName + ".lnb");
+
+	if (ReadLinks.is_open() && !reloaded_)
+	{
+		cout << "Found linked planes data file. Loading..." << endl;
+
+		string Line;
+		// Read the entire file until the end
+		while (!ReadLinks.eof())
+		{
+			getline(ReadLinks, Line);
+
+			vector<string> indices = Split(Line, ' ');
+
+			for (unsigned int i = 1; i < indices.size(); i++)
+			{
+				// TODO: Add range checks in case someone tinkered with the file
+				planes[atoi(indices[0].c_str())]->Neighbors.push_back(planes[atoi(indices[i].c_str())]);
+			}
+		}
+	}
+	else
+	{
+		WriteLinks.open(LevelName + ".lnb");
+
+		if (WriteLinks.is_open())
+		{
+			cout << "Linked planes data file not found. Generating..." << endl;
+
+			for (unsigned int i = 0; i < planes.size(); i++)
+			{
+				bool first = true;
+
+				// Find touching planes and add them
+				for (unsigned int j = 0; j < planes.size(); j++)
+				{
+					if (i != j)
+					{
+						// Find at least one common vertex
+						if (planes[i]->CommonVertices(planes[j]) >= 1)
+						{
+							if (first)
+							{
+								WriteLinks << i;
+								first = false;
+							}
+
+							planes[i]->Neighbors.push_back(planes[j]);
+
+							WriteLinks << " " << j;
+						}
+					}
+				}
+
+				if (!first)
+				{
+					WriteLinks << endl;
+				}
+			}
+		}
+	}
+
+	ReadLinks.close();
+	WriteLinks.close();
 }
