@@ -36,7 +36,7 @@ Texture::Texture(const string& Path, bool enableFiltering)
 
 	if (!Surface)
 	{
-		throw runtime_error("Error loading texture: " + Path + "\nCause: " + IMG_GetError());
+		throw runtime_error("Error loading texture '" + Path + "'\nCause: " + IMG_GetError());
 	}
 
 	Name_ = Path;
@@ -70,7 +70,7 @@ Texture::Texture(const string& Path, bool enableFiltering)
 	}
 	else
 	{
-		throw runtime_error("Texture " + Path + " has an unsupported number of bits per pixel: " + bits);
+		throw runtime_error("Texture " + Path + " has an unsupported number of bits per pixel (" + bits + " bpp)");
 	}
 
 	// Load the texture. The GL_BGR format should be used, but the bytes of the buffer have been flipped above.

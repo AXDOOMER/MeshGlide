@@ -278,8 +278,7 @@ void Level::LoadNative(const string& LevelName, unsigned int numOfPlayers)
 	}
 	else
 	{
-		cout << "Unable to open level file!" << endl;
-		throw runtime_error("Failure to open level: " + LevelName);
+		throw runtime_error("Unable to open level '" + LevelName + "'");
 	}
 }
 
@@ -485,7 +484,7 @@ void Level::LoadObj(const string& path, unsigned int numOfPlayers)
 	}
 	else
 	{
-		throw runtime_error("Failure to open level: " + path);
+		throw runtime_error("Unable to open level '" + path + "'");
 	}
 
 	model.close();

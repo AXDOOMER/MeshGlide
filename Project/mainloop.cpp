@@ -90,8 +90,7 @@ int mainloop(int argc, const char* argv[])
 		DemoRead.open(DemoName);
 		if (!DemoRead.is_open())
 		{
-			cout << "Could not open demo: " << DemoName << endl;
-			exit(EXIT_FAILURE);
+			throw runtime_error("Could not open demo '" + DemoName + "'");
 		}
 	}
 	else
@@ -106,8 +105,7 @@ int mainloop(int argc, const char* argv[])
 			DemoWrite.open(DemoName);
 			if (!DemoWrite.is_open())
 			{
-				cout << "Could not open demo file to write to: " << DemoName << endl;
-				exit(EXIT_FAILURE);
+				throw runtime_error("Could not open file '" + DemoName + "' to write");
 			}
 		}
 	}
@@ -201,8 +199,7 @@ int mainloop(int argc, const char* argv[])
 
 	if (!window)
 	{
-		cout << "Could not create OpenGL window!" << endl;
-		exit(EXIT_FAILURE);
+		throw runtime_error("Could not create OpenGL window!");
 	}
 
 	if (FindArgumentPosition(argc, argv, "-wireframe") > 0)
@@ -217,8 +214,7 @@ int mainloop(int argc, const char* argv[])
 
 	if (!CurrentLevel || CurrentLevel->planes.size() == 0)
 	{
-		cerr << "Failed to load level '" << LevelName << "'" << endl;
-		exit(EXIT_FAILURE);
+		throw runtime_error("Failed to load level '" + LevelName + "'");
 	}
 
 	/****************************** SETUP PHASE ******************************/
@@ -315,8 +311,7 @@ int mainloop(int argc, const char* argv[])
 				}
 				else
 				{
-					cerr << "Something is wrong: Player ID is not 0 or 1." << endl;
-					Quit = true;
+					throw runtime_error("Something is wrong: Player ID is not 0 or 1.");
 				}
 
 				// Quit on errors

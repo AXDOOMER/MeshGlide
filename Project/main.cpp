@@ -21,8 +21,8 @@
 #include <SDL2/SDL.h>
 
 #include <iostream>
-#include <stdexcept>
-#include <cstdlib>
+#include <stdexcept>		/* SDL_ShowSimpleMessageBox */
+#include <cstdlib>		/* EXIT_FAILURE, EXIT_SUCCESS */
 
 using namespace std;
 
@@ -36,15 +36,10 @@ int main(int argc, const char* argv[])
 	{
 		cerr << "Fatal error: " << e.what() << endl;
 
-		int i = SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
 			"Fatal error",
 			e.what(),
 			NULL);
-
-		if (i != 0)
-		{
-			cerr << "Failed to spawn message window: " << SDL_GetError() << endl;
-		}
 
 		return EXIT_FAILURE;
 	}
