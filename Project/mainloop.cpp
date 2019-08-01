@@ -43,7 +43,7 @@ using namespace std;
 
 int mainloop(int argc, const char* argv[])
 {
-	const char* const VERSION = "0.57 (dev)";
+	const char* const VERSION = "0.58 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;

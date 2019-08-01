@@ -29,7 +29,6 @@ private:
 	socket_t* sock_;
 	context_t* context_;
 	unsigned int id_;		// For 2 players, 0-1
-	bool error_;
 
 public:
 	Network();
@@ -39,7 +38,6 @@ public:
 
 	bool enabled();
 	unsigned int myPlayer();
-	bool error() const;
 
 	// Used when sharing tic commands
 	void send(const vector<unsigned char>& message);
