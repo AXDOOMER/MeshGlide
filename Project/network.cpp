@@ -21,6 +21,7 @@
 #include <iostream>	// cout
 #include <vector>
 #include <cstring>	// memcpy
+#include <stdexcept>
 
 #include "network.h"
 
@@ -32,7 +33,6 @@ Network::Network()
 	id_ = 0;
 	sock_ = nullptr;
 	context_ = nullptr;
-	error_ = false;
 }
 
 Network::~Network()
@@ -55,11 +55,6 @@ unsigned int Network::myPlayer()
 	return id_;
 }
 
-bool Network::error() const
-{
-	return error_;
-}
-
 void Network::send(const vector<unsigned char>& message)
 {
 	message_t request(message.size());
@@ -71,8 +66,7 @@ void Network::send(const vector<unsigned char>& message)
 	}
 	catch (zmq::error_t const& err)
 	{
-		error_ = true;
-		cerr << "Network send error. Timed out while waiting for peer." << endl;
+		throw runtime_error("Network send error. Timed out while waiting for peer.");
 	}
 }
 
@@ -86,8 +80,7 @@ vector<unsigned char> Network::receive()
 	}
 	catch (zmq::error_t const& err)
 	{
-		error_ = true;
-		cerr << "Network receive error. Timed out while waiting for peer." << endl;
+		throw runtime_error("Network receive error. Timed out while waiting for peer.");
 	}
 
 	vector<unsigned char> v(message.size());

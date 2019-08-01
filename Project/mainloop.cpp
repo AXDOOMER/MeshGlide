@@ -313,12 +313,6 @@ int mainloop(int argc, const char* argv[])
 				{
 					throw runtime_error("Something is wrong: Player ID is not 0 or 1.");
 				}
-
-				// Quit on errors
-				if (network.error())
-				{
-					Quit = true;
-				}
 			}
 			else
 			{

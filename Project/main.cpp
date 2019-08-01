@@ -18,10 +18,10 @@
 
 #include "mainloop.h"
 
-#include <SDL2/SDL.h>
+#include <SDL2/SDL.h>		/* SDL_ShowSimpleMessageBox */
 
 #include <iostream>
-#include <stdexcept>		/* SDL_ShowSimpleMessageBox */
+#include <stdexcept>
 #include <cstdlib>		/* EXIT_FAILURE, EXIT_SUCCESS */
 
 using namespace std;
