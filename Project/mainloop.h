@@ -13,39 +13,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// main.cpp
-// Call the function that contains the main loop. Catch any exceptions.
+// mainloop.cpp
+// The main stuff is here, like the game loop and initialization.
 
-#include "mainloop.h"
+#ifndef MAINLOOP_H
+#define MAINLOOP_H
 
-#include <SDL2/SDL.h>
+int mainloop(int argc, const char* argv[]);
 
-#include <iostream>
-#include <stdexcept>
-#include <cstdlib>
-
-using namespace std;
-
-int main(int argc, const char* argv[])
-{
-	try
-	{
-		return mainloop(argc, argv);
-	}
-	catch (const exception& e)
-	{
-		cerr << "Fatal error: " << e.what() << endl;
-
-		int i = SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
-			"Fatal error",
-			e.what(),
-			NULL);
-
-		if (i != 0)
-		{
-			cerr << "Failed to spawn message window: " << SDL_GetError() << endl;
-		}
-
-		return EXIT_FAILURE;
-	}
-}
+#endif	// MAINLOOP_H

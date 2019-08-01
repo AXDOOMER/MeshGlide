@@ -26,6 +26,7 @@
 #include <iostream>
 #include <utility>	/* swap */
 #include <algorithm>	/* transform */
+#include <stdexcept>
 using namespace std;
 
 Texture::Texture(const string& Path, bool enableFiltering)

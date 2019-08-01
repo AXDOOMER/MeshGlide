@@ -33,6 +33,7 @@
 #include <sstream>	/* istringstream */
 #include <iterator>	/* istream_iterator */
 #include <chrono>
+#include <stdexcept>
 using namespace std;
 
 Level::Level(const string& level, float scaling, unsigned int numOfPlayers)
@@ -278,6 +279,7 @@ void Level::LoadNative(const string& LevelName, unsigned int numOfPlayers)
 	else
 	{
 		cout << "Unable to open level file!" << endl;
+		throw runtime_error("Failure to open level: " + LevelName);
 	}
 }
 
@@ -480,6 +482,10 @@ void Level::LoadObj(const string& path, unsigned int numOfPlayers)
 				planes.erase(planes.begin() + i);
 			}
 		}
+	}
+	else
+	{
+		throw runtime_error("Failure to open level: " + path);
 	}
 
 	model.close();
