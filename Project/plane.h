@@ -27,13 +27,14 @@
 
 using namespace std;
 
+// Edges are barriers used to compute the collision detection and collision response
 struct Edge
 {
 	Float3 a;	// First
 	Float3 b;	// Second
 	short sides;
 //	vector<Float3> Vertices;
-	float angle;
+//	float angle;
 };
 
 class Plane

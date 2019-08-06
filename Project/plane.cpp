@@ -36,14 +36,14 @@ void Plane::Process()
 	{
 		vector<Float3> Points;
 
-		float angle1ji = atan2(Vertices[i].y - Vertices[j].y, Vertices[i].x - Vertices[j].x);
+		// If the same result is returned for both angles, it means that the vertices are above each other.
+		float a1 = atan2(Vertices[i].y - Vertices[j].y, Vertices[i].x - Vertices[j].x);
+		float a2 = atan2(Vertices[j].y - Vertices[i].y, Vertices[j].x - Vertices[i].x);
 
-		float angle2ij = atan2(Vertices[j].y - Vertices[i].y, Vertices[j].x - Vertices[i].x);
-
-		// If an edge is completly vertical, then skip it.
-		if (angle1ji != angle2ij)
+		// If an edge is completly vertical, skip it.
+		if (a1 != a2)
 		{
-			Edges.push_back({Vertices[i], Vertices[j], 0, /*Points,*/ angle1ji});
+			Edges.push_back({Vertices[i], Vertices[j], 0, /*Points, angle1*/});
 		}
 	}
 }

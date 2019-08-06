@@ -535,6 +535,20 @@ void Level::FinalPlaneProcessing()
 			CountCommonEdgesPlanes(planes[i], planes[i]->Neighbors[j]);
 		}
 	}
+
+	// For each plane
+/*	for (unsigned int i = 0; i < planes.size(); i++)
+	{
+		// For each edge of a plane
+		for (int j = planes[i]->Edges.size() - 1; j >= 0 ; j--)
+		{
+			// Remove if it doesn't block
+			if (planes[i]->Edges[j].sides > 0)
+			{
+				planes[i]->Edges.erase(planes[i]->Edges.begin() + j);
+			}
+		}
+	}*/
 }
 
 void Level::LinkPlanes(const string& LevelName)

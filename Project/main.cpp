@@ -60,6 +60,8 @@ int main(int argc, const char *argv[])
 	int frameSkip = 0;
 
 	cout << "                MESHGLIDE ENGINE -- " << VERSION << "\n\n";
+	cout << "Copyright (C) 2014-2019 Alexandre-Xavier Labonté-Lamoureux" << endl;
+	cout << "Copyright (C) 2015 Jeff Thompson" << endl << endl;
 
 	/****************************** SYSTEM OPTIONS ******************************/
 
