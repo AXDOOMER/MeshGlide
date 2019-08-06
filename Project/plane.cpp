@@ -43,7 +43,7 @@ void Plane::Process()
 		// If an edge is completly vertical, then skip it.
 		if (angle1ji != angle2ij)
 		{
-			Edges.push_back({Vertices[i], Vertices[j], 0, Points, angle1ji});
+			Edges.push_back({Vertices[i], Vertices[j], 0, /*Points,*/ angle1ji});
 		}
 	}
 }
