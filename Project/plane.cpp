@@ -29,7 +29,23 @@ void Plane::Process()
 {
 	normal = ComputeNormal(Vertices);
 	centroid = ComputeAverage(Vertices);
-	SetBox();
+	SetBox();	// TODO: Useless
+
+	// Create edges
+	for (unsigned int i = 0, j = Vertices.size() - 1; i < Vertices.size(); j = i++)
+	{
+		vector<Float3> Points;
+
+		float angle1ji = atan2(Vertices[i].y - Vertices[j].y, Vertices[i].x - Vertices[j].x);
+
+		float angle2ij = atan2(Vertices[j].y - Vertices[i].y, Vertices[j].x - Vertices[i].x);
+
+		// If an edge is completly vertical, then skip it.
+		if (angle1ji != angle2ij)
+		{
+			Edges.push_back({Vertices[i], Vertices[j], 0, Points, angle1ji});
+		}
+	}
 }
 
 // Used to compare two planes by counting the amount of common vertices
