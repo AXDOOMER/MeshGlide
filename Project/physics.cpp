@@ -316,26 +316,17 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 
 	// Check the edges of polygons that are touched
 	vector<Edge> edges;
-	for (unsigned int j = 0; j < pTouched.size(); j++)
+	for (unsigned int i = 0; i < pTouched.size(); i++)
 	{
-		for (unsigned int i = 0; i < pTouched[j]->Edges.size(); i++)
+		for (unsigned int j = 0; j < pTouched[i]->Edges.size(); j++)
 		{
-			bool touch = lineCircle(pTouched[j]->Edges[i].a.x, pTouched[j]->Edges[i].a.y, 
-				pTouched[j]->Edges[i].b.x, pTouched[j]->Edges[i].b.y, target.x, target.y, play->Radius());
+			bool touch = lineCircle(pTouched[i]->Edges[j].a.x, pTouched[i]->Edges[j].a.y, 
+				pTouched[i]->Edges[j].b.x, pTouched[i]->Edges[j].b.y, target.x, target.y, play->Radius());
 
-			if (touch)
+			if (touch && pTouched[i]->Edges[j].sides == 0)
 			{
-				edges.push_back(pTouched[j]->Edges[i]);
+				edges.push_back(pTouched[i]->Edges[j]);
 			}
-		}
-	}
-
-	// Erase edges that are not at least one-sided
-	for (int i = edges.size() - 1; i >= 0; i--)
-	{
-		if (edges[i].sides > 0)
-		{
-			edges.erase(edges.begin() + i);
 		}
 	}
 
@@ -378,6 +369,7 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 				// Intersection
 				pointsintersection.push_back(CollisionPoint(edges[i].a, edges[i].b,
 					{OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}));
+
 				touching.push_back(edges[i]);
 			}
 		}
