@@ -271,11 +271,13 @@ bool RadiusClearOfEdges(const Float3& target, const Player* play)
 // Moves the player to a new position. Returns false if it failed.
 bool MovePlayerToNewPosition(const Float3& origin, Float3 target, Player* play)
 {
+	// This position is blocked by a wall
 	if (RadiusClearOfEdges(target, play))
 	{
 		return false;
 	}
 
+	// There is no wall in the way and the player is still in the same polygon as before
 	if (pointInPolyXY(target.x, target.y, play->plane->Vertices))
 	{
 		// Player is in the same polygon
@@ -301,40 +303,6 @@ bool MovePlayerToNewPosition(const Float3& origin, Float3 target, Player* play)
 bool CompareDistanceToLength(const float DiffX, const float DiffY, const float Length)
 {
 	return pow(DiffX, 2) + pow(DiffY, 2) <= Length * Length;
-}
-
-float AngleOfFarthestIntersectedEdge(const Float3& origin, const Float3& target, Plane* plane)
-{
-	// Used to find out the farthest collision point
-	float distance = 0.0f;
-	unsigned int index = numeric_limits<unsigned int>::max();
-
-	// For each edge that has an intersection, get the distance from the origin to the intersection point
-	for (unsigned int i = 0; i < plane->Vertices.size(); i++)
-	{
-		if (CheckVectorIntersection(origin, target, plane->Vertices[i], plane->Vertices[(i+1) % plane->Vertices.size()]))
-		{
-			Float2 impact_point = CollisionPoint(origin, target, plane->Vertices[i], plane->Vertices[(i+1) % plane->Vertices.size()]);
-			float origin_to_impact = sqrt(pow(origin.x - impact_point.x, 2) + pow(origin.y - impact_point.y, 2));
-			if (origin_to_impact > distance)
-			{
-				distance = origin_to_impact;
-				index = i;
-			}
-		}
-	}
-
-	if (index >= plane->Vertices.size())
-	{
-		// This will happen if this function is used with a vector (origin-->target) that doesn't touch the plane.
-		return numeric_limits<float>::quiet_NaN();
-	}
-
-	// Compute the angle for this edge of the polygon
-	float edgeAngle = atan2(plane->Vertices[index].y - plane->Vertices[(index+1) % plane->Vertices.size()].y,
-							plane->Vertices[index].x - plane->Vertices[(index+1) % plane->Vertices.size()].x);
-
-	return edgeAngle;
 }
 
 // Push player out of point (extremity of a line)
