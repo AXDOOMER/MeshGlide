@@ -246,38 +246,24 @@ bool RadiusClearOfEdges(const Float3& target, const Player* play)
 	TouchingPlanes(play, play->plane, pTouched);
 
 	// Check for the edges that are touched
-	vector<Edge> edges;
-	for (unsigned int j = 0; j < pTouched.size(); j++)
+	for (unsigned int i = 0; i < pTouched.size(); i++)
 	{
-		for (unsigned int i = 0; i < pTouched[j]->Edges.size(); i++)
+		for (unsigned int j = 0; j < pTouched[i]->Edges.size(); j++)
 		{
-			bool touch = lineCircle(pTouched[j]->Edges[i].a.x, pTouched[j]->Edges[i].a.y, 
-				pTouched[j]->Edges[i].b.x, pTouched[j]->Edges[i].b.y, target.x, target.y, play->Radius());
+			// Is the player touching this edge?
+			bool touch = lineCircle(pTouched[i]->Edges[j].a.x, pTouched[i]->Edges[j].a.y,
+				pTouched[i]->Edges[j].b.x, pTouched[i]->Edges[j].b.y, target.x, target.y, play->Radius());
 
-			if (touch)
+			// A blocking edge must have nothing on the other side
+			if (touch && pTouched[i]->Edges[j].sides == 0)
 			{
-				edges.push_back(pTouched[j]->Edges[i]);
+				// The player crosses the edge of a polygon that can't be traversed
+				return true;
 			}
 		}
 	}
 
-	for (int i = edges.size() - 1; i >= 0; i--)
-	{
-		// If the is not blocking, remove it.
-		if (edges[i].sides > 0)
-		{
-			edges.erase(edges.begin() + i);
-		}
-	}
-
-	// The player scrossed the edge of the polygon
-	if (edges.size() > 0)
-	{
-		// Intersection. Can't pass over there.
-		return true;
-	}
-
-	// No intersection
+	// No intersection between player and a blocking edge
 	return false;
 }
 
