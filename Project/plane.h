@@ -30,11 +30,10 @@ using namespace std;
 // Edges are barriers used to compute the collision detection and collision response
 struct Edge
 {
-	Float3 a;	// First
-	Float3 b;	// Second
-	short sides;
-//	vector<Float3> Vertices;
-//	float angle;
+	Float3 a;	// First point
+	Float3 b;	// Second point
+	float angle;
+	bool blocking;	// Blocks the player
 };
 
 class Plane
@@ -54,7 +53,10 @@ public:
 	Float3 normal;
 	Float3 centroid;
 	vector<Plane*> Neighbors;	// List of adjacent planes
-	vector<Edge> Edges;	// List of adjacent planes
+
+	// Edges are great because they help with collision detection. It makes it
+	// easy to find out if the player touches a polygon with his radius.
+	vector<Edge> Edges;
 
 private:
 	Float3 max;		// Maximal coordinates

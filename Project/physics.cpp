@@ -187,6 +187,7 @@ bool TouchPlane(const Player* play, const Plane* p)
 }
 
 // Test if the player is touching a plane and find the neighbors to that plane
+// NOTE: Recursive and may hit the stack limit on levels with complex geometry
 void TouchingPlanes(const Player* play, Plane* p, vector<Plane*>& Tested)
 {
 	// Player touches the polygon
@@ -255,7 +256,7 @@ bool RadiusClearOfEdges(const Float3& target, const Player* play)
 				pTouched[i]->Edges[j].b.x, pTouched[i]->Edges[j].b.y, target.x, target.y, play->Radius());
 
 			// A blocking edge must have nothing on the other side
-			if (touch && pTouched[i]->Edges[j].sides == 0)
+			if (touch && pTouched[i]->Edges[j].blocking == true)
 			{
 				// The player crosses the edge of a polygon that can't be traversed
 				return true;
@@ -323,7 +324,7 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 			bool touch = lineCircle(pTouched[i]->Edges[j].a.x, pTouched[i]->Edges[j].a.y, 
 				pTouched[i]->Edges[j].b.x, pTouched[i]->Edges[j].b.y, target.x, target.y, play->Radius());
 
-			if (touch && pTouched[i]->Edges[j].sides == 0)
+			if (touch && pTouched[i]->Edges[j].blocking == true)
 			{
 				edges.push_back(pTouched[i]->Edges[j]);
 			}
@@ -355,14 +356,11 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 				points.push_back({edges[i].b.x, edges[i].b.y});
 			}
 
-			// Check along the line
-			float angle = (float)atan2(edges[i].a.y - edges[i].b.y, edges[i].a.x - edges[i].b.x);
-
 			// Get the orthogonal vector by adding 90 degrees to the angle.
-			float OrthPlayerStartX = target.x + (float) cos(angle + M_PI_2) * play->Radius();
-			float OrthPlayerStartY = target.y + (float) sin(angle + M_PI_2) * play->Radius();
-			float OrthPlayerEndX = target.x - (float) cos(angle + M_PI_2) * play->Radius();
-			float OrthPlayerEndY = target.y - (float) sin(angle + M_PI_2) * play->Radius();
+			float OrthPlayerStartX = target.x + (float) cos(edges[i].angle + M_PI_2) * play->Radius();
+			float OrthPlayerStartY = target.y + (float) sin(edges[i].angle + M_PI_2) * play->Radius();
+			float OrthPlayerEndX = target.x - (float) cos(edges[i].angle + M_PI_2) * play->Radius();
+			float OrthPlayerEndY = target.y - (float) sin(edges[i].angle + M_PI_2) * play->Radius();
 
 			if (CheckVectorIntersection(edges[i].a, edges[i].b, {OrthPlayerStartX, OrthPlayerStartY, 0}, {OrthPlayerEndX, OrthPlayerEndY, 0}))
 			{
@@ -401,8 +399,7 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 
 		if (isWall)
 		{
-			float theAngle = (float)atan2(closest.a.y - closest.b.y, closest.a.x - closest.b.x);
-			return MoveAlongAngle(origin, target, theAngle);
+			return MoveAlongAngle(origin, target, closest.angle);
 		}
 		else
 		{

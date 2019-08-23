@@ -35,6 +35,9 @@
 #include <chrono>
 using namespace std;
 
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
 Level::Level(const string& level, float scaling, unsigned int numOfPlayers)
 {
 	auto start = chrono::system_clock::now();
@@ -461,7 +464,7 @@ void Level::LoadObj(const string& path, unsigned int numOfPlayers)
 		if (uvs_.empty())
 		{
 			// This should help diagnostics
-			cerr << "WARNING: No UVs found. The program is expected to crash." << endl;
+			throw runtime_error("No UVs found. The program was expected to crash.");
 		}
 
 		// Set UVs
@@ -509,6 +512,10 @@ vector<Plane*> Level::getPlanesForBox(float x, float y, float radius) const
 
 void Level::CountCommonEdgesPlanes(Plane* p1, Plane* p2)
 {
+	if (p1 == p2) {
+		throw runtime_error(__FILE__ ":" TOSTRING(__LINE__) ": ERROR tested polygon against itself");
+	}
+
 	for (unsigned int i = 0; i < p1->Edges.size(); i++)
 	{
 		for (unsigned int j = 0; j < p2->Edges.size(); j++)
@@ -516,10 +523,9 @@ void Level::CountCommonEdgesPlanes(Plane* p1, Plane* p2)
 			if ((p1->Edges[i].a == p2->Edges[j].a && p1->Edges[i].b == p2->Edges[j].b) ||
 				(p1->Edges[i].a == p2->Edges[j].b && p1->Edges[i].b == p2->Edges[j].a))
 			{
-				// Increment the edge count if it is considered an edge
-				if (!p2->CanWalk())
-					continue;
-				p1->Edges[i].sides++;
+				// Edges can't just be removed, they remain there and they are set as "blocking".
+				p1->Edges[i].blocking = false;
+				break;
 			}
 		}
 	}
@@ -535,20 +541,6 @@ void Level::FinalPlaneProcessing()
 			CountCommonEdgesPlanes(planes[i], planes[i]->Neighbors[j]);
 		}
 	}
-
-	// For each plane
-/*	for (unsigned int i = 0; i < planes.size(); i++)
-	{
-		// For each edge of a plane
-		for (int j = planes[i]->Edges.size() - 1; j >= 0 ; j--)
-		{
-			// Remove if it doesn't block
-			if (planes[i]->Edges[j].sides > 0)
-			{
-				planes[i]->Edges.erase(planes[i]->Edges.begin() + j);
-			}
-		}
-	}*/
 }
 
 void Level::LinkPlanes(const string& LevelName)
@@ -587,11 +579,20 @@ void Level::LinkPlanes(const string& LevelName)
 
 			for (unsigned int i = 0; i < planes.size(); i++)
 			{
+				// Do not save planes where the player can't step because they are unneeded
+				if (!planes[i]->CanWalk())
+					continue;
+
 				bool first = true;
 
 				// Find touching planes and add them
 				for (unsigned int j = 0; j < planes.size(); j++)
 				{
+					// Do not check planes where the player can't step
+					if (!planes[j]->CanWalk())
+						continue;
+
+					// Do not test against self
 					if (i != j)
 					{
 						// Find at least one common vertex
