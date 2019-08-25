@@ -55,7 +55,7 @@ while True:
 	values = message.decode("ascii")
 
 	if playerid == 0:
-		newfile.write(str.encode("MeshGlide server v0.1 started\n" + values + "\n"))
+		newfile.write(str.encode("DUMP FROM MESHGLIDE SERVER 0.1\n" + values + "\n"))
 
 	values += "\n" + str(playerid)
 
@@ -101,8 +101,9 @@ while count > 0:
 
 	identity2, delimiter2, message2 = client.recv_multipart()
 
-	newfile.write(message)
-	newfile.write(message2)
+#TODO the order byte arrays are sorted must match the player ID
+	newfile.write(message[:7])
+	newfile.write(message2[:7])
 	newfile.flush()
 
 	client.send_multipart([

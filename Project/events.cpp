@@ -63,6 +63,7 @@ bool readCmdFromDemo(ifstream& demo, vector<Player*> players)
 
 		if (!demo)
 		{
+// TODO: Throw fatal exception
 			cerr << "WARNING: demo ended prematurely" << endl;
 			return false;
 		}
