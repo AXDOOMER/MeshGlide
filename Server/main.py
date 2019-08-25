@@ -35,7 +35,11 @@ identities = []
 
 timestr = time.strftime("%Y%m%d-%H%M%S")
 
+header = None
+
 print("MeshGlide server v0.1 started")
+
+newfile = open(timestr + ".dmo",'wb')
 
 while True:
 	lvlname = ""
@@ -49,6 +53,10 @@ while True:
 	identities.append(identity)
 
 	values = message.decode("ascii")
+
+	if playerid == 0:
+		newfile.write(str.encode("MeshGlide server v0.1 started\n" + values + "\n"))
+
 	values += "\n" + str(playerid)
 
 	splitted = values.split("\n")
@@ -92,6 +100,10 @@ while count > 0:
 	identity, delimiter, message = client.recv_multipart()
 
 	identity2, delimiter2, message2 = client.recv_multipart()
+
+	newfile.write(message)
+	newfile.write(message2)
+	newfile.flush()
 
 	client.send_multipart([
 		identity,
