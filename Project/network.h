@@ -38,6 +38,7 @@ public:
 
 	bool enabled();
 	unsigned int myPlayer();
+	void myPlayer(unsigned int id);
 
 	// Used when sharing tic commands
 	void send(const vector<unsigned char>& message);
@@ -48,7 +49,8 @@ public:
 	string receiveString();
 
 	// Handshake
-	void startServer(const string& port, const string& info);
-	string connectClient(const string& location);
+//	void startServer(const string& port, const string& info);
+//	string connectClient(const string& location);
+	string connectToServer(const string& port, const string& info);
 };
 

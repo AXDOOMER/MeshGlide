@@ -43,7 +43,7 @@ using namespace std;
 
 int mainloop(int argc, const char* argv[])
 {
-	const char* const VERSION = "0.58 (dev)";
+	const char* const VERSION = "0.59 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -58,6 +58,7 @@ int mainloop(int argc, const char* argv[])
 	Network network;
 	int numOfPlayers = 1;
 	int frameSkip = 0;
+	int myPlayerId = 0;
 
 	cout << "                MESHGLIDE ENGINE -- " << VERSION << "\n\n";
 
@@ -165,22 +166,41 @@ int mainloop(int argc, const char* argv[])
 
 	if (!DemoRead.is_open())
 	{
-		string hostport;
-		if (FindArgumentPosition(argc, argv, "-host") > 0)
-			hostport = FindArgumentParameter(argc, argv, "-host", "5555");
+//		string hostport;
+//		if (FindArgumentPosition(argc, argv, "-host") > 0)
+//			hostport = FindArgumentParameter(argc, argv, "-host", "5555");
 
 		string serverloc;
 		if (FindArgumentPosition(argc, argv, "-connect") > 0)
-			serverloc = FindArgumentParameter(argc, argv, "-connect", "localhost:5555");
+			serverloc = FindArgumentParameter(argc, argv, "-connect", "localhost:32456");
 
-		if (!hostport.empty())
+		if (FindArgumentPosition(argc, argv, "-players") > 0)
+			numOfPlayers = stoi(FindArgumentParameter(argc, argv, "-players", "2"));
+
+		if (!serverloc.empty())
+//		if (!hostport.empty())
 		{
-			numOfPlayers = 2;	// (for now, it's always two players)
-			// Start a server
+			// Send client's info to the server
 			string info = LevelName + '\n' + to_string(initialIndex) + '\n' + to_string(numOfPlayers);
-			network.startServer(hostport, info);
+			info = network.connectToServer(serverloc, info);
+
+			// Update the game with the info from the server
+			vector<string> infos = Split(info, '\n');
+
+			LevelName = infos[0];
+			SetIndex(initialIndex = stoi(infos[1]));
+			numOfPlayers = stoi(infos[2]);
+			network.myPlayer(stoi(infos[3]));
+
+			cout << "num of players: " << numOfPlayers << "		my player: " << infos[3] << endl;
+
+
+//			numOfPlayers = 2;	// (for now, it's always two players)
+			// Start a server
+//			string info = LevelName + '\n' + to_string(initialIndex) + '\n' + to_string(numOfPlayers);
+//			network.startServer(hostport, info);
 		}
-		else if (!serverloc.empty())
+/*		else if (!serverloc.empty())
 		{
 			// Or start a client that connects to a server
 			string info = network.connectClient(serverloc);
@@ -189,7 +209,7 @@ int mainloop(int argc, const char* argv[])
 			LevelName = infos[0];
 			SetIndex(initialIndex = stoi(infos[1]));
 			numOfPlayers = stoi(infos[2]);
-		}
+		}*/
 	}
 
 	/****************************** OPENGL HANDLING ******************************/
@@ -277,11 +297,11 @@ int mainloop(int argc, const char* argv[])
 						view.chatStr.clear();
 					}
 
-					// Receive network event from player 2
-					CurrentLevel->players[1]->NetToCmd(network.receive());
-
-					// Send network event to player 2
+					// Send network event to server
 					network.send(CurrentLevel->players[0]->CmdToNet());
+
+					// Receive network event from server
+					CurrentLevel->players[1]->NetToCmd(network.receive());
 
 					if (CurrentLevel->players[1]->Cmd.chat.size() > 0)
 					{

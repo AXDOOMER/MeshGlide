@@ -28,11 +28,11 @@ using namespace std;
 
 int main(int argc, const char* argv[])
 {
-	try
+//	try
 	{
 		return mainloop(argc, argv);
 	}
-	catch (const exception& e)
+/*	catch (const exception& e)
 	{
 		cerr << "Fatal error: " << e.what() << endl;
 
@@ -42,5 +42,5 @@ int main(int argc, const char* argv[])
 			NULL);
 
 		return EXIT_FAILURE;
-	}
+	}*/
 }

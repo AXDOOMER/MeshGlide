@@ -55,18 +55,23 @@ unsigned int Network::myPlayer()
 	return id_;
 }
 
+void Network::myPlayer(unsigned int id)
+{
+	id_ = id;
+}
+
 void Network::send(const vector<unsigned char>& message)
 {
 	message_t request(message.size());
 	memcpy(request.data(), &message[0], message.size());
 
-	try
+//	try
 	{
 		sock_->send(request);
 	}
-	catch (zmq::error_t const& err)
+//	catch (zmq::error_t const& err)
 	{
-		throw runtime_error("Network send error. Timed out while waiting for peer.");
+//		throw runtime_error("Network send error. Timed out while waiting for peer.");
 	}
 }
 
@@ -74,13 +79,13 @@ vector<unsigned char> Network::receive()
 {
 	message_t message;
 
-	try
+//	try
 	{
 		sock_->recv(&message);
 	}
-	catch (zmq::error_t const& err)
+//	catch (zmq::error_t const& err)
 	{
-		throw runtime_error("Network receive error. Timed out while waiting for peer.");
+//		throw runtime_error("Network receive error. Timed out while waiting for peer.");
 	}
 
 	vector<unsigned char> v(message.size());
@@ -105,7 +110,35 @@ string Network::receiveString()
 	return string(static_cast<char*>(reply.data()), reply.size());
 }
 
-void Network::startServer(const string& port, const string& info)
+string Network::connectToServer(const string& location, const string& info)
+{
+	context_ = new context_t(1);
+	sock_ = new socket_t(*context_, ZMQ_REQ);
+
+//sock_->setsockopt(ZMQ_IDENTITY, "abcd", 5);
+
+	cout << "Connecting to server at '" << location << "'" << endl;
+	sock_->connect("tcp://" + location);
+
+	// Init game
+cout << "***********************  sending string" << endl;
+	sendString(info);
+cout << "***********************  receiving string" << endl;
+	string settings = receiveString();
+
+cout << "SETTINGS %%%%" << settings << "%%%%END SETTINGS" << endl;
+
+//TODO move before "'connect'"
+	// Allow the socket to timeout while the game is running
+	sock_->setsockopt(ZMQ_RCVTIMEO, &TIMEOUT, sizeof(int));
+	sock_->setsockopt(ZMQ_SNDTIMEO, &TIMEOUT, sizeof(int));
+
+//	id_ = 0;
+
+	return settings;
+}
+
+/*void Network::startServer(const string& port, const string& info)
 {
 	context_ = new context_t(1);
 	sock_ = new socket_t(*context_, ZMQ_REP);
@@ -143,4 +176,4 @@ string Network::connectClient(const string& location)
 	id_ = 1;
 
 	return settings;
-}
+}*/
