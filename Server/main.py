@@ -25,6 +25,9 @@ context = zmq.Context()
 client = context.socket(zmq.ROUTER)
 client.bind("tcp://*:32456")
 
+#client.setsockopt(zmq.RCVTIMEO, 5000)
+#client.setsockopt(zmq.SNDTIMEO, 5000)
+
 count = 0
 playerid = 0
 maxplayers = 0
@@ -106,8 +109,28 @@ while count > 0:
 	identity2, delimiter2, message2 = client.recv_multipart()
 
 #TODO the order byte arrays are sorted must match the player ID
-	newfile.write(message[:7])
-	newfile.write(message2[:7])
+
+	action_byte = int.from_bytes(message[:1], "little")
+	fire = action_byte & 64
+	quit = action_byte & 128
+	plyrid = action_byte & 63
+
+	print("test quit bit: ", str(quit), "   and player id is ", str(plyrid), " fire is ", str(fire), "...  byte is ", str(action_byte))
+
+	action_byte2 = int.from_bytes(message2[:1], "little")
+	fire2 = action_byte2 & 64
+	quit2 = action_byte2 & 128
+	plyrid2 = action_byte2 & 63
+
+	print("test quit bit: ", str(quit2), "   and player id is ", str(plyrid2), " fire is ", str(fire2), "...  byte is ", str(action_byte2))
+
+	if plyrid == 0:
+		newfile.write(message[:7])
+		newfile.write(message2[:7])
+	else:
+		newfile.write(message2[:7])
+		newfile.write(message[:7])
+
 	newfile.flush()
 
 	client.send_multipart([
@@ -121,3 +144,9 @@ while count > 0:
 		b"",
 		message,
 	])
+
+	if (quit | quit2) & 128 == 128:
+		print("***** quit message seen *****")
+		break
+
+print("*****  Done  *****")
