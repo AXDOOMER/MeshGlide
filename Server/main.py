@@ -68,6 +68,10 @@ while True:
 		maxplayers = splitted[2]
 		print("Max players in game:", maxplayers)
 
+		if int(maxplayers) < 2:
+			print("Cannot start a game with less than two players.")
+			quit()
+
 	playerid += 1
 
 	print("teststt**********", maxplayers, playerid)
