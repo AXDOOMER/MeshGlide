@@ -28,125 +28,126 @@ client.bind("tcp://*:32456")
 #client.setsockopt(zmq.RCVTIMEO, 5000)
 #client.setsockopt(zmq.SNDTIMEO, 5000)
 
-count = 0
-playerid = 0
-maxplayers = 0
-
-orig = None
-
-identities = []
-
-timestr = time.strftime("%Y%m%d-%H%M%S")
-
-header = None
-
 print("MeshGlide server v0.1 started")
 
-newfile = open(timestr + ".dmo",'wb')
-
 while True:
-	lvlname = ""
-	rndseed = 0
-	numplyrs = 0
 
-	identity, delimiter, message = client.recv_multipart()
+	# init
+	count = 0
+	playerid = 0
+	maxplayers = 0
+	orig = None
+	identities = []
+	header = None
 
-	print("ID: {0}, Delim: {1}, Message: {2}".format(identity, delimiter, message))
+	print("Waiting for a game to start...")
 
-	identities.append(identity)
+	timestr = time.strftime("%Y%m%d-%H%M%S")
+	newfile = open(timestr + ".dmo",'wb')
 
-	values = message.decode("ascii")
+	while True:
+		lvlname = ""
+		rndseed = 0
+		numplyrs = 0
 
-	if playerid == 0:
-		newfile.write(str.encode("DUMP FROM MESHGLIDE SERVER 0.1\n" + values + "\n"))
+		identity, delimiter, message = client.recv_multipart()
 
-	values += "\n" + str(playerid)
+		print("ID: {0}, Delim: {1}, Message: {2}".format(identity, delimiter, message))
 
-	splitted = values.split("\n")
-	print(splitted)
+		identities.append(identity)
 
-	if playerid == 0:
-		orig = message
+		values = message.decode("ascii")
 
-		maxplayers = splitted[2]
-		print("Max players in game:", maxplayers)
+		if playerid == 0:
+			newfile.write(str.encode("DUMP FROM MESHGLIDE SERVER 0.1\n" + values + "\n"))
 
-		if int(maxplayers) < 2:
-			print("Cannot start a game with less than two players.")
-			quit()
+		values += "\n" + str(playerid)
 
-	playerid += 1
+		splitted = values.split("\n")
+		print(splitted)
 
-	print("teststt**********", maxplayers, playerid)
+		if playerid == 0:
+			orig = message
 
-	if int(maxplayers) == playerid:
-		break
+			maxplayers = splitted[2]
+			print("Max players in game:", maxplayers)
+
+			if int(maxplayers) < 2:
+				print("Cannot start a game with less than two players.")
+				quit()
+
+		playerid += 1
+
+		print("teststt**********", maxplayers, playerid)
+
+		if int(maxplayers) == playerid:
+			break
 
 
-while count != int(maxplayers):
+	while count != int(maxplayers):
 
-	print(datetime.now(), "================")
+		print(datetime.now(), "================")
 
-	message = orig + str.encode("\n" + str(count))
+		message = orig + str.encode("\n" + str(count))
 
-	print("identity: ", identities[count])
-	print(message.decode("ascii"))
+		print("identity: ", identities[count])
+		print(message.decode("ascii"))
 
-	client.send_multipart([
-		identities[count],
-		b"",
-		message,
-	])
+		client.send_multipart([
+			identities[count],
+			b"",
+			message,
+		])
 
-	count += 1
+		count += 1
 
-while count > 0:
+	while count > 0:
 
-#	print(".", end = '', flush=True)
+	#	print(".", end = '', flush=True)
 
-	identity, delimiter, message = client.recv_multipart()
+		identity, delimiter, message = client.recv_multipart()
 
-	identity2, delimiter2, message2 = client.recv_multipart()
+		identity2, delimiter2, message2 = client.recv_multipart()
 
-#TODO the order byte arrays are sorted must match the player ID
+	#TODO the order byte arrays are sorted must match the player ID
 
-	action_byte = int.from_bytes(message[:1], "little")
-	fire = action_byte & 64
-	quit = action_byte & 128
-	plyrid = action_byte & 63
+		action_byte = int.from_bytes(message[:1], "little")
+		fire = action_byte & 64
+		quit = action_byte & 128
+		plyrid = action_byte & 63
 
-	print("test quit bit: ", str(quit), "   and player id is ", str(plyrid), " fire is ", str(fire), "...  byte is ", str(action_byte))
+		print("test quit bit: ", str(quit), "   and player id is ", str(plyrid), " fire is ", str(fire), "...  byte is ", str(action_byte))
 
-	action_byte2 = int.from_bytes(message2[:1], "little")
-	fire2 = action_byte2 & 64
-	quit2 = action_byte2 & 128
-	plyrid2 = action_byte2 & 63
+		action_byte2 = int.from_bytes(message2[:1], "little")
+		fire2 = action_byte2 & 64
+		quit2 = action_byte2 & 128
+		plyrid2 = action_byte2 & 63
 
-	print("test quit bit: ", str(quit2), "   and player id is ", str(plyrid2), " fire is ", str(fire2), "...  byte is ", str(action_byte2))
+		print("test quit bit: ", str(quit2), "   and player id is ", str(plyrid2), " fire is ", str(fire2), "...  byte is ", str(action_byte2))
 
-	if plyrid == 0:
-		newfile.write(message[:7])
-		newfile.write(message2[:7])
-	else:
-		newfile.write(message2[:7])
-		newfile.write(message[:7])
+		if plyrid == 0:
+			newfile.write(message[:7])
+			newfile.write(message2[:7])
+		else:
+			newfile.write(message2[:7])
+			newfile.write(message[:7])
 
-	newfile.flush()
+		newfile.flush()
 
-	client.send_multipart([
-		identity,
-		b"",
-		message2,
-	])
+		client.send_multipart([
+			identity,
+			b"",
+			message2,
+		])
 
-	client.send_multipart([
-		identity2,
-		b"",
-		message,
-	])
+		client.send_multipart([
+			identity2,
+			b"",
+			message,
+		])
 
-	if (quit | quit2) & 128 == 128:
-		print("***** quit message seen *****")
-		break
+		if (quit | quit2) & 128 == 128:
+			print("***** quit message seen *****")
+			break
 
 print("*****  Done  *****")
