@@ -174,6 +174,8 @@ int mainloop(int argc, const char* argv[])
 		if (FindArgumentPosition(argc, argv, "-connect") > 0)
 			serverloc = FindArgumentParameter(argc, argv, "-connect", "localhost:32456");
 
+		// When not in a network game, we can set more than one player for tests.
+		// The other players can be controlled using the spy key.
 		if (FindArgumentPosition(argc, argv, "-players") > 0)
 			numOfPlayers = stoi(FindArgumentParameter(argc, argv, "-players", "2"));
 
