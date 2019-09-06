@@ -58,7 +58,6 @@ int mainloop(int argc, const char* argv[])
 	Network network;
 	int numOfPlayers = 1;
 	int frameSkip = 0;
-	int myPlayerId = 0;
 
 	cout << "                MESHGLIDE ENGINE -- " << VERSION << "\n\n";
 
@@ -290,50 +289,42 @@ int mainloop(int argc, const char* argv[])
 			// Send commands over network and receive commands
 			if (network.enabled())
 			{
-				if (network.myPlayer() == 0)
+//				if (network.myPlayer() == 0)
 				{
+					unsigned int id = network.myPlayer();
+
 					if (view.chatSend)
 					{
-						CurrentLevel->players[0]->Cmd.chat = view.chatStr;
+						CurrentLevel->players[id]->Cmd.chat = view.chatStr;
 						view.chatSend = false;
 						view.chatStr.clear();
 					}
 
 					// Send network event to server
-					network.send(CurrentLevel->players[0]->CmdToNet());
+					network.send(CurrentLevel->players[id]->CmdToNet());
+
+					vector<unsigned char> dat = network.receive();
 
 					// Receive network event from server
-					CurrentLevel->players[1]->NetToCmd(network.receive());
-
-					if (CurrentLevel->players[1]->Cmd.chat.size() > 0)
+					int j = 0;
+					for (int i = 0; i < CurrentLevel->players.size(); i++)
 					{
-						ShowMessage(view, CurrentLevel->players[1]->Cmd.chat);
+						if (i != id)
+						{
+							vector<unsigned char> pdat;
+							copy(dat.begin() + j * 8, dat.begin() + j * 8 + 8, back_inserter(pdat));
+
+							CurrentLevel->players[i]->NetToCmd(pdat);
+
+							j++;
+
+							if (CurrentLevel->players[i]->Cmd.chat.size() > 0)
+							{
+								ShowMessage(view, CurrentLevel->players[i]->Cmd.chat);
+							}
+						}
 					}
 
-				}
-				else if (network.myPlayer() == 1)
-				{
-					if (view.chatSend)
-					{
-						CurrentLevel->players[1]->Cmd.chat = view.chatStr;
-						view.chatSend = false;
-						view.chatStr.clear();
-					}
-
-					// Send network event to player 1
-					network.send(CurrentLevel->players[1]->CmdToNet());
-
-					// Receive network event from player 1
-					CurrentLevel->players[0]->NetToCmd(network.receive());
-
-					if (CurrentLevel->players[0]->Cmd.chat.size() > 0)
-					{
-						ShowMessage(view, CurrentLevel->players[0]->Cmd.chat);
-					}
-				}
-				else
-				{
-					throw runtime_error("Something is wrong: Player ID is not 0 or 1.");
 				}
 			}
 			else
