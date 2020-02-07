@@ -21,6 +21,7 @@
 #include <vector>
 #include <cmath>	// sqrt
 #include <limits>	// numeric_limits<float>::quiet_NaN()
+#include <stdexcept>
 using namespace std;
 
 bool operator==(const Float3& lhs, const Float3& rhs)
@@ -28,58 +29,33 @@ bool operator==(const Float3& lhs, const Float3& rhs)
     return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
 }
 
+constexpr float Float3::operator[](const int attribute_index) const
+{
+	switch (attribute_index)
+	{
+		case 0:
+			return x;
+		case 1:
+			return y;
+		case 2:
+			return z;
+		default:
+			throw out_of_range("Float3::[] : Attribute index is out of range");
+	}
+}
+
 // Ray-casting algorithm used to find if a 2D coordinate is on a 3D polygon
-bool pointInPolyXY(const float x, const float y, const vector<Float3>& vertices)
+bool pointInPoly(const float x, const float y, const vector<Float3>& vertices, const int attr1, const int attr2)
 {
 	bool inside = false;
 	// Iterate over every edge. Trace an infinite ray starting from the point.
 	// If the number of intersections if even, it's outside. If it's odd, the point is inside.
 	for (unsigned int i = 0, j = vertices.size() - 1; i < vertices.size(); j = i++) {
 		// Create new variables for readability
-		float xi = vertices[i].x;
-		float yi = vertices[i].y;
-		float xj = vertices[j].x;
-		float yj = vertices[j].y;
-
-		bool intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-		if (intersect)
-			inside = !inside;
-	}
-
-	return inside;
-}
-
-bool pointInPolyYZ(const float x, const float y, const vector<Float3>& vertices)
-{
-	bool inside = false;
-	// Iterate over every edge. Trace an infinite ray starting from the point.
-	// If the number of intersections if even, it's outside. If it's odd, the point is inside.
-	for (unsigned int i = 0, j = vertices.size() - 1; i < vertices.size(); j = i++) {
-		// Create new variables for readability
-		float xi = vertices[i].y;
-		float yi = vertices[i].z;
-		float xj = vertices[j].y;
-		float yj = vertices[j].z;
-
-		bool intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-		if (intersect)
-			inside = !inside;
-	}
-
-	return inside;
-}
-
-bool pointInPolyZX(const float x, const float y, const vector<Float3>& vertices)
-{
-	bool inside = false;
-	// Iterate over every edge. Trace an infinite ray starting from the point.
-	// If the number of intersections if even, it's outside. If it's odd, the point is inside.
-	for (unsigned int i = 0, j = vertices.size() - 1; i < vertices.size(); j = i++) {
-		// Create new variables for readability
-		float xi = vertices[i].z;
-		float yi = vertices[i].x;
-		float xj = vertices[j].z;
-		float yj = vertices[j].x;
+		float xi = vertices[i][attr1];
+		float yi = vertices[i][attr2];
+		float xj = vertices[j][attr1];
+		float yj = vertices[j][attr2];
 
 		bool intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
 		if (intersect)

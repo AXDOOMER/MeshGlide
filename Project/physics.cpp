@@ -27,6 +27,7 @@
 #include <vector>
 #include <utility>		/* pair */
 #include <algorithm>	/* find, sort */
+#include <stdexcept>
 
 using namespace std;
 
@@ -44,7 +45,7 @@ float CapHeight(float point, float min, float max)
 bool TouchesPlane(const Player* play, const Plane* p)
 {
 	// Is the player inside the polygon?
-	if (pointInPolyXY(play->PosX(), play->PosY(), p->Vertices))
+	if (pointInPoly(play->PosX(), play->PosY(), p->Vertices))
 		return true;
 
 	// Is the player touching one of the polygon's edges?
@@ -267,6 +268,10 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 // NOTE: Function is huge and ugly. Could be improved.
 void Hitscan(Level* lvl, Player* play, const vector<Player*>& players)
 {
+	// 0.57735 is the biggest value for x,y,z that you can get all at once for a normal in a sphere
+	// This value would be 0.70711 in a circle
+	const float THRESHOLD = 0.5f;
+
 	vector<pair<Float3, Plane*>> points;
 
 	for (unsigned int i = 0; i < lvl->planes.size(); i++)
@@ -276,15 +281,24 @@ void Hitscan(Level* lvl, Player* play, const vector<Player*>& players)
 		Float3 aim = {play->AimX(), play->AimY(), play->AimZ()};
 		Float3 f = RayIntersect(aim, {play->PosX(), play->PosY(), play->CamZ()}, lvl->planes[i]->normal, lvl->planes[i]->centroid);
 
+		// Check if point is valid
 		if (f.z != numeric_limits<float>::quiet_NaN())
 		{
 			vector<Float3> verts = lvl->planes[i]->Vertices;
 
-			bool XY = pointInPolyXY(f.x, f.y, verts);
-			bool YZ = pointInPolyYZ(f.y, f.z, verts);
-			bool ZX = pointInPolyZX(f.z, f.x, verts);
+			// Check if the point is inside the polygon (because a plane is infinite)
+			bool test = false;
+			if (lvl->planes[i]->normal.z >= THRESHOLD || lvl->planes[i]->normal.z <= -THRESHOLD)
+				test = pointInPoly(f.x, f.y, verts, 0, 1);	// xOy
+			else if (lvl->planes[i]->normal.x >= THRESHOLD || lvl->planes[i]->normal.x <= -THRESHOLD)
+				test = pointInPoly(f.y, f.z, verts, 1, 2);	// yOz
+			else if (lvl->planes[i]->normal.y >= THRESHOLD || lvl->planes[i]->normal.y <= -THRESHOLD)
+				test = pointInPoly(f.z, f.x, verts, 2, 0);	// zOx
+			else
+				throw runtime_error("Caught a polygon with the following normal:\n" +
+					to_string(lvl->planes[i]->normal.x) + ", " + to_string(lvl->planes[i]->normal.y) + ", " + to_string(lvl->planes[i]->normal.z));
 
-			if ((XY && YZ) || (YZ && ZX) || (ZX && XY) || (XY && allEqualZ(verts)) || (YZ && allEqualX(verts)) || (ZX && allEqualY(verts)))
+			if (test)
 			{
 				float front = atan2(play->PosY() - f.y, play->PosX() - f.x) - play->GetRadianAngle(play->Angle);
 

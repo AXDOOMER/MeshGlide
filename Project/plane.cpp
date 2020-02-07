@@ -83,7 +83,9 @@ bool Plane::InBox2D(float x, float y, float radius) const
 
 bool Plane::CanWalk() const
 {
-	const float WALL_ANGLE = 0.4f;	// '1' points up (floor) and '0' points to the side (wall)
+	// '1' points up (floor) and '0' points to the side (wall)
+	// At '0.7', it's a 45 degrees climb.
+	const float WALL_ANGLE = 0.4f;
 
 	if (Impassable && normal.z < WALL_ANGLE && normal.z > -WALL_ANGLE)
 		return false;

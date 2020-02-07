@@ -29,6 +29,8 @@ struct Float3
 	float x;
 	float y;
 	float z;
+
+	constexpr float operator[](const int index) const;
 };
 
 struct Float2
@@ -51,10 +53,9 @@ bool allEqualZ(const vector<Float3>& vertices);
 
 // Ray-casting algorithm used to find if a 2D coordinate is on a 3D polygon
 // Takes 'x' and 'y' (a 2D point) and the 'vertices' used to build the edges
-bool pointInPolyXY(const float x, const float y, const vector<Float3>& vertices);
-// Same, but for yOz and zOx
-bool pointInPolyYZ(const float y, const float z, const vector<Float3>& vertices);
-bool pointInPolyZX(const float z, const float x, const vector<Float3>& vertices);
+// The two last parameters define if the test is going to be done on xOy (default), yOz or zOx
+// If called without the two last parameters, it uses the polygon's X and Y coordinates for the test (xOy)
+bool pointInPoly(const float x, const float y, const vector<Float3>& vertices, const int attr1 = 0, const int attr2 = 1);
 
 Float3 crossProduct(const Float3& u, const Float3& v);
 
