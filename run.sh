@@ -23,9 +23,9 @@ elif [ "$#" -ge 1 ] && [ "$1" == "release" ]; then
 	echo "Building release"
 	shift
 	echo "$EXENAME args: $@"
-	g++ *.cpp -std=c++11 -O2 -s -Wall -Wextra -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -lzmq -o $EXENAME && ./$EXENAME $@
+	g++ *.cpp -std=c++14 -O2 -s -Wall -Wextra -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -lzmq -o $EXENAME && ./$EXENAME $@
 else
 	echo "Building default"
 	echo "$EXENAME args: $@"
-	g++ *.cpp -std=c++11 -Wall -Wextra -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -lzmq -o $EXENAME && ./$EXENAME $@
+	g++ *.cpp -std=c++14 -g -Wall -Wextra -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -lzmq -o $EXENAME && ./$EXENAME $@
 fi

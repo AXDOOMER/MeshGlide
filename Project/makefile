@@ -6,7 +6,7 @@ SRC = $(wildcard *.cpp)
 OBJ = $(SRC:.cpp=.o)
 DEP = $(OBJ:.o=.d)	# One dependency file for each source
 
-CXXFLAGS = -Wall -Wextra -std=c++11 -O2 -pipe
+CXXFLAGS = -Wall -Wextra -std=c++14 -O2 -pipe
 LDFLAGS = -lstdc++ -lm -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -lzmq
 
 TARGET = MeshGlide
