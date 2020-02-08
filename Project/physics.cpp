@@ -272,8 +272,11 @@ void Hitscan(Level* lvl, Player* play, const vector<Player*>& players)
 	// This value would be 0.70711 in a circle
 	const float THRESHOLD = 0.5f;
 
-	vector<pair<Float3, Plane*>> points;
+	Float3 wallHitPoint;
+	Plane* planeHitPoint = nullptr;
+	float wallDist = numeric_limits<float>::max();
 
+	// Check for polygons that are hit.
 	for (unsigned int i = 0; i < lvl->planes.size(); i++)
 	{
 		// Get the point where the player is looking at and throw a ray
@@ -303,22 +306,28 @@ void Hitscan(Level* lvl, Player* play, const vector<Player*>& players)
 				float front = atan2(play->PosY() - f.y, play->PosX() - f.x) - play->GetRadianAngle(play->Angle);
 
 				if (front > M_PI_4 || front < -M_PI_4)
-					points.push_back(make_pair(f, lvl->planes[i]));
+				{
+					// How far is it?
+					float dist = sqrt(pow(f.x - play->PosX(), 2) + pow(f.y - play->PosY(), 2) + pow(f.z - play->CamZ(), 2));
+
+					if (planeHitPoint)
+					{
+						// Check if this hit is closer
+						if (dist < wallDist)
+						{
+							wallHitPoint = f;	// Set hit position
+							planeHitPoint = lvl->planes[i];	// Set wall that was hit
+						}
+					}
+					else
+					{
+						wallHitPoint = f;	// Set hit position
+						planeHitPoint = lvl->planes[i];	// Set wall that was hit
+						wallDist = dist;	// Set distance of hit
+					}
+				}
 			}
 		}
-	}
-
-	sort(points.begin(), points.end(), [play](const pair<Float3, Plane*> a, const pair<Float3, Plane*> b)
-	{
-		return pow(play->PosX() - a.first.x, 2) + pow(play->PosY() - a.first.y, 2) < pow(play->PosX() - b.first.x, 2) + pow(play->PosY() - b.first.y, 2);
-	});
-
-	float wallDist = numeric_limits<float>::max();
-
-	if (points.size() > 0)
-	{
-		// A wall is hit. Set how far it is.
-		wallDist = sqrt(pow(points[0].first.x - play->PosX(), 2) + pow(points[0].first.y - play->PosY(), 2) + pow(points[0].first.z - play->PosZ(), 2));
 	}
 
 	Player* hit = nullptr;
@@ -358,11 +367,11 @@ void Hitscan(Level* lvl, Player* play, const vector<Player*>& players)
 		}
 	}
 
-	if (points.size() > 0 && (hit == nullptr || wallDist < hitDist))
+	if (planeHitPoint && (hit == nullptr || wallDist < hitDist))
 	{
-		Float3 dir = {points[0].first.x - play->PosX(), points[0].first.y - play->PosY(), points[0].first.z - play->CamZ()};
+		Float3 dir = {wallHitPoint.x - play->PosX(), wallHitPoint.y - play->PosY(), wallHitPoint.z - play->CamZ()};
 		dir = subVectors(dir, scaleVector(0.1f, normalize(dir)));	// The puff must not touch the wall
-		//dir = addVectors(dir, scaleVector(0.1f, points[0].second->normal));	// TODO: Use this later when every normal will point inside the level
+		//dir = addVectors(dir, scaleVector(0.1f, planeHitPoint->normal));	// TODO: Use this later when every normal will point inside the level
 		lvl->things.push_back(new Puff(play->PosX() + dir.x, play->PosY() + dir.y, play->CamZ() + dir.z));
 	}
 	else if (hit)
