@@ -124,7 +124,7 @@ void Player::AngleTurn(short AngleChange)
 	{
 		Angle += AngleChange;
 
-		if (Angle  > 16383)
+		if (Angle > 16383)
 		{
 			Angle = Angle - 32768;
 		}

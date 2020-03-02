@@ -27,6 +27,7 @@
 #include "events.h"
 #include "network.h"
 #include "strutils.h"	/* Split */
+#include "bot.h"
 
 #include <GLFW/glfw3.h>
 #include <GL/gl.h>
@@ -258,6 +259,9 @@ int mainloop(int argc, const char* argv[])
 			{
 				updatePlayerWithEvents(window, view, TicCount, CurrentLevel->play);
 			}
+
+			// Run bot on Player 2. For testing.
+//			updateBot(CurrentLevel->players[1], CurrentLevel);
 
 			// Cause the game to quit if the player wants to
 			if (glfwWindowShouldClose(window))
