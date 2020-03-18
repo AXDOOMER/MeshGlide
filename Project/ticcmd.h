@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2017-2020 Alexandre-Xavier Labonté-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -40,8 +40,10 @@ public:
 	Ticcmd();
 	void Reset();
 
-	vector<unsigned char> Serialize() const;
-	void Deserialize(vector<unsigned char> v);
+	vector<unsigned char> Serialize() const;	// raw binary
+	vector<unsigned char> Serialize2() const;	// line of text
+	void Deserialize(vector<unsigned char> v);	// raw binary
+	void Deserialize2(vector<unsigned char> v);	// line of text
 };
 
 #endif /* TICCMD_H */

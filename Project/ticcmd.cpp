@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2017-2020 Alexandre-Xavier Labonté-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 
 #include <SDL2/SDL_endian.h>	/* SDL_BYTEORDER, SDL_BIG_ENDIAN */
 
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -88,6 +89,23 @@ vector<unsigned char> Ticcmd::Serialize() const
 	return c;
 }
 
+// Encodes a player's data to a buffer for network usage
+vector<unsigned char> Ticcmd::Serialize2() const
+{
+	// Serialize the command
+	string s;
+
+	s += to_string(id) + ' ' + to_string(fire) + ' ' + to_string(quit) + ' ';
+
+	s += to_string(forward) + ' ' + to_string(lateral) + ' ';
+
+	s += to_string(rotation) + ' ' + to_string(vertical) + ' ';
+
+	s += chat;
+
+	return vector<unsigned char>(s.begin(), s.end());
+}
+
 // Decodes a player's data from a buffer and write to command
 void Ticcmd::Deserialize(vector<unsigned char> v)
 {
@@ -129,4 +147,38 @@ void Ticcmd::Deserialize(vector<unsigned char> v)
 	{
 		chat.push_back(v[i + 8]);
 	}
+}
+
+// Decodes a player's data from a buffer and write to command
+void Ticcmd::Deserialize2(vector<unsigned char> v)
+{
+	// Deserialize the command
+	string s(v.begin(), v.end());
+	istringstream split(s);
+
+	string token;
+	if (getline(split, token, ' '))
+		id = stoi(token);
+
+	if (getline(split, token, ' '))
+		fire = stoi(token);
+
+	if (getline(split, token, ' '))
+		quit = stoi(token);
+
+	if (getline(split, token, ' '))
+		forward = stoi(token);
+
+	if (getline(split, token, ' '))
+		lateral = stoi(token);
+
+	if (getline(split, token, ' '))
+		rotation = stoi(token);
+
+	if (getline(split, token, ' '))
+		vertical = stoi(token);
+
+	// The remainder is the chat string
+	if (getline(split, token, '\0'))
+		chat = token;
 }
