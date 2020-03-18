@@ -13,11 +13,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// tick.cpp
-// Single instance of a game action sampled per tick for a player
+// ticcmd.cpp
+// Single instance of a game action sampled per tic for a player
 // Sometimes called a "tic command"
 
-#include "tick.h"
+#include "ticcmd.h"
 
 #include <SDL2/SDL_endian.h>	/* SDL_BYTEORDER, SDL_BIG_ENDIAN */
 
@@ -26,14 +26,14 @@
 
 using namespace std;
 
-Tick::Tick()
+Ticcmd::Ticcmd()
 {
 	Reset();
 	quit = false;
 	id = 0;	// Must be changed when playing multiplayer
 }
 
-void Tick::Reset()
+void Ticcmd::Reset()
 {
 	// Init to default values
 	forward = 0;
@@ -45,7 +45,7 @@ void Tick::Reset()
 }
 
 // Encodes a player's data to a buffer for network usage
-vector<unsigned char> Tick::Serialize() const
+vector<unsigned char> Ticcmd::Serialize() const
 {
 	// Serialize the command
 	vector<unsigned char> c;
@@ -89,7 +89,7 @@ vector<unsigned char> Tick::Serialize() const
 }
 
 // Decodes a player's data from a buffer and write to command
-void Tick::Deserialize(vector<unsigned char> v)
+void Ticcmd::Deserialize(vector<unsigned char> v)
 {
 	// Safety check if not a least 8 bytes
 	if (v.size() < 8)

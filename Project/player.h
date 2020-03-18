@@ -23,7 +23,7 @@
 #include "vecmath.h"	// Custom library for vector math, collision with planes, etc.
 #include "plane.h"
 #include "actor.h"
-#include "tick.h"
+#include "ticcmd.h"
 
 #include <string>
 #include <cmath>
@@ -34,7 +34,7 @@ using namespace std;
 class Player: public Actor
 {
 public:
-	Tick Cmd = Tick();
+	Ticcmd Cmd = Ticcmd();
 
 	// Object-oriented programming is a pain. Made it public so it's easily accessible.
 	short Angle = 8192;	// Yaw

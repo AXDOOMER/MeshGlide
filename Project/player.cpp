@@ -20,7 +20,7 @@
 #include "texture.h"
 #include "cache.h"
 #include "actor.h"
-#include "tick.h"
+#include "ticcmd.h"
 
 #include <cmath>
 #include <limits>		/* numeric_limits */

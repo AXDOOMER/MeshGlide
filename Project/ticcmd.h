@@ -13,19 +13,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// tick.h
-// Single instance of a game action sampled per tick for a player
+// ticcmd.h
+// Single instance of a game action sampled per tic for a player
 // Sometimes called a "tic command"
 
-#ifndef TICK_H
-#define TICK_H
+#ifndef TICCMD_H
+#define TICCMD_H
 
 #include <string>
 #include <vector>
 
 using namespace std;
 
-class Tick
+class Ticcmd
 {
 public:
 	unsigned char id;
@@ -37,11 +37,11 @@ public:
 	bool quit;
 	string chat;
 
-	Tick();
+	Ticcmd();
 	void Reset();
 
 	vector<unsigned char> Serialize() const;
 	void Deserialize(vector<unsigned char> v);
 };
 
-#endif /* TICK_H */
+#endif /* TICCMD_H */
