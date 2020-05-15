@@ -229,7 +229,7 @@ Float2 MoveOnCollision(const Float3& origin, const Float3& target, const Player*
 	if (PlayerTouchesWalls(play, TouchedPlanes(play, lvl)))
 	{
 		// Get the list of touched walls
-		vector<Plane*> touched = PlayerTouchedWallsList(play, TouchedPlanes(play, lvl));
+		const vector<Plane*> touched = PlayerTouchedWallsList(play, TouchedPlanes(play, lvl));
 
 		Player* dummy = new Player();	// Used for simulations
 		dummy->pos_.z = play->pos_.z;	// The "dummy" must be at the same height as the player
