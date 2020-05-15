@@ -11,7 +11,7 @@ jobs:
     steps:
       - checkout
 
-      - run: apt-get -y install g++ build-essential make autoconf libglfw3-dev libsdl2-image-dev libsdl2-dev libczmq-dev
+      - run: sudo apt-get -y install g++ build-essential make autoconf libglfw3-dev libsdl2-image-dev libsdl2-dev libczmq-dev
 
       - run:
           name: Execute Makefile
