@@ -18,7 +18,7 @@ jobs:
       - run:
           name: Run test demo
           working_directory: Project
-          command: ./MeshGlide -debug -playdemo citest1.demo
+          command: ./MeshGlide -debug -time -playdemo citest.demo
 
 workflows:
   main:
