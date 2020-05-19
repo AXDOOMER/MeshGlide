@@ -18,6 +18,11 @@ jobs:
           working_directory: Project
           command: make -j 4
 
+      - run:
+          name: Run test demo
+          working_directory: Project
+          ./MeshGlide -playdemo citest.demo
+
 workflows:
   main:
     jobs:
