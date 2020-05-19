@@ -1,13 +1,10 @@
 version: 2.1
 
-orbs:
-  python: circleci/python@0.3.0
-
 jobs:
   build:
     working_directory: ~/project
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/node:7.10-node-browsers
     steps:
       - checkout
 
