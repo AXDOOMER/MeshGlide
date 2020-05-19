@@ -415,7 +415,8 @@ int mainloop(int argc, const char* argv[])
 		if (Debug)
 		{
 			cout << "X: " << CurrentLevel->play->PosX() << "\t\tY: " << CurrentLevel->play->PosY()
-				<< "\t\tZ: " << CurrentLevel->play->PosZ() << "\t\tA: " << CurrentLevel->play->Angle << endl;
+				<< "\t\tZ: " << CurrentLevel->play->PosZ() << "\t\tA: " << CurrentLevel->play->Angle
+				<< "\t\tFrame time: " << (FrameDelay / 1000.0f) << "ms" << endl;
 		}
 
 		TicCount++;
