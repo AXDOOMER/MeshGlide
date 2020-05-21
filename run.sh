@@ -8,18 +8,7 @@ cd $(dirname "$0")
 cd Project
 
 # Compile the source code files and execute the program by default
-if [ "$#" -ge 1 ] && [ "$1" == "cppcheck" ]; then
-	cd ..
-	cppcheck --error-exitcode=1 -j2 -UTESTING -Iopl -Isrc -Isrc/Project Project/
-elif [ "$#" -ge 1 ] && [ "$1" == "info" ]; then
-	if [ -f $EXENAME ]; then
-		echo -n "File size in bytes is: "
-		du -b $EXENAME | cut -f 1
-		md5sum $EXENAME
-	else
-		echo "File not found!"
-	fi
-elif [ "$#" -ge 1 ] && [ "$1" == "release" ]; then
+if [ "$#" -ge 1 ] && [ "$1" == "release" ]; then
 	echo "Building release"
 	shift
 	echo "$EXENAME args: $@"
