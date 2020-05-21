@@ -492,6 +492,11 @@ void Level::LoadObj(const string& path, unsigned int numOfPlayers)
 
 vector<Plane*> Level::getPlanesForBox(float x, float y, float radius) const
 {
+	// TODO: Should be computed once. Doesn't need to be computed again unless map
+	// geometry moves. Planes could be linked together like a linked list. We could
+	// keep track of the plane where the player is located to speed up lookups.
+	// This would also be useful for the bot's pathfinding.
+
 	vector<Plane*> boxplanes;
 
 	for (unsigned int k = 0; k < planes.size(); k++)
