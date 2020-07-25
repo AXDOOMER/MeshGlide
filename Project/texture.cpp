@@ -100,11 +100,11 @@ Texture::Texture(const string& Path, bool enableFiltering)
 		throw runtime_error((const char*)gluErrorString(ErrorCode));
 	}
 
+	cout << "Texture loaded: '" << Path << "' is " << Surface->w << 'x' << Surface->h << 'x' << bits << endl;
+
 	// Set the ID and free the surface
 	Id_ = textureID;
 	SDL_FreeSurface(Surface);
-
-	cout << "Texture loaded: '" << Path << "' is " << Surface->w << 'x' << Surface->h << 'x' << bits << endl;
 }
 
 string Texture::Name() const
