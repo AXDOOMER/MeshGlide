@@ -233,3 +233,67 @@ bool Blood::Update()
 
 	return false;
 }
+
+Plasma::Plasma(float x, float y, float z, float velx, float vely, float velz)
+{
+	pos_.x = x;
+	pos_.y = y;
+	pos_.z = z;
+
+	mom_.x = velx;
+	mom_.y = vely;
+	mom_.z = velz;
+
+	Cache::Instance()->Add(sprite_, false);
+
+	Age_ = 0;
+}
+
+Plasma::~Plasma()
+{
+	// Empty
+}
+
+float Plasma::PosX() const
+{
+	return pos_.x;
+}
+
+float Plasma::PosY() const
+{
+	return pos_.y;
+}
+
+float Plasma::PosZ() const
+{
+	return pos_.z;
+}
+
+float Plasma::Radius() const
+{
+	return GetSprite({0,0,0})->Width() / 64.0f;
+}
+
+float Plasma::Height() const
+{
+	return GetSprite({0,0,0})->Height() * 2.0f / 64.0f;
+}
+
+Texture* Plasma::GetSprite(Float3 /*CamPos*/) const
+{
+	return Cache::Instance()->Get(sprite_);
+}
+
+bool Plasma::Update()
+{
+	Age_++;
+
+	pos_.x += mom_.x;
+	pos_.y += mom_.y;
+	pos_.z += mom_.z;
+
+	if (Age_ < MAX_AGE)
+		return true;
+
+	return false;
+}

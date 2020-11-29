@@ -134,5 +134,29 @@ public:
 	bool Update();
 };
 
+class Plasma: public Actor
+{
+public:
+	Plasma(float x, float y, float z, float velx, float vely, float velz);
+	~Plasma();
+
+	float PosX() const;
+	float PosY() const;
+	float PosZ() const;
+	float Radius() const;
+	float Height() const;
+
+	string Type;
+	int Age_;
+	float GroundZ_;
+	float MomZ_;
+	const int MAX_AGE = 1024;
+
+	// Sprite names
+	const string sprite_ = "aplsa0.png";
+	Texture* GetSprite(Float3 CamPos) const;
+	bool Update();
+};
+
 
 #endif /* ACTOR_H */
