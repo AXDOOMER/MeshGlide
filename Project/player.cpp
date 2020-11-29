@@ -67,6 +67,9 @@ void Player::Reset()
 // TODO: Improve the movement system so the division by 64 can be avoided
 void Player::ForwardMove(int Thrust)
 {
+	mom_.x += ((float)Thrust / 64) * cos(GetRadianAngle(Angle));
+	mom_.y += ((float)Thrust / 64) * sin(GetRadianAngle(Angle));
+
 	pos_.x += ((float)Thrust / 64) * cos(GetRadianAngle(Angle));
 	pos_.y += ((float)Thrust / 64) * sin(GetRadianAngle(Angle));
 }
@@ -74,6 +77,9 @@ void Player::ForwardMove(int Thrust)
 void Player::LateralMove(int Thrust)
 {
 	float LateralAngle = GetRadianAngle(Angle) - M_PI / 2;
+
+	mom_.x += ((float)Thrust / 64) * cos(LateralAngle);
+	mom_.y += ((float)Thrust / 64) * sin(LateralAngle);
 
 	pos_.x += ((float)Thrust / 64) * cos(LateralAngle);
 	pos_.y += ((float)Thrust / 64) * sin(LateralAngle);
@@ -95,6 +101,9 @@ void Player::NetToCmd(vector<unsigned char> v)
 
 void Player::ExecuteTick()
 {
+	// TODO: This should be moved elsewhere
+	mom_.x = mom_.y = mom_.z = 0;
+
 	ForwardMove(Cmd.forward);
 	LateralMove(Cmd.lateral);
 	AngleTurn(Cmd.rotation);

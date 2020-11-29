@@ -351,6 +351,7 @@ int mainloop(int argc, const char* argv[])
 				Float2 pos = MoveOnCollision(pt, CurrentLevel->players[i]->pos_, CurrentLevel->players[i], CurrentLevel);
 
 				// Move the player back to its original position
+				// TODO: Shouldn't any 'momentum' be cancelled?
 				CurrentLevel->players[i]->pos_ = pt;
 
 				// Try to slide the player against the walls to a valid position
@@ -365,6 +366,7 @@ int mainloop(int argc, const char* argv[])
 					}
 					else
 					{
+						// TODO: Shouldn't any 'momentum' be cancelled?
 						CurrentLevel->players[i]->pos_ = pt;
 					}
 				}

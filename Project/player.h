@@ -51,6 +51,7 @@ public:
 
 	int AirTime = 0;	// When the player falls
 	bool ShouldFire = false;
+	int TimeSinceLastShot = 0;
 
 	// Weapons that are in the player's possession
 	bool OwnedWeapons[MAXOWNEDWEAPONS];

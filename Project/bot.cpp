@@ -46,8 +46,23 @@ float angleBetweenPlayers(const Player* const source, const Player* const target
 	return atan2(source->PosY() - target->PosY(), source->PosX() - target->PosX());
 }
 
+float distance(const Float3& u, const Float3& v)
+{
+	return sqrt(pow(u.x - v.x, 2) + pow(u.y - v.y, 2));
+}
+
+float direction(const Float3& u, const Float3& v)
+{
+	return atan2(v.y - u.y, v.x - u.x);
+}
+
+float velocity(const Float3& v)
+{
+	return sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2));
+}
+
 // Simple AI that follows a target
-void updateBot(Player* const bot, const Level* const lvl)
+void updateBot(Player* const bot, Level* const lvl)
 {
 	Player* target = findTarget(bot, lvl);
 
@@ -78,5 +93,56 @@ void updateBot(Player* const bot, const Level* const lvl)
 		{
 			bot->Cmd.forward = 10;
 		}
+
+		// Fire at opponent
+		if (bot->TimeSinceLastShot > 30)
+		{
+			// TODO: LINE OF SIGHT CHECK
+
+			bot->TimeSinceLastShot = 0;
+
+			// Get updated angle
+			currentAngle = bot->GetRadianAngle(bot->Angle);
+
+			const int PROJECTILE_SPEED = 1.0f;	// TODO: Has to get the value from the current weapon
+
+			// This code computes an interception point between two objects that move at a different speed
+			// Quadratic formula adapted from:
+			// https://stackoverflow.com/questions/37250215/intersection-of-two-moving-objects-with-latitude-longitude-coordinates
+			float dist = distance(bot->pos_, target->pos_);
+			float dir = direction(bot->pos_, target->pos_);
+
+			// "target_dir" is the direction angle of the target
+			float target_dir = atan2(target->mom_.y, target->mom_.x);
+			float target_vel = velocity(target->mom_);
+			// Angle "alpha" is the direction from chaser to target
+			float alpha = M_PI + dir - target_dir;
+			float chaser_vel = PROJECTILE_SPEED;
+
+			float a = pow(chaser_vel, 2) - pow(target_vel, 2);
+			float b = 2 * dist * target_vel * cos(alpha);
+			float c = -pow(dist, 2);
+			float disc = pow(b, 2) - 4 * a * c;
+
+			// Check if intersection is possible
+			if (disc >= 0 && a != 0.0f && dist != 0.0f)
+			{
+				float time = (sqrt(disc) - b) / (2 * a);
+				float x = target->PosX() + target_vel * time * cos(target_dir);
+				float y = target->PosY() + target_vel * time * sin(target_dir);
+
+				float missile_zspeed = (target->PosZ() - bot->PosZ()) / dist;
+				float missile_dir = direction(bot->pos_, Float3{x, y , 0});
+				// Spawn missile
+				// TODO: Aim at player if plasma, aim at ground if rocket because of splash damage
+				lvl->things.push_back(new Plasma(bot->PosX(), bot->PosY(), bot->CamZ() - 0.5f, cos(missile_dir), sin(missile_dir), missile_zspeed));
+			}
+			// Else preserve ammo
+		}
+		else
+		{
+			bot->TimeSinceLastShot++;
+		}
+
 	}
 }

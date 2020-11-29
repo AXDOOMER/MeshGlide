@@ -19,4 +19,4 @@
 #include "player.h"
 #include "level.h"
 
-void updateBot(Player* const bot, const Level* const lvl);
+void updateBot(Player* const bot, Level* const lvl);
