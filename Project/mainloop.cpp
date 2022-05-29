@@ -39,12 +39,11 @@
 #include <cstdlib>		/* EXIT_FAILURE, EXIT_SUCCESS */
 #include <fstream>
 #include <chrono>
-
 using namespace std;
 
 int mainloop(int argc, const char* argv[])
 {
-	const char* const VERSION = "0.58 (dev)";
+	const char* const VERSION = "0.59 (dev)";
 
 	bool Quit = false;
 	static unsigned int TicCount = 0;
@@ -58,7 +57,6 @@ int mainloop(int argc, const char* argv[])
 	extern GameWindow view;
 	Network network;
 	int numOfPlayers = 1;
-	int frameSkip = 0;
 
 	cout << "                MESHGLIDE ENGINE -- " << VERSION << "\n\n";
 
@@ -74,12 +72,6 @@ int mainloop(int argc, const char* argv[])
 	{
 		// Makes the game run as fast as possible and output the time that it took to play the demo at full speed
 		Fast = true;
-	}
-
-	if (FindArgumentPosition(argc, argv, "-frameskip") > 0)
-	{
-		// How many frames to skip before drawing one.
-		frameSkip = stoi(FindArgumentParameter(argc, argv, "-frameskip"));
 	}
 
 	/****************************** DEMO FILES ******************************/
@@ -405,12 +397,6 @@ int mainloop(int argc, const char* argv[])
 
 		CurrentLevel->UpdateThings();
 
-		// Draw Screen
-		if (frameSkip == 0 || TicCount % frameSkip == 0)
-		{
-			DrawScreen(window, CurrentLevel->play, CurrentLevel, FrameDelay);
-		}
-
 		// Play sound
 
 		// Status of the player for debugging purposes
@@ -422,15 +408,25 @@ int mainloop(int argc, const char* argv[])
 
 		TicCount++;
 
-		if (!Fast)
-		{
-			auto end = chrono::system_clock::now();
-			FrameDelay = chrono::duration_cast<chrono::microseconds>(end - start).count();
+		const int FRAMERATE = 60;
+		auto FrameTime = std::chrono::milliseconds(1000 / FRAMERATE);
+		auto max = GameStartTime + FrameTime * TicCount;
 
-			const int FRAMERATE = 60;
-			const float DELAY = 1000 / FRAMERATE;
-			if (FrameDelay / 1000 < DELAY)
-				SDL_Delay(DELAY - FrameDelay / 1000);
+		// Check if we're not running too late
+		// Game won't be responsive on horridly slow computers as the frame will never render
+		// due to computer being too slow to process the game logic fast enough.
+		if (chrono::system_clock::now() < max)
+		{
+			// Draw Screen
+			FrameDelay = chrono::duration_cast<chrono::microseconds>(chrono::system_clock::now() - start).count();
+			DrawScreen(window, CurrentLevel->play, CurrentLevel, FrameDelay);
+
+			// If there's still time left, wait so game doesn't update crazily fast
+			auto end = chrono::system_clock::now();
+			if (!Fast && end < max)
+			{
+				SDL_Delay(chrono::duration_cast<chrono::milliseconds>(max - end).count());
+			}
 		}
 
 		// Detect OpenGL errors
