@@ -10,10 +10,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Get short SHA
-        id: slug
-        run: echo "::set-output name=sha7::$(git rev-parse --short HEAD)"
-
       - name: Update and install packages
         run: |
           apt-get -qq update
@@ -37,10 +33,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Get short SHA
-        id: slug
-        run: echo "::set-output name=sha7::$(git rev-parse --short HEAD)"
-
       - name: Set up vcpkg submodule
         run: git submodule update --init --recursive
 
@@ -51,8 +43,10 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -Dsdl2-image_DIR=C:/vcpkg/installed/x64-windows/share/sdl2-image
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+          Get-ChildItem -Path "C:\vcpkg" -Recurse -Filter "sdl2-imageConfig.cmake","sdl2-image-config.cmake" -File -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
           cmake --build .
+          Get-ChildItem -Path "C:\vcpkg" -Recurse -Filter "sdl2-imageConfig.cmake","sdl2-image-config.cmake" -File -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
 
       - name: Create archive
         run: |
@@ -64,3 +58,47 @@ jobs:
         with:
           name: meshglide
           path: meshglide.zip
+
+  build-msys:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { sys: mingw64, env: x86_64 }
+          - { sys: mingw32, env: i686 }
+
+    steps:
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          msystem: ${{ matrix.sys }}
+          path-type: inherit
+          install: >-
+            autotools
+            zip
+            mingw-w64-${{matrix.env}}-gcc
+            mingw-w64-${{matrix.env}}-SDL2
+            mingw-w64-${{matrix.env}}-SDL2_image
+            mingw-w64-${{matrix.env}}-glfw
+            mingw-w64-${{matrix.env}}-libpng
+            mingw-w64-${{matrix.env}}-zeromq
+
+      - uses: actions/checkout@v3
+
+      - name: Build
+        working-directory: Project
+        run: |
+          make -j 4
+          
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: meshglide
+          path: Project/MeshGlide
