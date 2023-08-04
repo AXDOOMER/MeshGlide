@@ -1,5 +1,5 @@
 {
-    "name": "MeshGlide",
+    "name": "meshglide",
     "dependencies": [
         "sdl2",
         "sdl2-image",
