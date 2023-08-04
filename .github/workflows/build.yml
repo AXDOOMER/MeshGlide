@@ -45,7 +45,7 @@ jobs:
         run: git submodule update --init --recursive
 
       - name: Install vcpkg depedencies
-        run: vcpkg install
+        run: vcpkg integrate install
 
       - name: Build the project
         run: |
