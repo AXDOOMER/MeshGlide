@@ -1,6 +1,6 @@
 name: Build project
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   build-linux:
@@ -51,7 +51,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -Dsdl2-image_DIR=C:/vcpkg/installed/x64-windows/share/sdl2-image
           cmake --build .
 
       - name: Create archive
