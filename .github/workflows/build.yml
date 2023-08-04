@@ -21,11 +21,10 @@ jobs:
         run: |
           make -j 4
       - name: Upload ELF
-        working-directory: Project
         uses: actions/upload-artifact@v2
         with:
           name: meshglide
-          path: meshglide
+          path: Project/meshglide
   build-windows:
     runs-on: windows-2019
     steps:
