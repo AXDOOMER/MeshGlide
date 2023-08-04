@@ -1,0 +1,42 @@
+name: Build project
+
+on: [push, pull_request]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    container: ubuntu:18.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get short SHA
+        id: slug
+        run: echo "::set-output name=sha7::$(git rev-parse --short HEAD)"
+      - name: Update and install packages
+        run: |
+          apt-get -qq update
+          ACCEPT_EULA=Y apt-get -y dist-upgrade
+          apt-get -y install g++ build-essential make autoconf libglfw3-dev libsdl2-image-dev libsdl2-dev libczmq-dev cppcheck
+      - name: Build from makefile
+        run: |
+          make -j 4
+      - name: Upload ELF
+        uses: actions/upload-artifact@v2
+        with:
+          name: meshglide
+          path: meshglide
+  build-windows:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get short SHA
+        id: slug
+        run: echo "::set-output name=sha7::$(git rev-parse --short HEAD)"
+      - name: Install vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          cd vcpkg
+          bootstrap-vcpkg.bat
+      - name: Install vcpkg dependencies
+        run: |
+          cd vcpkg
+          vcpkg.exe install --triplet x64-windows-static --overlay-tripletscript

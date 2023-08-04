@@ -1,0 +1,10 @@
+{
+    "name": "MeshGlide",
+    "dependencies": [
+        "sdl2",
+        "sdl2-image",
+        "glfw3",
+        "freeglut",
+        "cppzmq"
+    ]
+}
