@@ -22,6 +22,7 @@
 #include "actor.h"
 #include "ticcmd.h"
 
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <limits>		/* numeric_limits */
 #include <string>		/* to_string() */

@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2018 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2018 Alexandre-Xavier Labontï¿½-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 
 #include <iostream>	// cerr, endl
 #include <string>
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <algorithm>	// sort()
 #include <regex>	// regex_replace()

@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2018 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2018 Alexandre-Xavier Labontï¿½-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include "physics.h"
 #include "line.h"
 
+#define _USE_MATH_DEFINES
 #include <cmath>		/* round, isnan, fmod, nanf */
 #include <limits>		/* numeric_limits */
 #include <vector>
