@@ -45,7 +45,7 @@ jobs:
         run: git submodule update --init --recursive
 
       - name: Install vcpkg depedencies
-        run: vcpkg install glfw3 sdl2 sdl2-image cppzmq
+        run: vcpkg install
 
       - name: Build the project
         run: |
