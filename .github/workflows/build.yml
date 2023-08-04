@@ -44,9 +44,13 @@ jobs:
           mkdir build
           cd build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
-          Get-ChildItem -Path "C:\vcpkg" -Recurse -Filter "sdl2-imageConfig.cmake","sdl2-image-config.cmake" -File -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
+          cd C:/vcpkg
+          dir /s /b sdl2-imageConfig.cmake
+          dir /s /b sdl2-image-config.cmake
           cmake --build .
-          Get-ChildItem -Path "C:\vcpkg" -Recurse -Filter "sdl2-imageConfig.cmake","sdl2-image-config.cmake" -File -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
+          cd C:/vcpkg
+          dir /s /b sdl2-imageConfig.cmake
+          dir /s /b sdl2-image-config.cmake
 
       - name: Create archive
         run: |
@@ -59,7 +63,7 @@ jobs:
           name: meshglide
           path: meshglide.zip
 
-  build-msys:
+  build-msys2:
     runs-on: windows-latest
 
     defaults:
