@@ -29,7 +29,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: meshglide
-          path: Project/meshglide
+          path: Project/MeshGlide
 
   build-windows:
     runs-on: windows-2019
@@ -42,7 +42,10 @@ jobs:
         run: echo "::set-output name=sha7::$(git rev-parse --short HEAD)"
 
       - name: Set up vcpkg submodule
-        run: git submodule update --init
+        run: git submodule update --init --recursive
+
+      - name: Install vcpkg depedencies
+        run: vcpkg install glfw3 sdl2 sdl2-image cppzmq
 
       - name: Build the project
         run: |
