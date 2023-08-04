@@ -44,13 +44,11 @@ jobs:
           mkdir build
           cd build
           cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
-          cd C:/vcpkg
-          dir /s /b sdl2-imageConfig.cmake
-          dir /s /b sdl2-image-config.cmake
+          Get-ChildItem -Path "C:\vcpkg\" -Recurse -File -Filter "sdl2-imageConfig.cmake" -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName }
+          Get-ChildItem -Path "C:\vcpkg\" -Recurse -File -Filter "sdl2-image-config.cmake" -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName }
           cmake --build .
-          cd C:/vcpkg
-          dir /s /b sdl2-imageConfig.cmake
-          dir /s /b sdl2-image-config.cmake
+          Get-ChildItem -Path "C:\vcpkg\" -Recurse -File -Filter "sdl2-imageConfig.cmake" -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName }
+          Get-ChildItem -Path "C:\vcpkg\" -Recurse -File -Filter "sdl2-image-config.cmake" -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName }
 
       - name: Create archive
         run: |

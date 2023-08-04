@@ -33,6 +33,10 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+#ifndef M_PI_4
+#define M_PI_4 3.14159265358979323846/4
+#endif
+
 using namespace std;
 
 // Cap a value between a min and a max
