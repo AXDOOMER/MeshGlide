@@ -17,9 +17,11 @@ jobs:
           ACCEPT_EULA=Y apt-get -y dist-upgrade
           apt-get -y install g++ build-essential make autoconf libglfw3-dev libsdl2-image-dev libsdl2-dev libczmq-dev cppcheck
       - name: Build from makefile
+        working-directory: Project
         run: |
           make -j 4
       - name: Upload ELF
+        working-directory: Project
         uses: actions/upload-artifact@v2
         with:
           name: meshglide
