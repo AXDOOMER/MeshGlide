@@ -7,37 +7,57 @@ jobs:
     runs-on: ubuntu-latest
     container: ubuntu:18.04
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Get short SHA
         id: slug
         run: echo "::set-output name=sha7::$(git rev-parse --short HEAD)"
+
       - name: Update and install packages
         run: |
           apt-get -qq update
           ACCEPT_EULA=Y apt-get -y dist-upgrade
           apt-get -y install g++ build-essential make autoconf libglfw3-dev libsdl2-image-dev libsdl2-dev libczmq-dev cppcheck
+
       - name: Build from makefile
         working-directory: Project
         run: |
           make -j 4
+
       - name: Upload ELF
         uses: actions/upload-artifact@v2
         with:
           name: meshglide
           path: Project/meshglide
+
   build-windows:
     runs-on: windows-2019
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Get short SHA
         id: slug
         run: echo "::set-output name=sha7::$(git rev-parse --short HEAD)"
-      - name: Install vcpkg
+
+      - name: Set up vcpkg submodule
+        run: git submodule update --init
+
+      - name: Build the project
         run: |
-          git clone https://github.com/microsoft/vcpkg.git
-          cd vcpkg
-          bootstrap-vcpkg.bat
-      - name: Install vcpkg dependencies
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
+          cmake --build .
+
+      - name: Create archive
         run: |
-          cd vcpkg
-          vcpkg.exe install --triplet x64-windows-static --overlay-tripletscript
+          cd build
+          zip -r meshglide.zip MeshGlide ../vcpkg/vcpkg_installed
+
+      - name: Create artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: meshglide
+          path: meshglide.zip
