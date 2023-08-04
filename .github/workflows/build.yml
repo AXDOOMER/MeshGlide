@@ -51,13 +51,13 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
           cmake --build .
 
       - name: Create archive
         run: |
           cd build
-          zip -r meshglide.zip MeshGlide ../vcpkg/vcpkg_installed
+          zip -r meshglide.zip MeshGlide C:/vcpkg/vcpkg_installed
 
       - name: Create artifact
         uses: actions/upload-artifact@v2
