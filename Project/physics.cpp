@@ -22,13 +22,16 @@
 #include "physics.h"
 #include "line.h"
 
-#define _USE_MATH_DEFINES
 #include <cmath>		/* round, isnan, fmod, nanf */
 #include <limits>		/* numeric_limits */
 #include <vector>
 #include <utility>		/* pair */
 #include <algorithm>	/* find, sort */
 #include <stdexcept>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 using namespace std;
 

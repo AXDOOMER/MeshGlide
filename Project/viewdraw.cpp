@@ -31,10 +31,18 @@
 
 #include <iostream>	// cerr, endl
 #include <string>
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <algorithm>	// sort()
 #include <regex>	// regex_replace()
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+#ifndef M_PI_2
+#define M_PI_2 3.14159265358979323846/2
+#endif
+
 using namespace std;
 
 GameWindow view;
