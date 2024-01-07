@@ -23,7 +23,7 @@ TARGET: $(OBJ)
 # Rule to generate a dep file by using the C preprocessor
 # (see 'man cpp' for details on the -MM and -MT options)
 %.d: %.c
-	$(CPP) $(CXXFLAGS) $< -MM -MT $(@:.d=.o) >$@
+	@$(CPP) $(CXXFLAGS) $< -MM -MT $(@:.d=.o) >$@
 
 .PHONY: clean
 clean:
