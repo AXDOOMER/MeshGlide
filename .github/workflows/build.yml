@@ -58,7 +58,7 @@ jobs:
       - name: Build from makefile
         working-directory: Project
         run: |
-          make CXX=clang -j
+          make CXX=clang++ -j
 
       - name: Prepare artifact for packaging
         run: |
