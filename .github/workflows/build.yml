@@ -25,7 +25,7 @@ jobs:
           name: meshglide
           path: Project/MeshGlide
 
-  build-windows:
+  build-windows-clang:
     runs-on: windows-latest
     defaults:
       run:
@@ -53,6 +53,8 @@ jobs:
       - name: Build from makefile
         working-directory: Project
         run: |
+          clang --version
+          clang++ --version
           make -j
 
       - name: Prepare artifact for packaging
@@ -98,7 +100,7 @@ jobs:
         working-directory: Project
         run: |
           ls -al
-          g++.exe -Wall -Wextra -std=c++14 -O2 -o vecmath.o vecmath.cpp
+          g++ -Wall -Wextra -std=c++14 -O2 -o vecmath.o vecmath.cpp
 
       - name: Prepare artifact for packaging
         run: |
