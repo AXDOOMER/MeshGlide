@@ -32,8 +32,12 @@ using namespace std;
 
 int main(int argc, const char* argv[])
 {
-	SDL_Init(SDL_INIT_TIMER);
 	int result;
+	if (SDL_Init(SDL_INIT_TIMER) != 0)
+	{
+		SDL_Log("SDL_Init failed: %s", SDL_GetError());
+		return 1;
+	}
 	
 	try
 	{
@@ -61,8 +65,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	return main(__argc, __argv);
 }
 #endif
-/*
+
+#ifndef SDL_main
 int SDL_main(int argc, const char* argv[]) {
 	return main(argc, argv);
 }
-*/
+#endif
