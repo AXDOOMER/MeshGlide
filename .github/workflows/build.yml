@@ -8,9 +8,8 @@ jobs:
     steps:
       - name: Update and install packages
         run: |
-          apt-get -qq update
-          ACCEPT_EULA=Y apt-get -y dist-upgrade
-          apt-get -y install g++ build-essential make autoconf libglfw3-dev libsdl2-image-dev libsdl2-dev libczmq-dev cppcheck
+          sudo apt-get update
+          sudo apt-get -y install g++ build-essential make autoconf libglfw3-dev libsdl2-image-dev libsdl2-dev libczmq-dev cppcheck
 
       - name: Checkout repository
         uses: actions/checkout@v3
