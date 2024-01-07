@@ -39,14 +39,13 @@ jobs:
           install: >-
             git
             make
-            mingw-w64-x86_64-toolchain
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-SDL2
-            mingw-w64-x86_64-zlib
-            mingw-w64-x86_64-SDL2_image
-            mingw-w64-x86_64-zeromq
-            mingw-w64-x86_64-glfw
-            mingw-w64-x86_64-libpng
+            mingw-w64-clang-x86_64-toolchain
+            mingw-w64-clang-x86_64-SDL2
+            mingw-w64-clang-x86_64-zlib
+            mingw-w64-clang-x86_64-SDL2_image
+            mingw-w64-clang-x86_64-zeromq
+            mingw-w64-clang-clang-x86_64-glfw
+            mingw-w64-clang-x86_64-libpng
 
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -54,7 +53,7 @@ jobs:
       - name: Build from makefile
         working-directory: Project
         run: |
-          /mingw64/bin/g++.exe -Wall -Wextra -std=c++14 -O2 -o vecmath.o vecmath.cpp
+          make -j
 
       - name: Prepare artifact for packaging
         run: |
