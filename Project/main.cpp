@@ -56,6 +56,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 }
 #endif
 
-int SDL_main(int argc, char* argv[]) {
+int SDL_main(int argc, const char* argv[]) {
 	return main(argc, argv);
 }
