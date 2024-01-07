@@ -55,6 +55,7 @@ jobs:
         working-directory: Project
         run: |
           pacman -Fy g++.exe
+          alias g++="mingw64/bin/g++.exe"
           make -j
 
       - name: Upload EXE
