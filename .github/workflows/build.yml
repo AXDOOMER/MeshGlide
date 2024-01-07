@@ -54,7 +54,7 @@ jobs:
       - name: Build from makefile
         working-directory: Project
         run: |
-          make CXX=clang -j
+          make -j
 
       - name: Prepare artifact for packaging
         run: |
@@ -99,7 +99,7 @@ jobs:
       - name: Build from makefile
         working-directory: Project
         run: |
-          make CXX=g++ -j
+          make -j
 
       - name: Prepare artifact for packaging
         run: |
@@ -144,7 +144,7 @@ jobs:
       - name: Build from makefile
         working-directory: Project
         run: |
-          make CXX=g++ -j
+          make -j
 
       - name: Prepare artifact for packaging
         run: |
