@@ -21,7 +21,7 @@ all: TARGET
 MeshGlide: TARGET
 
 TARGET: $(OBJ)
-	$(CXX) -o $(TARGET) $^ $(LDFLAGS)
+	$(CXX) -D SDL_MAIN_HANDLED -o $(TARGET) $^ $(LDFLAGS)
 
 -include $(DEP)	# Include all dep files in the makefile
 
