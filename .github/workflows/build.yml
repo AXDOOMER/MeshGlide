@@ -54,8 +54,8 @@ jobs:
         working-directory: Project
         run: |
           pacman -Fy clang
-          clang --version
-          clang++ --version
+          x86_64-w64-mingw32-clang --version
+          x86_64-w64-mingw32-clang++ --version
           make -j
 
       - name: Prepare artifact for packaging
@@ -102,7 +102,7 @@ jobs:
         run: |
           ls -al
           pacman -Fy g++
-          g++ -Wall -Wextra -std=c++14 -O2 -o vecmath.o vecmath.cpp
+          x86_64-w64-mingw32-g++ -Wall -Wextra -std=c++14 -O2 -o vecmath.o vecmath.cpp
 
       - name: Prepare artifact for packaging
         run: |
