@@ -9,7 +9,7 @@ DEP = $(OBJ:.o=.d)	# One dependency file for each source
 CXXFLAGS = -Wall -Wextra -std=c++14 -O2 -pipe
 
 ifeq ($(findstring MINGW,$(shell uname -s)),MINGW)
-	LDFLAGS = -lSDL2main -lSDL2 -lSDL2_image -lkernel32 -luser32 -lgdi32 -lstdc++ -lm -lglfw3 -lglu32 -lopengl32 -lzmq -mconsole -Wl,-subsystem,windows
+	LDFLAGS = -lSDL2main -lSDL2 -lSDL2_image -lkernel32 -luser32 -lgdi32 -lstdc++ -lm -lglfw3 -lglu32 -lopengl32 -lzmq -mconsole -Wl,-subsystem,windows -e main
 else
 	LDFLAGS = -lstdc++ -lm -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -lzmq
 endif
