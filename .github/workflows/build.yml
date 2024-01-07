@@ -54,7 +54,7 @@ jobs:
       - name: Build from makefile
         working-directory: Project
         run: |
-          /mingw64/bin/g++.exe -Wall -Wextra -std=c++14 -O2 -pipe   -c -o actor.o actor.cpp |& cat
+          /mingw64/bin/g++.exe -Wall -Wextra -std=c++14 -O2 -o actor.o actor.cpp |& cat
 
       - name: Prepare artifact for packaging
         run: |
