@@ -55,7 +55,6 @@ jobs:
         working-directory: Project
         run: |
           /mingw64/bin/g++.exe -Wall -Wextra -std=c++14 -O2 -pipe   -c -o actor.o actor.cpp
-          make CXX=/mingw64/bin/g++.exe -j
 
       - name: Prepare artifact for packaging
         run: |
