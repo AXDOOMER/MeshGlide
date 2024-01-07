@@ -7,8 +7,12 @@ OBJ = $(SRC:.cpp=.o)
 DEP = $(OBJ:.o=.d)	# One dependency file for each source
 
 CXXFLAGS = -Wall -Wextra -std=c++14 -O2 -pipe
-LDFLAGS = -L/mingw64/lib -lstdc++ -lm -lglfw3 -lSDL2 -lSDL2_image -lzmq
-#-lGL -lGLU
+
+#ifeq ($(OS),Windows_NT)
+LDFLAGS = -lstdc++ -lm -lglfw3 -lopengl32 -lSDL2 -lSDL2_image -lzmq
+#else
+LDFLAGS = -lstdc++ -lm -lglfw -lGL -lGLU -lSDL2 -lSDL2_image -lzmq
+#endif
 
 TARGET = MeshGlide
 
