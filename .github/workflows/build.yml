@@ -57,8 +57,15 @@ jobs:
           pacman -Fy g++.exe
           make CXX=/mingw64/bin/g++.exe -j
 
+      - name: Prepare artifact for packaging
+        run: |
+          mkdir -p bin
+          cp Project/MeshGlide bin/meshglide.exe
+          cp /mingw32/bin/*.dll bin/
+          touch bin/crap.txt
+
       - name: Upload EXE
         uses: actions/upload-artifact@v3
         with:
-          name: meshglide
-          path: Project/MeshGlide
+          name: meshglide4windows
+          path: bin
