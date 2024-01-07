@@ -1,25 +1,24 @@
 name: Build project
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build-linux:
     runs-on: ubuntu-latest
-    container: ubuntu:18.04
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       - name: Update and install packages
         run: |
           apt-get -qq update
           ACCEPT_EULA=Y apt-get -y dist-upgrade
           apt-get -y install g++ build-essential make autoconf libglfw3-dev libsdl2-image-dev libsdl2-dev libczmq-dev cppcheck
 
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Build from makefile
         working-directory: Project
         run: |
-          make -j 4
+          make -j
 
       - name: Upload ELF
         uses: actions/upload-artifact@v2
@@ -28,79 +27,31 @@ jobs:
           path: Project/MeshGlide
 
   build-windows:
-    runs-on: windows-2019
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up vcpkg submodule
-        run: git submodule update --init --recursive
-
-      - name: Install vcpkg depedencies
-        run: vcpkg integrate install
-
-      - name: Build the project
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
-          Get-ChildItem -Path "C:\vcpkg\" -Recurse -File -Filter "sdl2-imageConfig.cmake" -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName }
-          Get-ChildItem -Path "C:\vcpkg\" -Recurse -File -Filter "sdl2-image-config.cmake" -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName }
-          cmake --build .
-          Get-ChildItem -Path "C:\vcpkg\" -Recurse -File -Filter "sdl2-imageConfig.cmake" -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName }
-          Get-ChildItem -Path "C:\vcpkg\" -Recurse -File -Filter "sdl2-image-config.cmake" -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName }
-
-      - name: Create archive
-        run: |
-          cd build
-          zip -r meshglide.zip MeshGlide C:/vcpkg/vcpkg_installed
-
-      - name: Create artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: meshglide
-          path: meshglide.zip
-
-  build-msys2:
     runs-on: windows-latest
-
     defaults:
       run:
         shell: msys2 {0}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { sys: mingw64, env: x86_64 }
-          - { sys: mingw32, env: i686 }
-
     steps:
-      - name: Setup MSYS2
+      - name: Install MSYS2
         uses: msys2/setup-msys2@v2
         with:
+          msystem: MINGW32
           update: true
-          msystem: ${{ matrix.sys }}
-          path-type: inherit
           install: >-
-            autotools
-            zip
-            mingw-w64-${{matrix.env}}-gcc
-            mingw-w64-${{matrix.env}}-SDL2
-            mingw-w64-${{matrix.env}}-SDL2_image
-            mingw-w64-${{matrix.env}}-glfw
-            mingw-w64-${{matrix.env}}-libpng
-            mingw-w64-${{matrix.env}}-zeromq
+            git
+            make
+            mingw-w64-i686-toolchain
+            mingw-w64-i686-SDL2
+            mingw-w64-i686-zlib
+            mingw-w64-i686-SDL2_image
+            mingw-w64-i686-zeromq
+            mingw-w64-i686-glfw
+            mingw-w64-i686-libpng
+            
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - uses: actions/checkout@v3
-
-      - name: Build
+      - name: Build from makefile
         working-directory: Project
         run: |
-          make -j 4
-          
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: meshglide
-          path: Project/MeshGlide
+          make -j
