@@ -55,8 +55,7 @@ jobs:
         working-directory: Project
         run: |
           pacman -Fy g++.exe
-          alias g++="mingw64/bin/g++.exe"
-          make -j
+          make CXX=mingw64/bin/g++.exe -j
 
       - name: Upload EXE
         uses: actions/upload-artifact@v3
