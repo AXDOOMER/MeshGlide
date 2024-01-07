@@ -44,7 +44,7 @@ jobs:
             mingw-w64-clang-x86_64-zlib
             mingw-w64-clang-x86_64-SDL2_image
             mingw-w64-clang-x86_64-zeromq
-            mingw-w64-clang-clang-x86_64-glfw
+            mingw-w64-clang-x86_64-glfw
             mingw-w64-clang-x86_64-libpng
 
       - name: Checkout repository
