@@ -53,10 +53,7 @@ jobs:
       - name: Build from makefile
         working-directory: Project
         run: |
-          pacman -Fy clang
-          clang.exe --version
-          clang++.exe --version
-          make -j
+          make CXX=clang -j
 
       - name: Prepare artifact for packaging
         run: |
@@ -100,9 +97,7 @@ jobs:
       - name: Build from makefile
         working-directory: Project
         run: |
-          ls -al
-          pacman -Fy g++
-          g++ -Wall -Wextra -std=c++14 -O2 -o vecmath.o vecmath.cpp
+          make CXX=g++ -j
 
       - name: Prepare artifact for packaging
         run: |
