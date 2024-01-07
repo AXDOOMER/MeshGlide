@@ -29,7 +29,10 @@
 #include "strutils.h"	/* Split */
 #include "bot.h"
 
+#ifdef _WIN32
 #include <windef.h>
+#endif
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GLFW/glfw3.h>
