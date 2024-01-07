@@ -53,5 +53,5 @@ jobs:
       - name: Build from makefile
         working-directory: Project
         run: |
-          pacman -F g++.exe
+          pacman -Fy g++.exe
           make -j
