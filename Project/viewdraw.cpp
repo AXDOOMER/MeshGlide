@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2018 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2018 Alexandre-Xavier Labontï¿½-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,6 +24,11 @@
 
 #include <SDL2/SDL_image.h>
 #include <GLFW/glfw3.h>
+
+#ifdef _WIN32
+#include <windef.h>
+#endif
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 
@@ -34,6 +39,15 @@
 #include <cmath>
 #include <algorithm>	// sort()
 #include <regex>	// regex_replace()
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+#ifndef M_PI_2
+#define M_PI_2 3.14159265358979323846/2
+#endif
+
 using namespace std;
 
 GameWindow view;

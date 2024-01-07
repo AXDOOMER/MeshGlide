@@ -1,0 +1,165 @@
+name: Build project
+
+on:
+  push:
+    paths-ignore:
+      - "**.md"
+      - "**.txt"
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update and install packages
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install g++ build-essential make autoconf libglfw3-dev libsdl2-image-dev libsdl2-dev libczmq-dev cppcheck
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build from makefile
+        working-directory: Project
+        run: |
+          make -j
+
+      - name: Upload ELF
+        uses: actions/upload-artifact@v3
+        with:
+          name: meshglide
+          path: Project/MeshGlide
+
+  build-windows-clang:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - name: Install MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git
+            make
+            mingw-w64-clang-x86_64-toolchain
+            mingw-w64-clang-x86_64-clang
+            mingw-w64-clang-x86_64-SDL2
+            mingw-w64-clang-x86_64-zlib
+            mingw-w64-clang-x86_64-SDL2_image
+            mingw-w64-clang-x86_64-zeromq
+            mingw-w64-clang-x86_64-cppzmq
+            mingw-w64-clang-x86_64-glfw
+            mingw-w64-clang-x86_64-libpng
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build from makefile
+        working-directory: Project
+        run: |
+          make CXX=clang++ -j
+
+      - name: Prepare artifact for packaging
+        run: |
+          mkdir -p bin
+          cp Project/MeshGlide bin/meshglide.exe
+          cp /mingw64/bin/*.dll bin/
+          touch bin/crap.txt
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v3
+        with:
+          name: meshglide4windows
+          path: bin
+
+  build-windows-gcc:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - name: Install MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git
+            make
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-SDL2
+            mingw-w64-x86_64-zlib
+            mingw-w64-x86_64-SDL2_image
+            mingw-w64-x86_64-zeromq
+            mingw-w64-x86_64-cppzmq
+            mingw-w64-x86_64-glfw
+            mingw-w64-x86_64-libpng
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build from makefile
+        working-directory: Project
+        run: |
+          make -j
+
+      - name: Prepare artifact for packaging
+        run: |
+          mkdir -p bin
+          cp Project/MeshGlide bin/meshglide.exe
+          cp /mingw64/bin/*.dll bin/
+          touch bin/crap.txt
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v3
+        with:
+          name: meshglide4windows
+          path: bin
+
+  build-windows-gcc-ucrt64:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - name: Install MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ucrt64
+          update: true
+          install: >-
+            git
+            make
+            mingw-w64-ucrt-x86_64-toolchain
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-SDL2
+            mingw-w64-ucrt-x86_64-zlib
+            mingw-w64-ucrt-x86_64-SDL2_image
+            mingw-w64-ucrt-x86_64-zeromq
+            mingw-w64-ucrt-x86_64-cppzmq
+            mingw-w64-ucrt-x86_64-glfw
+            mingw-w64-ucrt-x86_64-libpng
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build from makefile
+        working-directory: Project
+        run: |
+          make -j
+
+      - name: Prepare artifact for packaging
+        run: |
+          mkdir -p bin
+          cp Project/MeshGlide bin/meshglide.exe
+          cp /mingw64/bin/*.dll bin/
+          touch bin/crap.txt
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v3
+        with:
+          name: meshglide4windows
+          path: bin

@@ -26,11 +26,22 @@
 
 using namespace std;
 
-int main(int argc, const char* argv[])
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+int SDL_main(int argc, const char* argv[])
 {
+	int result;
+	if (SDL_Init(SDL_INIT_TIMER) != 0)
+	{
+		SDL_Log("SDL_Init failed: %s", SDL_GetError());
+		return 1;
+	}
+	
 	try
 	{
-		return mainloop(argc, argv);
+		result = mainloop(argc, argv);
 	}
 	catch (const exception& e)
 	{
@@ -41,6 +52,23 @@ int main(int argc, const char* argv[])
 			e.what(),
 			NULL);
 
-		return EXIT_FAILURE;
+		result = EXIT_FAILURE;
 	}
+
+	SDL_Quit();
+	return result;
 }
+
+#ifdef _WIN32
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+	// Call your existing main function
+	return main(__argc, __argv);
+}
+#endif
+/*
+#ifndef SDL_main
+int SDL_main(int argc, const char* argv[]) {
+	return main(argc, argv);
+}
+#endif
+*/

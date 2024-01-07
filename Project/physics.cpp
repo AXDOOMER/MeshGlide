@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2018 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2018 Alexandre-Xavier Labontï¿½-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,6 +28,14 @@
 #include <utility>		/* pair */
 #include <algorithm>	/* find, sort */
 #include <stdexcept>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+#ifndef M_PI_4
+#define M_PI_4 3.14159265358979323846/4
+#endif
 
 using namespace std;
 

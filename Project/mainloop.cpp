@@ -29,9 +29,13 @@
 #include "strutils.h"	/* Split */
 #include "bot.h"
 
-#include <GLFW/glfw3.h>
+#ifdef _WIN32
+#include <windef.h>
+#endif
+
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <GLFW/glfw3.h>
 #include <SDL2/SDL.h>	/* SDL_Delay */
 
 #include <iostream>

@@ -1,4 +1,4 @@
-// Copyright (C) 2014-2018 Alexandre-Xavier Labonté-Lamoureux
+// Copyright (C) 2014-2018 Alexandre-Xavier LabontÃ©-Lamoureux
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,6 +27,11 @@ using namespace std;
 #include "actor.h"
 #include "player.h"
 #include "level.h"
+
+#ifndef GL_SAMPLE_ALPHA_TO_COVERAGE
+// OpenGL ES constant
+#define GL_SAMPLE_ALPHA_TO_COVERAGE 0x809e
+#endif
 
 /****************************** Constants ******************************/
 
