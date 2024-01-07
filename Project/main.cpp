@@ -26,6 +26,10 @@
 
 using namespace std;
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 int main(int argc, const char* argv[])
 {
 	try
@@ -44,3 +48,10 @@ int main(int argc, const char* argv[])
 		return EXIT_FAILURE;
 	}
 }
+
+#ifdef WIN32
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+	// Call your existing main function
+	return main(__argc, __argv);
+}
+#endif
