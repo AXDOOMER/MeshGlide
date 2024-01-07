@@ -20,7 +20,7 @@ jobs:
           make -j
 
       - name: Upload ELF
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: meshglide
           path: Project/MeshGlide
@@ -46,11 +46,12 @@ jobs:
             mingw-w64-x86_64-zeromq
             mingw-w64-x86_64-glfw
             mingw-w64-x86_64-libpng
-            
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Build from makefile
         working-directory: Project
         run: |
+          pacman -F g++.exe
           make -j
