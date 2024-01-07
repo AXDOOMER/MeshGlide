@@ -51,7 +51,7 @@ int main(int argc, const char* argv[])
 		result = EXIT_FAILURE;
 	}
 
-	SQL_Quit();
+	SDL_Quit();
 	return result;
 }
 
