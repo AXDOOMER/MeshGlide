@@ -24,6 +24,11 @@
 
 #include <SDL2/SDL_image.h>
 #include <GLFW/glfw3.h>
+
+#ifdef _WIN32
+#include <windef.h>
+#endif
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 
