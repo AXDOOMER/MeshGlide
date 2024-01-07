@@ -32,9 +32,12 @@ using namespace std;
 
 int main(int argc, const char* argv[])
 {
+	SDL_Init(SDL_INIT_TIMER);
+	int result;
+	
 	try
 	{
-		return mainloop(argc, argv);
+		result = mainloop(argc, argv);
 	}
 	catch (const exception& e)
 	{
@@ -45,8 +48,11 @@ int main(int argc, const char* argv[])
 			e.what(),
 			NULL);
 
-		return EXIT_FAILURE;
+		result = EXIT_FAILURE;
 	}
+
+	SQL_Quit();
+	return result;
 }
 
 #ifdef _WIN32
