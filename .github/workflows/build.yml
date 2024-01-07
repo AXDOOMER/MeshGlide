@@ -61,7 +61,7 @@ jobs:
         run: |
           mkdir -p bin
           cp Project/MeshGlide bin/meshglide.exe
-          cp /mingw32/bin/*.dll bin/
+          cp /mingw64/bin/*.dll bin/
           touch bin/crap.txt
 
       - name: Upload EXE
