@@ -132,15 +132,15 @@ jobs:
           install: >-
             git
             make
-            mingw-w64-ucrt64-x86_64-toolchain
-            mingw-w64-ucrt64-x86_64-gcc
-            mingw-w64-ucrt64-x86_64-SDL2
-            mingw-w64-ucrt64-x86_64-zlib
-            mingw-w64-ucrt64-x86_64-SDL2_image
-            mingw-w64-ucrt64-x86_64-zeromq
-            mingw-w64-ucrt64-x86_64-cppzmq
-            mingw-w64-ucrt64-x86_64-glfw
-            mingw-w64-ucrt64-x86_64-libpng
+            mingw-w64-ucrt-x86_64-toolchain
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-SDL2
+            mingw-w64-ucrt-x86_64-zlib
+            mingw-w64-ucrt-x86_64-SDL2_image
+            mingw-w64-ucrt-x86_64-zeromq
+            mingw-w64-ucrt-x86_64-cppzmq
+            mingw-w64-ucrt-x86_64-glfw
+            mingw-w64-ucrt-x86_64-libpng
 
       - name: Checkout repository
         uses: actions/checkout@v3
