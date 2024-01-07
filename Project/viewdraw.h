@@ -28,7 +28,7 @@ using namespace std;
 #include "player.h"
 #include "level.h"
 
-#ifnef GL_SAMPLE_ALPHA_TO_COVERAGE
+#ifndef GL_SAMPLE_ALPHA_TO_COVERAGE
 // OpenGL ES constant
 #define GL_SAMPLE_ALPHA_TO_COVERAGE 0x809e
 #endif
